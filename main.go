@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/tlorens/go-ibgetkey"
 	"github.com/nsf/termbox-go"
 	"github.com/tatsushid/go-fastping"
+	"github.com/tlorens/go-ibgetkey"
 	"io/ioutil"
 	"log"
 	"net"
@@ -85,23 +85,42 @@ func drawBlue(x, y int, str string) {
 	}
 }
 
+func drawRed(x, y int, str string) {
+	termbox.SetOutputMode(termbox.Output256)
+	color := termbox.Attribute(196 + 1)
+	backgroundColor := termbox.ColorDefault
+	runes := []rune(str)
+
+	for i := 0; i < len(runes); i += 1 {
+		termbox.SetCell(x+i, y, runes[i], color, backgroundColor)
+	}
+}
+
 func Pinger(host string) string {
+	//func Pinger(host string) <-chan string {
 	p := fastping.NewPinger()
 	ra, err := net.ResolveIPAddr("ip4:icmp", host)
-	fatal(err)
+	if err != nil {
+		termbox.Close()
+		panic(err)
+	}
 	p.AddIPAddr(ra)
+
 	var out string
 	p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
 		out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
 	}
-	p.OnIdle = func() {}
+	p.OnIdle = func() {
+	}
 	err = p.Run()
 	if err != nil {
 		fmt.Println(err)
 	}
+	//	receiver := make(chan string)
+	//	receiver <- out
 	rbf.WriteString(out)
+	//	return receiver
 	return out
-
 }
 
 func draw() {
@@ -123,8 +142,17 @@ func draw() {
 		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 		for pscanner.Scan() {
 			ps := pscanner.Text()
+			//		done := make(chan struct{}, 0)
+			//		var res string
+			//		go func() {
+			//reseive := <-Pinger(ps)
+			//res = reseive
+			//defer close(done)
+			//		}()
+			//		<-done
 			drawBlue(2, i, fmt.Sprintf("%v", "o"))
 			drawLine(4, i, fmt.Sprintf("%v", Pinger(ps)))
+			//drawLine(4, i, fmt.Sprintf("%v", res))
 			drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
 			termbox.Flush()
 			i++
@@ -144,24 +172,22 @@ func pollEvent() {
 	targetkey := "q"
 	t := int(targetkey[0])
 loop:
-    for {
-        input := keyboard.ReadKey()
-        select {
-        case <-finished:
-            break loop
-        default:
-            if input == t {
-                kill <- true
-                break loop
-            }
-        }
-    }
+	for {
+		input := keyboard.ReadKey()
+		select {
+		case <-finished:
+			break loop
+		default:
+			if input == t {
+				kill <- true
+				break loop
+			}
+		}
+	}
 }
 
-
-
-func killPing(kill, finished chan bool){
-	for{
+func killPing(kill, finished chan bool) {
+	for {
 		select {
 		case <-kill:
 			finished <- true
@@ -174,29 +200,29 @@ func killPing(kill, finished chan bool){
 
 	}
 
-/*
-			for {
-				switch ev := termbox.PollEvent(); ev.Type {
-				case termbox.EventKey:
-					switch ev.Key {
-					case termbox.KeyEsc:
-						return
-					}
+	/*
+		for {
+			switch ev := termbox.PollEvent(); ev.Type {
+			case termbox.EventKey:
+				switch ev.Key {
+				case termbox.KeyEsc:
+					return
 				}
-			}*/
+			}
+		}*/
 }
 
 func init() {
 	pl, err := os.Open("ping-list")
-                fatal(err)
-                defer pl.Close()
-                scanner := bufio.NewScanner(pl)
-		for scanner.Scan() {
-                        s := scanner.Text() + "\n"
+	fatal(err)
+	defer pl.Close()
+	scanner := bufio.NewScanner(pl)
+	for scanner.Scan() {
+		s := scanner.Text() + "\n"
 		pbf.WriteString(s)
 		if err := scanner.Err(); err != nil {
-                                panic(err)
-                        }
+			panic(err)
+		}
 	}
 }
 
