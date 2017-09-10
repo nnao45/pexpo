@@ -96,8 +96,7 @@ func drawRed(x, y int, str string) {
 	}
 }
 
-func Pinger(host string) string {
-	//func Pinger(host string) <-chan string {
+func Pinger(host string) (s string, i int) {
 	p := fastping.NewPinger()
 	ra, err := net.ResolveIPAddr("ip4:icmp", host)
 	if err != nil {
@@ -107,20 +106,31 @@ func Pinger(host string) string {
 	p.AddIPAddr(ra)
 
 	var out string
-	p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
-		out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
-	}
+	var res string
+	receiver := make(chan string, 10000)
+	go func() {
+		p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
+			out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
+			receiver <- out
+		}
+	}()
 	p.OnIdle = func() {
 	}
 	err = p.Run()
 	if err != nil {
 		fmt.Println(err)
 	}
-	//	receiver := make(chan string)
-	//	receiver <- out
-	rbf.WriteString(out)
-	//	return receiver
-	return out
+	for {
+		select {
+		case res = <-receiver:
+			rbf.WriteString(res)
+			return res, 0
+		case <-time.After(time.Second):
+			res = "Host: " + host + " ping faild...\n"
+			rbf.WriteString(res)
+			return res, 1
+		}
+	}
 }
 
 func draw() {
@@ -131,7 +141,11 @@ func draw() {
 		rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
 		for rscanner.Scan() {
 			rs := rscanner.Text()
-			drawBlue(2, h, fmt.Sprintf("%v", "o"))
+			if strings.Contains(rs, "ping faild") {
+				drawRed(2, h, fmt.Sprintf("%v", "x"))
+			} else {
+				drawBlue(2, h, fmt.Sprintf("%v", "o"))
+			}
 			drawLine(4, h, fmt.Sprintf("%v", rs))
 			h++
 			if err := rscanner.Err(); err != nil {
@@ -142,17 +156,13 @@ func draw() {
 		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 		for pscanner.Scan() {
 			ps := pscanner.Text()
-			//		done := make(chan struct{}, 0)
-			//		var res string
-			//		go func() {
-			//reseive := <-Pinger(ps)
-			//res = reseive
-			//defer close(done)
-			//		}()
-			//		<-done
-			drawBlue(2, i, fmt.Sprintf("%v", "o"))
-			drawLine(4, i, fmt.Sprintf("%v", Pinger(ps)))
-			//drawLine(4, i, fmt.Sprintf("%v", res))
+			res, flag := Pinger(ps)
+			if flag == 0 {
+				drawBlue(2, i, fmt.Sprintf("%v", "o"))
+			} else if flag == 1 {
+				drawRed(2, i, fmt.Sprintf("%v", "x"))
+			}
+			drawLine(4, i, fmt.Sprintf("%v", res))
 			drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
 			termbox.Flush()
 			i++
