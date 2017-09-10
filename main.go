@@ -4,15 +4,20 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-//	"strings"
+	"github.com/tlorens/go-ibgetkey"
 	"github.com/nsf/termbox-go"
 	"github.com/tatsushid/go-fastping"
 	"io/ioutil"
 	"log"
 	"net"
 	"os"
+	"strings"
 	"time"
 )
+
+var i int
+var h int
+var rbf bytes.Buffer
 
 func fatal(err error) {
 	if err != nil {
@@ -68,6 +73,17 @@ func drawLine(x, y int, str string) {
 	}
 }
 
+func drawBlue(x, y int, str string) {
+	termbox.SetOutputMode(termbox.Output256)
+	color := termbox.Attribute(21 + 1)
+	backgroundColor := termbox.ColorDefault
+	runes := []rune(str)
+
+	for i := 0; i < len(runes); i += 1 {
+		termbox.SetCell(x+i, y, runes[i], color, backgroundColor)
+	}
+}
+
 func Pinger(host string) string {
 	p := fastping.NewPinger()
 	ra, err := net.ResolveIPAddr("ip4:icmp", host)
@@ -82,61 +98,98 @@ func Pinger(host string) string {
 	if err != nil {
 		fmt.Println(err)
 	}
-	addog(out, "test.txt")
+	rbf.WriteString(out)
 	return out
 
 }
 
-func draw(i int) {
+func draw() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
-	drawLine(0, 0, "Press ESC to exit.")
-	drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
-	if i > 0 {
-		f, err := os.Open("test.txt")
-		fatal(err)
-		defer f.Close()
-		scanner := bufio.NewScanner(f)
-		h := 2
+	drawLine(0, 0, "Press q to exit.")
+	//drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
+	if i >= 2 {
+		scanner := bufio.NewScanner(strings.NewReader(rbf.String()))
 		for scanner.Scan() {
 			s := scanner.Text()
-			drawLine(2, h, fmt.Sprintf("%v", s))
-			if h == i {
-				break
-				}
+			drawBlue(2, h, fmt.Sprintf("%v", "o"))
+			drawLine(4, h, fmt.Sprintf("%v", s))
 			h++
 			if err := scanner.Err(); err != nil {
-			panic(err)
-		}
+				panic(err)
 			}
-		drawLine(2, i+1, fmt.Sprintf("%v", Pinger("www.google.com")))
+			i = h
+		}
+		ph, err := os.Open("ping-list")
+		fatal(err)
+		defer ph.Close()
+		pscanner := bufio.NewScanner(ph)
+		for pscanner.Scan() {
+			ps := pscanner.Text()
+			drawBlue(2, i, fmt.Sprintf("%v", "o"))
+			drawLine(4, i, fmt.Sprintf("%v", Pinger(ps)))
+			drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
+			termbox.Flush()
+			i++
+			if err := pscanner.Err(); err != nil {
+				panic(err)
+			}
+		}
+
 	}
 	termbox.Flush()
 }
 
 func pollEvent() {
-	var i int
-	i = 0
-	draw(i)
-	for {
-		switch ev := termbox.PollEvent(); ev.Type {
-		case termbox.EventKey:
-			switch ev.Key {
-			case termbox.KeyEsc:
-				return
-			default:
-				i++
-				draw(i)
-			}
+	kill := make(chan bool)
+	finished := make(chan bool)
+	go killPing(kill, finished)
+	targetkey := "q"
+	t := int(targetkey[0])
+loop:
+    for {
+        input := keyboard.ReadKey()
+        select {
+        case <-finished:
+            break loop
+        default:
+            if input == t {
+                kill <- true
+                break loop
+            }
+        }
+    }
+}
+
+
+
+func killPing(kill, finished chan bool){
+	for{
+		select {
+		case <-kill:
+			finished <- true
+			return
 		default:
-			draw(i)
+			i = 2
+			h = 2
+			draw()
 		}
+
 	}
+
+/*
+			for {
+				switch ev := termbox.PollEvent(); ev.Type {
+				case termbox.EventKey:
+					switch ev.Key {
+					case termbox.KeyEsc:
+						return
+					}
+				}
+			}*/
 }
 
 func main() {
-	ifExists("test.txt")
-	defer os.Remove("test.txt")
 	err := termbox.Init()
 	if err != nil {
 		panic(err)
