@@ -18,6 +18,7 @@ import (
 var i int
 var h int
 var rbf bytes.Buffer
+var pbf bytes.Buffer
 
 func fatal(err error) {
 	if err != nil {
@@ -107,23 +108,19 @@ func draw() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
 	drawLine(0, 0, "Press q to exit.")
-	//drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
 	if i >= 2 {
-		scanner := bufio.NewScanner(strings.NewReader(rbf.String()))
-		for scanner.Scan() {
-			s := scanner.Text()
+		rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
+		for rscanner.Scan() {
+			rs := rscanner.Text()
 			drawBlue(2, h, fmt.Sprintf("%v", "o"))
-			drawLine(4, h, fmt.Sprintf("%v", s))
+			drawLine(4, h, fmt.Sprintf("%v", rs))
 			h++
-			if err := scanner.Err(); err != nil {
+			if err := rscanner.Err(); err != nil {
 				panic(err)
 			}
 			i = h
 		}
-		ph, err := os.Open("ping-list")
-		fatal(err)
-		defer ph.Close()
-		pscanner := bufio.NewScanner(ph)
+		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 		for pscanner.Scan() {
 			ps := pscanner.Text()
 			drawBlue(2, i, fmt.Sprintf("%v", "o"))
@@ -187,6 +184,20 @@ func killPing(kill, finished chan bool){
 					}
 				}
 			}*/
+}
+
+func init() {
+	pl, err := os.Open("ping-list")
+                fatal(err)
+                defer pl.Close()
+                scanner := bufio.NewScanner(pl)
+		for scanner.Scan() {
+                        s := scanner.Text() + "\n"
+		pbf.WriteString(s)
+		if err := scanner.Err(); err != nil {
+                                panic(err)
+                        }
+	}
 }
 
 func main() {
