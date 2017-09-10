@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+//	"strings"
 	"github.com/nsf/termbox-go"
 	"github.com/tatsushid/go-fastping"
 	"io/ioutil"
@@ -74,17 +75,13 @@ func Pinger(host string) string {
 	p.AddIPAddr(ra)
 	var out string
 	p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
-		//	fmt.Printf("IP Addr: %s receive, RTT: %v\n", addr.String(), rtt)
 		out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
 	}
-	//str := "IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
-	//fmt.Fprintln(out, str)
 	p.OnIdle = func() {}
 	err = p.Run()
 	if err != nil {
 		fmt.Println(err)
 	}
-	//        time.Sleep(100 * time.Millisecond)
 	addog(out, "test.txt")
 	return out
 
@@ -96,7 +93,22 @@ func draw(i int) {
 	drawLine(0, 0, "Press ESC to exit.")
 	drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
 	if i > 0 {
-		drawLine(2, i, fmt.Sprintf("%v", cat("test.txt")))
+		f, err := os.Open("test.txt")
+		fatal(err)
+		defer f.Close()
+		scanner := bufio.NewScanner(f)
+		h := 2
+		for scanner.Scan() {
+			s := scanner.Text()
+			drawLine(2, h, fmt.Sprintf("%v", s))
+			if h == i {
+				break
+				}
+			h++
+			if err := scanner.Err(); err != nil {
+			panic(err)
+		}
+			}
 		drawLine(2, i+1, fmt.Sprintf("%v", Pinger("www.google.com")))
 	}
 	termbox.Flush()
