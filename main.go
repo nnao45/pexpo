@@ -18,10 +18,13 @@ import (
 	"time"
 )
 
-var a int
-var i int
-var pbf bytes.Buffer
-var hbf bytes.Buffer
+/*This global counter*/
+var i int // "i" is all pings count.
+var j int // "j" is all pings "per host" count.
+
+/*This global buffer*/
+var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
+var hbf bytes.Buffer // hbf is ping loss mapping to host.
 
 func fatal(err error) {
 	if err != nil {
@@ -141,7 +144,7 @@ func draw() {
 			drawRed(2, i+2, fmt.Sprintf("%v", "x"))
 		}
 		drawLine(4, i+2, fmt.Sprintf("%v", res))
-		drawGreen(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), a), 2)))
+		drawGreen(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)))
 		drawGreen(86, index, fmt.Sprintf("(%vloss)", drawLoss(index)))
 		drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
 		termbox.Flush()
@@ -161,7 +164,7 @@ func drawHostList() {
 	for scanner.Scan() {
 		s := scanner.Text()
 		drawGreen(60, hi, fmt.Sprintf("%v", s))
-		if a <= 1 {
+		if j <= 1 {
 			drawGreen(80, hi, fmt.Sprintf("%v", "0.000"))
 			drawGreen(86, hi, fmt.Sprintf("%v", "(0loss)"))
 		}
@@ -213,7 +216,7 @@ func killPing(kill, finished chan bool) {
 			finished <- true
 			return
 		default:
-			a++
+			j++
 			draw()
 		}
 
