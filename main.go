@@ -4,21 +4,26 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/dariubs/percent"
 	"github.com/nsf/termbox-go"
 	"github.com/tatsushid/go-fastping"
 	"github.com/tlorens/go-ibgetkey"
 	"io/ioutil"
 	"log"
+	"math"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
 
+var a int
 var i int
 var h int
 var rbf bytes.Buffer
 var pbf bytes.Buffer
+var hbf bytes.Buffer
 
 func fatal(err error) {
 	if err != nil {
@@ -64,6 +69,11 @@ func cat(filename string) string {
 	return string(buff)
 }
 
+func Round(f float64, places int) float64 {
+	shift := math.Pow(10, float64(places))
+	return math.Floor(f*shift+.5) / shift
+}
+
 func drawLine(x, y int, str string) {
 	color := termbox.ColorDefault
 	backgroundColor := termbox.ColorDefault
@@ -96,7 +106,18 @@ func drawRed(x, y int, str string) {
 	}
 }
 
-func Pinger(host string) (s string, i int) {
+func drawGreen(x, y int, str string) {
+	termbox.SetOutputMode(termbox.Output256)
+	color := termbox.Attribute(48 + 1)
+	backgroundColor := termbox.ColorDefault
+	runes := []rune(str)
+
+	for i := 0; i < len(runes); i += 1 {
+		termbox.SetCell(x+i, y, runes[i], color, backgroundColor)
+	}
+}
+
+func Pinger(host string, index int) (s string, i int) {
 	p := fastping.NewPinger()
 	ra, err := net.ResolveIPAddr("ip4:icmp", host)
 	if err != nil {
@@ -110,7 +131,8 @@ func Pinger(host string) (s string, i int) {
 	receiver := make(chan string, 10000)
 	go func() {
 		p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
-			out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
+			//out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
+			out = "Host: " + host + " receive, RTT: " + rtt.String() + "\n"
 			receiver <- out
 		}
 	}()
@@ -128,51 +150,85 @@ func Pinger(host string) (s string, i int) {
 		case <-time.After(time.Second):
 			res = "Host: " + host + " ping faild...\n"
 			rbf.WriteString(res)
+			fres := strconv.Itoa(index) + "\n"
+			hbf.WriteString(fres)
 			return res, 1
 		}
 	}
 }
 
 func draw() {
-	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-
+	drawHostList()
 	drawLine(0, 0, "Press q to exit.")
-	if i >= 2 {
-		rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
-		for rscanner.Scan() {
-			rs := rscanner.Text()
-			if strings.Contains(rs, "ping faild") {
-				drawRed(2, h, fmt.Sprintf("%v", "x"))
-			} else {
-				drawBlue(2, h, fmt.Sprintf("%v", "o"))
-			}
-			drawLine(4, h, fmt.Sprintf("%v", rs))
-			h++
-			if err := rscanner.Err(); err != nil {
-				panic(err)
-			}
-			i = h
+	rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
+	for rscanner.Scan() {
+		rs := rscanner.Text()
+		if !strings.Contains(rs, "ping faild") {
+			drawBlue(2, h, fmt.Sprintf("%v", "o"))
+		} else {
+			drawRed(2, h, fmt.Sprintf("%v", "x"))
 		}
-		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
-		for pscanner.Scan() {
-			ps := pscanner.Text()
-			res, flag := Pinger(ps)
-			if flag == 0 {
-				drawBlue(2, i, fmt.Sprintf("%v", "o"))
-			} else if flag == 1 {
-				drawRed(2, i, fmt.Sprintf("%v", "x"))
-			}
-			drawLine(4, i, fmt.Sprintf("%v", res))
-			drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
-			termbox.Flush()
-			i++
-			if err := pscanner.Err(); err != nil {
-				panic(err)
-			}
+		drawLine(4, h, fmt.Sprintf("%v", rs))
+		h++
+		if err := rscanner.Err(); err != nil {
+			panic(err)
 		}
-
+		i = h
 	}
-	termbox.Flush()
+
+	index := 2
+	pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
+	for pscanner.Scan() {
+		ps := pscanner.Text()
+		res, flag := Pinger(ps, index)
+		if flag == 0 {
+			drawBlue(2, i, fmt.Sprintf("%v", "o"))
+		} else if flag == 1 {
+			drawRed(2, i, fmt.Sprintf("%v", "x"))
+		}
+		drawLine(4, i, fmt.Sprintf("%v", res))
+		drawGreen(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), a), 2)))
+		drawGreen(86, index, fmt.Sprintf("(%vloss)", drawLoss(index)))
+		drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
+		termbox.Flush()
+		i++
+		index++
+		if err := pscanner.Err(); err != nil {
+			panic(err)
+		}
+	}
+}
+
+func drawHostList() {
+	hi := 2
+	drawLine(60, hi-1, fmt.Sprintf("%v", "HOST"))
+	drawLine(80, hi-1, fmt.Sprintf("%v", "LOSS"))
+	scanner := bufio.NewScanner(strings.NewReader(pbf.String()))
+	for scanner.Scan() {
+		s := scanner.Text()
+		drawGreen(60, hi, fmt.Sprintf("%v", s))
+		if a <= 1 {
+			drawGreen(80, hi, fmt.Sprintf("%v", "0.000"))
+			drawGreen(86, hi, fmt.Sprintf("%v", "(0loss)"))
+		}
+		hi++
+		if err := scanner.Err(); err != nil {
+			panic(err)
+		}
+	}
+
+}
+
+func drawLoss(index int) int {
+	var c int
+	scanner := bufio.NewScanner(strings.NewReader(hbf.String()))
+	for scanner.Scan() {
+		s := scanner.Text()
+		if s == strconv.Itoa(index) {
+			c++
+		}
+	}
+	return c
 }
 
 func pollEvent() {
@@ -203,6 +259,7 @@ func killPing(kill, finished chan bool) {
 			finished <- true
 			return
 		default:
+			a++
 			i = 2
 			h = 2
 			draw()
@@ -243,6 +300,5 @@ func main() {
 	}
 
 	defer termbox.Close()
-
 	pollEvent()
 }
