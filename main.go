@@ -8,7 +8,7 @@ import (
 	"github.com/nsf/termbox-go"
 	"github.com/tatsushid/go-fastping"
 	"github.com/tlorens/go-ibgetkey"
-	"io/ioutil"
+	//	"io/ioutil"
 	"log"
 	"math"
 	"net"
@@ -20,8 +20,6 @@ import (
 
 var a int
 var i int
-var h int
-var rbf bytes.Buffer
 var pbf bytes.Buffer
 var hbf bytes.Buffer
 
@@ -29,26 +27,6 @@ func fatal(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func bfdog(text string) string {
-	var b bytes.Buffer
-	b.WriteString(text)
-	return b.String()
-}
-
-func exists(filename string) bool {
-	_, err := os.Stat(filename)
-	return err == nil
-}
-
-func ifExists(filename string) {
-	if !exists(filename) {
-		f, err := os.Create(filename)
-		fatal(err)
-		defer f.Close()
-	}
-	return
 }
 
 func addog(text string, filename string) {
@@ -61,12 +39,6 @@ func addog(text string, filename string) {
 	writer.Flush()
 	fatal(err)
 	defer write_file.Close()
-}
-
-func cat(filename string) string {
-	buff, err := ioutil.ReadFile(filename)
-	fatal(err)
-	return string(buff)
 }
 
 func Round(f float64, places int) float64 {
@@ -145,11 +117,9 @@ func Pinger(host string, index int) (s string, i int) {
 	for {
 		select {
 		case res = <-receiver:
-			rbf.WriteString(res)
 			return res, 0
 		case <-time.After(time.Second):
 			res = "Host: " + host + " ping faild...\n"
-			rbf.WriteString(res)
 			fres := strconv.Itoa(index) + "\n"
 			hbf.WriteString(fres)
 			return res, 1
@@ -160,33 +130,17 @@ func Pinger(host string, index int) (s string, i int) {
 func draw() {
 	drawHostList()
 	drawLine(0, 0, "Press q to exit.")
-	rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
-	for rscanner.Scan() {
-		rs := rscanner.Text()
-		if !strings.Contains(rs, "ping faild") {
-			drawBlue(2, h, fmt.Sprintf("%v", "o"))
-		} else {
-			drawRed(2, h, fmt.Sprintf("%v", "x"))
-		}
-		drawLine(4, h, fmt.Sprintf("%v", rs))
-		h++
-		if err := rscanner.Err(); err != nil {
-			panic(err)
-		}
-		i = h
-	}
-
 	index := 2
 	pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 	for pscanner.Scan() {
 		ps := pscanner.Text()
 		res, flag := Pinger(ps, index)
 		if flag == 0 {
-			drawBlue(2, i, fmt.Sprintf("%v", "o"))
+			drawBlue(2, i+2, fmt.Sprintf("%v", "o"))
 		} else if flag == 1 {
-			drawRed(2, i, fmt.Sprintf("%v", "x"))
+			drawRed(2, i+2, fmt.Sprintf("%v", "x"))
 		}
-		drawLine(4, i, fmt.Sprintf("%v", res))
+		drawLine(4, i+2, fmt.Sprintf("%v", res))
 		drawGreen(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), a), 2)))
 		drawGreen(86, index, fmt.Sprintf("(%vloss)", drawLoss(index)))
 		drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
@@ -260,13 +214,10 @@ func killPing(kill, finished chan bool) {
 			return
 		default:
 			a++
-			i = 2
-			h = 2
 			draw()
 		}
 
 	}
-
 	/*
 		for {
 			switch ev := termbox.PollEvent(); ev.Type {
