@@ -22,12 +22,10 @@ import (
 /*This global counter*/
 var i int // "i" is all pings count.
 var j int // "j" is all pings "per host" count.
-var k int // "k" is scroll counter
 
 /*This global buffer*/
 var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
 var hbf bytes.Buffer // hbf is ping loss mapping to host.
-var rbf bytes.Buffer // rbf is ping result list
 
 const layout = "2006 Jan 02 15:04:05.000Z07:00 JST"
 
@@ -97,7 +95,7 @@ func drawGreen(x, y int, str string) {
 	}
 }
 
-func Pinger(host string, index int) (s string, flag int) {
+func Pinger(host string, index int) (s string, i int) {
 	p := fastping.NewPinger()
 	ra, err := net.ResolveIPAddr("ip4:icmp", host)
 	if err != nil {
@@ -122,14 +120,11 @@ func Pinger(host string, index int) (s string, flag int) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	timer := time.NewTimer(3 * time.Second)
 	for {
-		timer.Reset(3 * time.Second)
 		select {
 		case res = <-receiver:
 			return res, 0
-		//case <-time.After(2 * time.Second):
-		case <-timer.C:
+		case <-time.After(time.Second):
 			res = "Host: " + host + " ping faild...\n"
 			fres := strconv.Itoa(index) + "\n"
 			hbf.WriteString(fres)
@@ -139,66 +134,27 @@ func Pinger(host string, index int) (s string, flag int) {
 }
 
 func draw() {
-	//termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	drawHostList()
-	drawLine(0, 0, "Press q to exit.")
-	//var maxX int
+	var maxX int
 	var maxY int
+	go func() {
+		for {
+			maxX, maxY = termbox.Size()
+			drawRed(20, 0, fmt.Sprintf("%v:%v", maxX, maxY))
+		}
+	}()
+	drawLine(0, 0, "Press q to exit.")
 	index := 2
-	//maxX, maxY = termbox.Size()
-	_, maxY = termbox.Size()
-	//drawRed(20, 0, fmt.Sprintf("%v:%v", maxX, maxY))
-
 	pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 	for pscanner.Scan() {
 		ps := pscanner.Text()
 		res, flag := Pinger(ps, index)
-		var mb string
 		if flag == 0 {
-			mb = "o"
-			drawBlue(2, i+2, fmt.Sprintf("%v", mb))
+			drawBlue(2, i+2, fmt.Sprintf("%v", "o"))
 		} else if flag == 1 {
-			mb = "x"
-			drawRed(2, i+2, fmt.Sprintf("%v", mb))
+			drawRed(2, i+2, fmt.Sprintf("%v", "x"))
 		}
-		if maxY > i+2 {
-			drawLine(4, i+2, fmt.Sprintf("%v", res))
-
-		} else {
-			/*ping-list clear*/
-			n := maxY - 1
-			for 0 < n {
-				drawLine(2, n, fmt.Sprintf("%v", "                                                   "))
-				n--
-			}
-			if mb == "o" {
-				drawBlue(2, maxY-1, fmt.Sprintf("%v", mb))
-			} else if mb == "x" {
-				drawRed(2, maxY-1, fmt.Sprintf("%v", mb))
-			}
-			drawLine(4, maxY-1, fmt.Sprintf("%v", res))
-			var rc int
-			rc = rc - k
-			rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
-			for rscanner.Scan() {
-				rs := rscanner.Text()
-				if rc > 0 {
-					rs_ary := strings.SplitN(rs, " ", 2)
-					if rs_ary[0] == "o" {
-						drawBlue(2, rc+1, fmt.Sprintf("%v", rs_ary[0]))
-					} else if rs_ary[0] == "x" {
-						drawRed(2, rc+1, fmt.Sprintf("%v", rs_ary[0]))
-					}
-					drawLine(4, rc+1, fmt.Sprintf("%v", rs_ary[1]))
-				}
-				rc++
-				//drawBlue(50, 0, fmt.Sprintf("%v", i+2-maxY))
-			}
-			k++
-		}
-		pres := mb + " " + res
-		//drawBlue(50, 0, fmt.Sprintf("%v", pres))
-		rbf.WriteString(pres)
+		drawLine(4, i+2, fmt.Sprintf("%v", res))
 		drawGreen(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)))
 		drawGreen(86, index, fmt.Sprintf("(%v loss)", drawLoss(index)))
 		t := time.Now()
