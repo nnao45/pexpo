@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+
 	"github.com/dariubs/percent"
 	"github.com/nsf/termbox-go"
 	"github.com/tatsushid/go-fastping"
@@ -25,6 +26,8 @@ var j int // "j" is all pings "per host" count.
 /*This global buffer*/
 var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
 var hbf bytes.Buffer // hbf is ping loss mapping to host.
+
+const layout = "2006 Jan 02 15:04:05.000Z07:00 JST"
 
 func fatal(err error) {
 	if err != nil {
@@ -145,8 +148,9 @@ func draw() {
 		}
 		drawLine(4, i+2, fmt.Sprintf("%v", res))
 		drawGreen(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)))
-		drawGreen(86, index, fmt.Sprintf("(%vloss)", drawLoss(index)))
-		drawLine(2, 1, fmt.Sprintf("date: %v", time.Now()))
+		drawGreen(86, index, fmt.Sprintf("(%v loss)", drawLoss(index)))
+		t := time.Now()
+		drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(layout)))
 		termbox.Flush()
 		i++
 		index++
@@ -166,7 +170,7 @@ func drawHostList() {
 		drawGreen(60, hi, fmt.Sprintf("%v", s))
 		if j <= 1 {
 			drawGreen(80, hi, fmt.Sprintf("%v", "0.000"))
-			drawGreen(86, hi, fmt.Sprintf("%v", "(0loss)"))
+			drawGreen(86, hi, fmt.Sprintf("%v", "(0 loss)"))
 		}
 		hi++
 		if err := scanner.Err(); err != nil {
