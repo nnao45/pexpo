@@ -107,7 +107,7 @@ func Pinger(host string, index int) (s string, flag string) {
 
 	var out string
 	var res string
-	receiver := make(chan string, 10000)
+	receiver := make(chan string, 100000)
 	go func() {
 		p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
 			//out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
@@ -121,6 +121,7 @@ func Pinger(host string, index int) (s string, flag string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	timer := time.NewTimer(3 * time.Second)
 	for {
 		timer.Reset(3 * time.Second)
@@ -137,61 +138,79 @@ func Pinger(host string, index int) (s string, flag string) {
 	}
 }
 
-func draw() {
-	//termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-	drawHostList()
-	drawLine(0, 0, "Press q to exit.")
-	//var maxX int
-	var maxY int
-	index := 2
-	//maxX, maxY = termbox.Size()
-	_, maxY = termbox.Size()
-	//drawRed(20, 0, fmt.Sprintf("%v:%v", maxX, maxY))
+func drawLoop() {
+	for {
+		j++
+		//termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+		drawHostList()
+		drawLine(0, 0, "Press Esc ,Ctrl+C to exit.")
+		//var maxX int
+		var maxY int
+		index := 2
+		//maxX, maxY = termbox.Size()
+		_, maxY = termbox.Size()
+		//drawRed(20, 0, fmt.Sprintf("%v:%v", maxX, maxY))
 
-	pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
-	for pscanner.Scan() {
-		ps := pscanner.Text()
-		res, flag := Pinger(ps, index)
-		drawFlag(2, i+2, flag)
-		if maxY > i+2 {
-			drawLine(4, i+2, fmt.Sprintf("%v", res))
-
-		} else {
-			/*ping-list clear*/
-			n := maxY - 1
-			for 0 < n {
-				drawLine(2, n, fmt.Sprintf("%v", "                                                   "))
-				n--
-			}
-			drawFlag(2, maxY-1, flag)
-			drawLine(4, maxY-1, fmt.Sprintf("%v", res))
-			var rc int
-			rc = rc - k
-			rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
-			for rscanner.Scan() {
-				rs := rscanner.Text()
-				if rc > 0 {
-					rs_ary := strings.SplitN(rs, " ", 2)
-					drawFlag(2, rc+1, rs_ary[0])
-					drawLine(4, rc+1, fmt.Sprintf("%v", rs_ary[1]))
+		killKey := make(chan termbox.Key)
+		go keyEventLoop(killKey)
+		go func() {
+			for {
+				select {
+				case wait := <-killKey:
+					switch wait {
+					case termbox.KeyEsc, termbox.KeyCtrlC:
+						termbox.Close()
+						os.Exit(0)
+					}
 				}
-				rc++
-				//drawBlue(50, 0, fmt.Sprintf("%v", i+2-maxY))
 			}
-			k++
-		}
-		pres := flag + " " + res
-		//drawBlue(50, 0, fmt.Sprintf("%v", pres))
-		rbf.WriteString(pres)
-		drawGreen(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)))
-		drawGreen(86, index, fmt.Sprintf("(%v loss)", drawLoss(index)))
-		t := time.Now()
-		drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(layout)))
-		termbox.Flush()
-		i++
-		index++
-		if err := pscanner.Err(); err != nil {
-			panic(err)
+		}()
+
+		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
+		for pscanner.Scan() {
+			ps := pscanner.Text()
+			res, flag := Pinger(ps, index)
+			drawFlag(2, i+2, flag)
+			if maxY > i+2 {
+				drawLine(4, i+2, fmt.Sprintf("%v", res))
+
+			} else {
+				/*ping-list clear*/
+				n := maxY - 1
+				for 0 < n {
+					drawLine(2, n, fmt.Sprintf("%v", "                                                   "))
+					n--
+				}
+				drawFlag(2, maxY-1, flag)
+				drawLine(4, maxY-1, fmt.Sprintf("%v", res))
+				var rc int
+				rc = rc - k
+				rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
+				for rscanner.Scan() {
+					rs := rscanner.Text()
+					if rc > 0 {
+						rs_ary := strings.SplitN(rs, " ", 2)
+						drawFlag(2, rc+1, rs_ary[0])
+						drawLine(4, rc+1, fmt.Sprintf("%v", rs_ary[1]))
+					}
+					rc++
+					//drawBlue(50, 0, fmt.Sprintf("%v", i+2-maxY))
+				}
+				k++
+			}
+			pres := flag + " " + res
+			//drawBlue(50, 0, fmt.Sprintf("%v", pres))
+			rbf.WriteString(pres)
+			drawGreen(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)))
+			drawGreen(86, index, fmt.Sprintf("(%v loss)", drawLoss(index)))
+			t := time.Now()
+			drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(layout)))
+			termbox.Flush()
+			i++
+			index++
+			if err := pscanner.Err(); err != nil {
+				panic(err)
+			}
 		}
 	}
 }
@@ -236,55 +255,6 @@ func drawLoss(index int) int {
 	return c
 }
 
-/*
-func pollEvent() {
-	kill := make(chan bool)
-	finished := make(chan bool)
-	go killPing(kill, finished)
-	targetkey := "q"
-	t := int(targetkey[0])
-loop:
-	for {
-		input := keyboard.ReadKey()
-		select {
-		case <-finished:
-			break loop
-		default:
-			if input == t {
-				kill <- true
-				break loop
-			}
-		}
-	}
-}
-*/
-
-func pollEvent() {
-	kill := make(chan bool)
-	killKey := make(chan termbox.Key)
-	finished := make(chan bool)
-	go keyEventLoop(killKey)
-	go killPing(kill, finished)
-	//targetkey := "q"
-	//t := int(targetkey[0])
-loop:
-	for {
-		//input := keyboard.ReadKey()
-		select {
-		case <-finished:
-			break loop
-		//default:
-		//	if input == t {
-		case wait := <-killKey:
-			switch wait {
-			case termbox.KeyEsc, termbox.KeyCtrlC:
-				kill <- true
-				break loop
-			}
-		}
-	}
-}
-
 func keyEventLoop(killKey chan termbox.Key) {
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
@@ -296,34 +266,6 @@ func keyEventLoop(killKey chan termbox.Key) {
 		default:
 		}
 	}
-}
-
-func killPing(kill, finished chan bool) {
-	for {
-		select {
-		case <-kill:
-			//case wait := <-kill:
-			//	switch wait {
-			//	case termbox.KeyEsc, termbox.KeyCtrlC:
-			finished <- true
-			return
-			//}
-		default:
-			j++
-			draw()
-		}
-
-	}
-	/*
-		for {
-			switch ev := termbox.PollEvent(); ev.Type {
-			case termbox.EventKey:
-				switch ev.Key {
-				case termbox.KeyEsc:
-					return
-				}
-			}
-		}*/
 }
 
 func init() {
@@ -347,5 +289,5 @@ func main() {
 	}
 
 	defer termbox.Close()
-	pollEvent()
+	drawLoop()
 }
