@@ -180,6 +180,8 @@ func drawLoop() {
 						rs_ary := strings.SplitN(rs, " ", 2)
 						drawFlag(2, rc+1, rs_ary[0])
 						drawLine(4, rc+1, fmt.Sprintf("%v", rs_ary[1]))
+					} else {
+						rs = ""
 					}
 					rc++
 				}
