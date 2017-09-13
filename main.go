@@ -28,7 +28,12 @@ var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
 var hbf bytes.Buffer // hbf is ping loss mapping to host.
 var rbf bytes.Buffer // rbf is ping result list
 
-const layout = "2006 Jan 02 15:04:05.000Z07:00 JST"
+const (
+	DATE     = "2006 Jan 02 15:04:05.000Z07:00 JST"
+	BLUE256  = 21
+	RED256   = 196
+	GREEN256 = 48
+)
 
 func fatal(err error) {
 	if err != nil {
@@ -63,31 +68,9 @@ func drawLine(x, y int, str string) {
 	}
 }
 
-func drawBlue(x, y int, str string) {
+func drawLineColor(x, y int, str string, code int) {
 	termbox.SetOutputMode(termbox.Output256)
-	color := termbox.Attribute(21 + 1)
-	backgroundColor := termbox.ColorDefault
-	runes := []rune(str)
-
-	for i := 0; i < len(runes); i += 1 {
-		termbox.SetCell(x+i, y, runes[i], color, backgroundColor)
-	}
-}
-
-func drawRed(x, y int, str string) {
-	termbox.SetOutputMode(termbox.Output256)
-	color := termbox.Attribute(196 + 1)
-	backgroundColor := termbox.ColorDefault
-	runes := []rune(str)
-
-	for i := 0; i < len(runes); i += 1 {
-		termbox.SetCell(x+i, y, runes[i], color, backgroundColor)
-	}
-}
-
-func drawGreen(x, y int, str string) {
-	termbox.SetOutputMode(termbox.Output256)
-	color := termbox.Attribute(48 + 1)
+	color := termbox.Attribute(code + 1)
 	backgroundColor := termbox.ColorDefault
 	runes := []rune(str)
 
@@ -147,12 +130,15 @@ func drawLoop() {
 		//var maxX int
 		var maxY int
 		index := 2
-		//maxX, maxY = termbox.Size()
 		_, maxY = termbox.Size()
+		//_, maxY = getTermSize()
 		//drawRed(20, 0, fmt.Sprintf("%v:%v", maxX, maxY))
+		//drawRed(50, 0, fmt.Sprintf("%v", maxY))
 
 		killKey := make(chan termbox.Key)
+		//		resizeTerm := make(chan bool)
 		go keyEventLoop(killKey)
+		//		go getTermSize(resizeTerm)
 		go func() {
 			for {
 				select {
@@ -162,6 +148,8 @@ func drawLoop() {
 						termbox.Close()
 						os.Exit(0)
 					}
+					//				case <-resizeTerm:
+					//					_, maxY = termbox.Size()
 				}
 			}
 		}()
@@ -194,17 +182,15 @@ func drawLoop() {
 						drawLine(4, rc+1, fmt.Sprintf("%v", rs_ary[1]))
 					}
 					rc++
-					//drawBlue(50, 0, fmt.Sprintf("%v", i+2-maxY))
 				}
 				k++
 			}
 			pres := flag + " " + res
-			//drawBlue(50, 0, fmt.Sprintf("%v", pres))
 			rbf.WriteString(pres)
-			drawGreen(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)))
-			drawGreen(86, index, fmt.Sprintf("(%v loss)", drawLoss(index)))
+			drawLineColor(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), GREEN256)
+			drawLineColor(80, index, fmt.Sprintf("(%v loss)", drawLoss(index)), GREEN256)
 			t := time.Now()
-			drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(layout)))
+			drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(DATE)))
 			termbox.Flush()
 			i++
 			index++
@@ -217,9 +203,9 @@ func drawLoop() {
 
 func drawFlag(x int, y int, flag string) {
 	if flag == "o" {
-		drawBlue(x, y, fmt.Sprintf("%v", flag))
+		drawLineColor(x, y, fmt.Sprintf("%v", flag), BLUE256)
 	} else if flag == "x" {
-		drawRed(x, y, fmt.Sprintf("%v", flag))
+		drawLineColor(x, y, fmt.Sprintf("%v", flag), RED256)
 	}
 }
 
@@ -230,10 +216,10 @@ func drawHostList() {
 	scanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 	for scanner.Scan() {
 		s := scanner.Text()
-		drawGreen(60, hi, fmt.Sprintf("%v", s))
+		drawLineColor(60, hi, fmt.Sprintf("%v", s), GREEN256)
 		if j <= 1 {
-			drawGreen(80, hi, fmt.Sprintf("%v", "0.000"))
-			drawGreen(86, hi, fmt.Sprintf("%v", "(0 loss)"))
+			drawLineColor(80, hi, fmt.Sprintf("%v", "0.000"), GREEN256)
+			drawLineColor(86, hi, fmt.Sprintf("%v", "(0 loss)"), GREEN256)
 		}
 		hi++
 		if err := scanner.Err(); err != nil {
@@ -255,14 +241,24 @@ func drawLoss(index int) int {
 	return c
 }
 
+func getTermSize(resizeTerm chan bool) {
+	for {
+		switch ev := termbox.PollEvent(); ev.Type {
+		case termbox.EventResize:
+			resizeTerm <- true
+		default:
+		}
+	}
+}
+
 func keyEventLoop(killKey chan termbox.Key) {
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
 		case termbox.EventKey:
 			killKey <- ev.Key
-			//		case termbox.EventResize:
-			//			layout.termW, layout.termH = termbox.Size()
-			//			drawHeader()
+		//case termbox.EventResize:
+		//			layout.termW, layout.termH = termbox.Size()
+		//			drawHeader()
 		default:
 		}
 	}
