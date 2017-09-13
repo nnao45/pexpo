@@ -8,7 +8,6 @@ import (
 	"github.com/dariubs/percent"
 	"github.com/nsf/termbox-go"
 	"github.com/tatsushid/go-fastping"
-	"github.com/tlorens/go-ibgetkey"
 	//	"io/ioutil"
 	"log"
 	"math"
@@ -237,6 +236,7 @@ func drawLoss(index int) int {
 	return c
 }
 
+/*
 func pollEvent() {
 	kill := make(chan bool)
 	finished := make(chan bool)
@@ -257,13 +257,57 @@ loop:
 		}
 	}
 }
+*/
+
+func pollEvent() {
+	kill := make(chan bool)
+	killKey := make(chan termbox.Key)
+	finished := make(chan bool)
+	go keyEventLoop(killKey)
+	go killPing(kill, finished)
+	//targetkey := "q"
+	//t := int(targetkey[0])
+loop:
+	for {
+		//input := keyboard.ReadKey()
+		select {
+		case <-finished:
+			break loop
+		//default:
+		//	if input == t {
+		case wait := <-killKey:
+			switch wait {
+			case termbox.KeyEsc, termbox.KeyCtrlC:
+				kill <- true
+				break loop
+			}
+		}
+	}
+}
+
+func keyEventLoop(killKey chan termbox.Key) {
+	for {
+		switch ev := termbox.PollEvent(); ev.Type {
+		case termbox.EventKey:
+			killKey <- ev.Key
+			//		case termbox.EventResize:
+			//			layout.termW, layout.termH = termbox.Size()
+			//			drawHeader()
+		default:
+		}
+	}
+}
 
 func killPing(kill, finished chan bool) {
 	for {
 		select {
 		case <-kill:
+			//case wait := <-kill:
+			//	switch wait {
+			//	case termbox.KeyEsc, termbox.KeyCtrlC:
 			finished <- true
 			return
+			//}
 		default:
 			j++
 			draw()
