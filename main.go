@@ -13,6 +13,7 @@ import (
 	"math"
 	"net"
 	"os"
+	//	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -29,10 +30,22 @@ var hbf bytes.Buffer // hbf is ping loss mapping to host.
 var rbf bytes.Buffer // rbf is ping result list
 
 const (
-	DATE     = "2006 Jan 02 15:04:05.000Z07:00 JST"
-	BLUE256  = 21
-	RED256   = 196
-	GREEN256 = 48
+	DATE         = "2006 Jan 02 15:04:05.000Z07:00 JST"
+	RED256       = 196
+	BLUE256      = 21
+	GREEN256     = 48
+	WHITE256     = 255
+	BENI256      = 13
+	JUDGE_X      = 3
+	HOST_X       = 7
+	RTT_X        = 27
+	DES_X        = 47
+	LIST_H_X     = 70
+	LIST_P_X     = 90
+	LIST_L_X     = 96
+	ICMP_TIMEOUT = 3
+	DRAW_UP_Y    = 3
+	DRAW_DW_Y    = 2
 )
 
 func fatal(err error) {
@@ -79,7 +92,19 @@ func drawLineColor(x, y int, str string, code int) {
 	}
 }
 
-func Pinger(host string, index int) (s string, flag string) {
+func drawLineColorful(x, y int, str string, strcode int, backcode int) {
+	termbox.SetOutputMode(termbox.Output256)
+	color := termbox.Attribute(strcode + 1)
+	backgroundColor := termbox.Attribute(backcode + 1)
+	runes := []rune(str)
+
+	for i := 0; i < len(runes); i += 1 {
+		termbox.SetCell(x+i, y, runes[i], color, backgroundColor)
+	}
+}
+
+//func Pinger(host string, index int) (s string, flag string) {
+func Pinger(host string, index int) (s string) {
 	p := fastping.NewPinger()
 	ra, err := net.ResolveIPAddr("ip4:icmp", host)
 	if err != nil {
@@ -94,7 +119,9 @@ func Pinger(host string, index int) (s string, flag string) {
 	go func() {
 		p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
 			//out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
-			out = "Host: " + host + " receive, RTT: " + rtt.String() + "\n"
+			//out = "Host: " + host + " receive, RTT: " + rtt.String() + "\n"
+			//out = host + " " + rtt.String() + "\n"
+			out = host + " " + rtt.String()
 			receiver <- out
 		}
 	}()
@@ -105,18 +132,23 @@ func Pinger(host string, index int) (s string, flag string) {
 		fmt.Println(err)
 	}
 
-	timer := time.NewTimer(3 * time.Second)
+	timer := time.NewTimer(ICMP_TIMEOUT * time.Second)
 	for {
-		timer.Reset(3 * time.Second)
+		timer.Reset(ICMP_TIMEOUT * time.Second)
 		select {
 		case res = <-receiver:
-			return res, "o"
+			//return res, "o"
+			res = "o " + res
+			return res
 		//case <-time.After(2 * time.Second):
 		case <-timer.C:
-			res = "Host: " + host + " ping faild...\n"
+			//res = "Host: " + host + " ping faild...\n"
+			//res = "x " + host + " ping faild...\n"
+			res = "x " + host + " ping...faild..."
 			fres := strconv.Itoa(index) + "\n"
 			hbf.WriteString(fres)
-			return res, "x"
+			//return res, "x"
+			return res
 		}
 	}
 }
@@ -126,11 +158,11 @@ func drawLoop() {
 		j++
 		//termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 		drawHostList()
-		drawLine(0, 0, "Press Esc ,Ctrl+C to exit.")
-		//var maxX int
+		var maxX int
 		var maxY int
-		index := 2
-		_, maxY = termbox.Size()
+		index := 3
+		maxX, maxY = termbox.Size()
+		drawLine(maxX-27, 0, "Press Esc ,Ctrl+C to exit.")
 		//_, maxY = getTermSize()
 		//drawRed(20, 0, fmt.Sprintf("%v:%v", maxX, maxY))
 		//drawRed(50, 0, fmt.Sprintf("%v", maxY))
@@ -156,30 +188,56 @@ func drawLoop() {
 
 		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 		for pscanner.Scan() {
-			ps := pscanner.Text()
-			res, flag := Pinger(ps, index)
-			drawFlag(2, i+2, flag)
-			if maxY > i+2 {
-				drawLine(4, i+2, fmt.Sprintf("%v", res))
-
+			preps := pscanner.Text()
+			preps_ary := strings.SplitN(preps, " ", 2)
+			ps := preps_ary[0]
+			des := preps_ary[1]
+			res := Pinger(ps, index)
+			res_ary := strings.SplitN(res, " ", 3)
+			if maxY > i+DRAW_UP_Y+1 {
+				drawFlag(JUDGE_X, i+DRAW_UP_Y, res_ary[0])
+				drawFlag(JUDGE_X, 1, res_ary[0])
+				if res_ary[0] == "o" {
+					drawLine(HOST_X, i+DRAW_UP_Y, fmt.Sprintf("%v", res_ary[1]))
+					drawLine(RTT_X, i+DRAW_UP_Y, fmt.Sprintf("%v", res_ary[2]))
+					drawLine(DES_X, i+DRAW_UP_Y, fmt.Sprintf("%v", des))
+				} else if res_ary[0] == "x" {
+					drawLineColor(HOST_X, i+DRAW_UP_Y, fmt.Sprintf("%v", res_ary[1]), RED256)
+					drawLineColor(RTT_X, i+DRAW_UP_Y, fmt.Sprintf("%v", res_ary[2]), RED256)
+					drawLineColor(DES_X, i+DRAW_UP_Y, fmt.Sprintf("%v", des), RED256)
+				}
 			} else {
 				/*ping-list clear*/
-				n := maxY - 1
-				for 0 < n {
-					drawLine(2, n, fmt.Sprintf("%v", "                                                   "))
-					n--
+				fill(HOST_X, 3, 63, maxY-4, termbox.Cell{Ch: ' '})
+
+				drawFlag(JUDGE_X, maxY-DRAW_DW_Y, res_ary[0])
+				drawFlag(JUDGE_X, 1, res_ary[0])
+				if res_ary[0] == "o" {
+					drawLine(HOST_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", res_ary[1]))
+					drawLine(RTT_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", res_ary[2]))
+					drawLine(DES_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", des))
+				} else if res_ary[0] == "x" {
+					drawLineColor(HOST_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", res_ary[1]), RED256)
+					drawLineColor(RTT_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", res_ary[2]), RED256)
+					drawLineColor(DES_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", des), RED256)
 				}
-				drawFlag(2, maxY-1, flag)
-				drawLine(4, maxY-1, fmt.Sprintf("%v", res))
 				var rc int
 				rc = rc - k
 				rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
 				for rscanner.Scan() {
 					rs := rscanner.Text()
 					if rc > 0 {
-						rs_ary := strings.SplitN(rs, " ", 2)
-						drawFlag(2, rc+1, rs_ary[0])
-						drawLine(4, rc+1, fmt.Sprintf("%v", rs_ary[1]))
+						rs_ary := strings.SplitN(rs, " ", 4)
+						drawFlag(JUDGE_X, rc+2, rs_ary[0])
+						if rs_ary[0] == "o" {
+							drawLine(HOST_X, rc+2, fmt.Sprintf("%v", rs_ary[1]))
+							drawLine(RTT_X, rc+2, fmt.Sprintf("%v", rs_ary[2]))
+							drawLine(DES_X, rc+2, fmt.Sprintf("%v", rs_ary[3]))
+						} else if rs_ary[0] == "x" {
+							drawLineColor(HOST_X, rc+2, fmt.Sprintf("%v", rs_ary[1]), RED256)
+							drawLineColor(RTT_X, rc+2, fmt.Sprintf("%v", rs_ary[2]), RED256)
+							drawLineColor(DES_X, rc+2, fmt.Sprintf("%v", rs_ary[3]), RED256)
+						}
 					} else {
 						rs = ""
 					}
@@ -187,18 +245,43 @@ func drawLoop() {
 				}
 				k++
 			}
-			pres := flag + " " + res
+			pres := res_ary[0] + " " + res_ary[1] + " " + res_ary[2] + " " + des + "\n"
 			rbf.WriteString(pres)
-			drawLineColor(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), GREEN256)
-			drawLineColor(80, index, fmt.Sprintf("(%v loss)", drawLoss(index)), GREEN256)
-			t := time.Now()
-			drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(DATE)))
+			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), GREEN256)
+			drawLineColor(LIST_L_X, index, fmt.Sprintf("(%v loss)", drawLoss(index)), GREEN256)
+			drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
+			drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
+			drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
+			fill(1, 0, 64, 1, termbox.Cell{Ch: '='})
+			fill(1, 2, 64, 1, termbox.Cell{Ch: '='})
+			fill(1, maxY-1, 64, 1, termbox.Cell{Ch: '='})
+			fill(JUDGE_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(JUDGE_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+			fill(HOST_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(HOST_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+			fill(RTT_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(RTT_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+			fill(DES_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(DES_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+			fill(64, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(64, 1, 1, 1, termbox.Cell{Ch: '|'})
+			//t := time.Now()
+			//drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(DATE)))
+			//drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(DATE)))
 			termbox.Flush()
 			i++
 			index++
 			if err := pscanner.Err(); err != nil {
 				panic(err)
 			}
+		}
+	}
+}
+
+func fill(x, y, w, h int, cell termbox.Cell) {
+	for ly := 0; ly < h; ly++ {
+		for lx := 0; lx < w; lx++ {
+			termbox.SetCell(x+lx, y+ly, cell.Ch, cell.Fg, cell.Bg)
 		}
 	}
 }
@@ -212,16 +295,21 @@ func drawFlag(x int, y int, flag string) {
 }
 
 func drawHostList() {
-	hi := 2
-	drawLine(60, hi-1, fmt.Sprintf("%v", "HOST"))
-	drawLine(80, hi-1, fmt.Sprintf("%v", "LOSS"))
+	hi := 3
+	//drawLineColor(LIST_H_X, 1, fmt.Sprintf("%v", "Loss counter Per host."), GREEN256)
+	drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "     Now, Loss counting Per host.     "), WHITE256, BENI256)
+	drawLine(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"))
+	drawLine(LIST_P_X, 2, fmt.Sprintf("%v", "Loss"))
+	drawLine(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"))
 	scanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 	for scanner.Scan() {
-		s := scanner.Text()
-		drawLineColor(60, hi, fmt.Sprintf("%v", s), GREEN256)
+		pres := scanner.Text()
+		pres_ary := strings.SplitN(pres, " ", 2)
+		s := pres_ary[0]
+		drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", s), GREEN256)
 		if j <= 1 {
-			drawLineColor(80, hi, fmt.Sprintf("%v", "0.000"), GREEN256)
-			drawLineColor(86, hi, fmt.Sprintf("%v", "(0 loss)"), GREEN256)
+			drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), GREEN256)
+			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "(0 loss)"), GREEN256)
 		}
 		hi++
 		if err := scanner.Err(); err != nil {
@@ -272,7 +360,19 @@ func init() {
 	defer pl.Close()
 	scanner := bufio.NewScanner(pl)
 	for scanner.Scan() {
-		s := scanner.Text() + "\n"
+		s := scanner.Text()
+		if !strings.HasPrefix(s, "#") {
+			if !strings.Contains(s, " ") {
+				s = s + " noname_host"
+			} else {
+				s_ary := strings.SplitN(s, " ", 2)
+				s_ary[1] = strings.TrimSpace(s_ary[1])
+				s = s_ary[0] + " " + s_ary[1]
+			}
+			s = s + "\n"
+		} else {
+			s = ""
+		}
 		pbf.WriteString(s)
 		if err := scanner.Err(); err != nil {
 			panic(err)
