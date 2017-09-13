@@ -97,7 +97,7 @@ func drawGreen(x, y int, str string) {
 	}
 }
 
-func Pinger(host string, index int) (s string, flag int) {
+func Pinger(host string, index int) (s string, flag string) {
 	p := fastping.NewPinger()
 	ra, err := net.ResolveIPAddr("ip4:icmp", host)
 	if err != nil {
@@ -127,13 +127,13 @@ func Pinger(host string, index int) (s string, flag int) {
 		timer.Reset(3 * time.Second)
 		select {
 		case res = <-receiver:
-			return res, 0
+			return res, "o"
 		//case <-time.After(2 * time.Second):
 		case <-timer.C:
 			res = "Host: " + host + " ping faild...\n"
 			fres := strconv.Itoa(index) + "\n"
 			hbf.WriteString(fres)
-			return res, 1
+			return res, "x"
 		}
 	}
 }
@@ -153,14 +153,7 @@ func draw() {
 	for pscanner.Scan() {
 		ps := pscanner.Text()
 		res, flag := Pinger(ps, index)
-		var mb string
-		if flag == 0 {
-			mb = "o"
-			drawBlue(2, i+2, fmt.Sprintf("%v", mb))
-		} else if flag == 1 {
-			mb = "x"
-			drawRed(2, i+2, fmt.Sprintf("%v", mb))
-		}
+		drawFlag(2, i+2, flag)
 		if maxY > i+2 {
 			drawLine(4, i+2, fmt.Sprintf("%v", res))
 
@@ -171,11 +164,7 @@ func draw() {
 				drawLine(2, n, fmt.Sprintf("%v", "                                                   "))
 				n--
 			}
-			if mb == "o" {
-				drawBlue(2, maxY-1, fmt.Sprintf("%v", mb))
-			} else if mb == "x" {
-				drawRed(2, maxY-1, fmt.Sprintf("%v", mb))
-			}
+			drawFlag(2, maxY-1, flag)
 			drawLine(4, maxY-1, fmt.Sprintf("%v", res))
 			var rc int
 			rc = rc - k
@@ -184,11 +173,7 @@ func draw() {
 				rs := rscanner.Text()
 				if rc > 0 {
 					rs_ary := strings.SplitN(rs, " ", 2)
-					if rs_ary[0] == "o" {
-						drawBlue(2, rc+1, fmt.Sprintf("%v", rs_ary[0]))
-					} else if rs_ary[0] == "x" {
-						drawRed(2, rc+1, fmt.Sprintf("%v", rs_ary[0]))
-					}
+					drawFlag(2, rc+1, rs_ary[0])
 					drawLine(4, rc+1, fmt.Sprintf("%v", rs_ary[1]))
 				}
 				rc++
@@ -196,7 +181,7 @@ func draw() {
 			}
 			k++
 		}
-		pres := mb + " " + res
+		pres := flag + " " + res
 		//drawBlue(50, 0, fmt.Sprintf("%v", pres))
 		rbf.WriteString(pres)
 		drawGreen(80, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)))
@@ -209,6 +194,14 @@ func draw() {
 		if err := pscanner.Err(); err != nil {
 			panic(err)
 		}
+	}
+}
+
+func drawFlag(x int, y int, flag string) {
+	if flag == "o" {
+		drawBlue(x, y, fmt.Sprintf("%v", flag))
+	} else if flag == "x" {
+		drawRed(x, y, fmt.Sprintf("%v", flag))
 	}
 }
 
