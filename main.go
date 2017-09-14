@@ -42,7 +42,7 @@ const (
 	DES_X        = 47
 	LIST_H_X     = 70
 	LIST_P_X     = 90
-	LIST_L_X     = 96
+	LIST_L_X     = 98
 	ICMP_TIMEOUT = 3
 	DRAW_UP_Y    = 3
 	DRAW_DW_Y    = 2
@@ -248,7 +248,7 @@ func drawLoop() {
 			pres := res_ary[0] + " " + res_ary[1] + " " + res_ary[2] + " " + des + "\n"
 			rbf.WriteString(pres)
 			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), GREEN256)
-			drawLineColor(LIST_L_X, index, fmt.Sprintf("(%v loss)", drawLoss(index)), GREEN256)
+			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v loss", drawLoss(index)), GREEN256)
 			drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
 			drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
 			drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
@@ -297,9 +297,9 @@ func drawFlag(x int, y int, flag string) {
 func drawHostList() {
 	hi := 3
 	//drawLineColor(LIST_H_X, 1, fmt.Sprintf("%v", "Loss counter Per host."), GREEN256)
-	drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "     Now, Loss counting Per host.     "), WHITE256, BENI256)
+	drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "      Now, Loss counting Per host.     "), WHITE256, BENI256)
 	drawLine(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"))
-	drawLine(LIST_P_X, 2, fmt.Sprintf("%v", "Loss"))
+	drawLine(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"))
 	drawLine(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"))
 	scanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 	for scanner.Scan() {
@@ -309,7 +309,7 @@ func drawHostList() {
 		drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", s), GREEN256)
 		if j <= 1 {
 			drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), GREEN256)
-			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "(0 loss)"), GREEN256)
+			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0 loss"), GREEN256)
 		}
 		hi++
 		if err := scanner.Err(); err != nil {
@@ -362,6 +362,14 @@ func init() {
 	for scanner.Scan() {
 		s := scanner.Text()
 		if !strings.HasPrefix(s, "#") {
+			for {
+				if strings.HasPrefix(s, " ") {
+					s_ary := strings.SplitN(s, " ", 2)
+					s = s_ary[1]
+				} else {
+					break
+				}
+			}
 			if !strings.Contains(s, " ") {
 				s = s + " noname_host"
 			} else {
