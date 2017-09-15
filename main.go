@@ -422,6 +422,9 @@ func init() {
 	scanner := bufio.NewScanner(pl)
 	for scanner.Scan() {
 		s := scanner.Text()
+		if s == "" {
+			s = "#" + s
+		}
 		if !strings.HasPrefix(s, "#") {
 			for {
 				if strings.HasPrefix(s, " ") {
