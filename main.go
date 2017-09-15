@@ -57,8 +57,8 @@ package main
 import (
 	"bufio"
 	"bytes"
+	//	"flag"
 	"fmt"
-
 	"github.com/dariubs/percent"
 	"github.com/nsf/termbox-go"
 	"github.com/tatsushid/go-fastping"
@@ -67,6 +67,8 @@ import (
 	"math"
 	"net"
 	"os"
+	"os/user"
+	"path/filepath"
 	//	"regexp"
 	"strconv"
 	"strings"
@@ -84,23 +86,29 @@ var hbf bytes.Buffer // hbf is ping loss mapping to host.
 var rbf bytes.Buffer // rbf is ping result list
 
 const (
-	DATE         = "2006 Jan 02 15:04:05.000Z07:00 JST"
-	RED256       = 196
-	BLUE256      = 21
-	GREEN256     = 48
-	WHITE256     = 255
-	BENI256      = 13
-	JUDGE_X      = 3
-	HOST_X       = 7
-	RTT_X        = 27
-	DES_X        = 47
-	LIST_H_X     = 70
-	LIST_P_X     = 90
-	LIST_L_X     = 100
-	LIST_D_X     = 110
-	ICMP_TIMEOUT = 3
-	DRAW_UP_Y    = 3
-	DRAW_DW_Y    = 2
+	DAY           = "20060102_150405"
+	DATE          = "2006-01-02 15:04:05.000"
+	PING_LIST     = "ping-list.txt"
+	RESULT_DIR    = ".pexpo"
+	RED256        = 196
+	BLUE256       = 21
+	GREEN256      = 48
+	WHITE256      = 255
+	BENI256       = 13
+	JUDGE_X       = 3
+	HOST_X        = 7
+	RTT_X         = 27
+	DES_X         = 47
+	START_X       = 1
+	EDGE_X        = 64
+	LIST_H_X      = 70
+	LIST_P_X      = 90
+	LIST_L_X      = 100
+	LIST_D_X      = 110
+	ICMP_INTERVAL = 500
+	ICMP_TIMEOUT  = 3
+	DRAW_UP_Y     = 3
+	DRAW_DW_Y     = 2
 )
 
 func fatal(err error) {
@@ -119,6 +127,11 @@ func addog(text string, filename string) {
 	writer.Flush()
 	fatal(err)
 	defer write_file.Close()
+}
+
+func exists(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil
 }
 
 func Round(f float64, places int) float64 {
@@ -160,6 +173,18 @@ func drawLineColorful(x, y int, str string, strcode int, backcode int) {
 
 //func Pinger(host string, index int) (s string, flag string) {
 func Pinger(host string, index int) (s string) {
+	/*	timeout := flag.Duration("t", 1, "")
+		interval := flag.Duration("i", 1, "")
+		flag.Usage = func() {
+			fmt.Printf(usage)
+		}
+		flag.Parse()
+
+		if flag.NArg() == 0 {
+			flag.Usage()
+			return
+		}
+	*/
 	p := fastping.NewPinger()
 	ra, err := net.ResolveIPAddr("ip4:icmp", host)
 	if err != nil {
@@ -168,6 +193,8 @@ func Pinger(host string, index int) (s string) {
 	}
 	p.AddIPAddr(ra)
 
+	p.MaxRTT = time.Millisecond * ICMP_INTERVAL
+	//p.MaxRTT = time.Millisecond * Interval
 	var out string
 	var res string
 	receiver := make(chan string, 100000)
@@ -188,8 +215,10 @@ func Pinger(host string, index int) (s string) {
 	}
 
 	timer := time.NewTimer(ICMP_TIMEOUT * time.Second)
+	//timer := time.NewTimer(Timeout)
 	for {
 		timer.Reset(ICMP_TIMEOUT * time.Second)
+		//timer.Reset(Timeout)
 		select {
 		case res = <-receiver:
 			//return res, "o"
@@ -252,30 +281,17 @@ func drawLoop() {
 			if maxY > i+DRAW_UP_Y+1 {
 				drawFlag(JUDGE_X, i+DRAW_UP_Y, res_ary[0])
 				drawFlag(JUDGE_X, 1, res_ary[0])
-				if res_ary[0] == "o" {
-					drawLine(HOST_X, i+DRAW_UP_Y, fmt.Sprintf("%v", res_ary[1]))
-					drawLine(RTT_X, i+DRAW_UP_Y, fmt.Sprintf("%v", res_ary[2]))
-					drawLine(DES_X, i+DRAW_UP_Y, fmt.Sprintf("%v", des))
-				} else if res_ary[0] == "x" {
-					drawLineColor(HOST_X, i+DRAW_UP_Y, fmt.Sprintf("%v", res_ary[1]), RED256)
-					drawLineColor(RTT_X, i+DRAW_UP_Y, fmt.Sprintf("%v", res_ary[2]), RED256)
-					drawLineColor(DES_X, i+DRAW_UP_Y, fmt.Sprintf("%v", des), RED256)
-				}
+				drawSeq(HOST_X, RTT_X, DES_X, i+DRAW_UP_Y, res_ary[0], res_ary[1], res_ary[2], des)
 			} else {
 				/*ping-list clear*/
-				fill(HOST_X, 3, 63, maxY-4, termbox.Cell{Ch: ' '})
+				fill(JUDGE_X+1, DRAW_UP_Y, HOST_X-JUDGE_X-3, maxY-4, termbox.Cell{Ch: ' '})
+				fill(HOST_X+1, DRAW_UP_Y, RTT_X-HOST_X-3, maxY-4, termbox.Cell{Ch: ' '})
+				fill(RTT_X+1, DRAW_UP_Y, DES_X-RTT_X-3, maxY-4, termbox.Cell{Ch: ' '})
+				fill(DES_X+1, DRAW_UP_Y, EDGE_X-DES_X-3, maxY-4, termbox.Cell{Ch: ' '})
 
 				drawFlag(JUDGE_X, maxY-DRAW_DW_Y, res_ary[0])
 				drawFlag(JUDGE_X, 1, res_ary[0])
-				if res_ary[0] == "o" {
-					drawLine(HOST_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", res_ary[1]))
-					drawLine(RTT_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", res_ary[2]))
-					drawLine(DES_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", des))
-				} else if res_ary[0] == "x" {
-					drawLineColor(HOST_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", res_ary[1]), RED256)
-					drawLineColor(RTT_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", res_ary[2]), RED256)
-					drawLineColor(DES_X, maxY-DRAW_DW_Y, fmt.Sprintf("%v", des), RED256)
-				}
+				drawSeq(HOST_X, RTT_X, DES_X, maxY-DRAW_DW_Y, res_ary[0], res_ary[1], res_ary[2], des)
 				var rc int
 				rc = rc - k
 				rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
@@ -284,15 +300,7 @@ func drawLoop() {
 					if rc > 0 {
 						rs_ary := strings.SplitN(rs, " ", 4)
 						drawFlag(JUDGE_X, rc+2, rs_ary[0])
-						if rs_ary[0] == "o" {
-							drawLine(HOST_X, rc+2, fmt.Sprintf("%v", rs_ary[1]))
-							drawLine(RTT_X, rc+2, fmt.Sprintf("%v", rs_ary[2]))
-							drawLine(DES_X, rc+2, fmt.Sprintf("%v", rs_ary[3]))
-						} else if rs_ary[0] == "x" {
-							drawLineColor(HOST_X, rc+2, fmt.Sprintf("%v", rs_ary[1]), RED256)
-							drawLineColor(RTT_X, rc+2, fmt.Sprintf("%v", rs_ary[2]), RED256)
-							drawLineColor(DES_X, rc+2, fmt.Sprintf("%v", rs_ary[3]), RED256)
-						}
+						drawSeq(HOST_X, RTT_X, DES_X, rc+2, rs_ary[0], rs_ary[1], rs_ary[2], rs_ary[3])
 					} else {
 						rs = ""
 					}
@@ -301,7 +309,21 @@ func drawLoop() {
 				k++
 			}
 			pres := res_ary[0] + " " + res_ary[1] + " " + res_ary[2] + " " + des + "\n"
+			logres := res_ary[0] + " " + res_ary[1] + " " + res_ary[2] + "\n"
 			rbf.WriteString(pres)
+
+			t := time.Now()
+			k := t.Format(DATE)
+			log := "[" + k + "]" + " " + logres
+			result := "result_" + DAY + ".txt"
+
+			u, err := user.Current()
+			if err != nil {
+				fatal(err)
+			}
+			rfile := filepath.Join(u.HomeDir, RESULT_DIR, result)
+			addog(log, rfile)
+
 			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), GREEN256)
 			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v loss", drawLoss(index)), GREEN256)
 			if res_ary[0] == "x" {
@@ -309,22 +331,24 @@ func drawLoop() {
 			} else if res_ary[0] == "o" {
 				fill(LIST_D_X, index, 9, 1, termbox.Cell{Ch: ' '})
 			}
-			drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
-			drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
-			drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
-			fill(1, 0, 64, 1, termbox.Cell{Ch: '='})
-			fill(1, 2, 64, 1, termbox.Cell{Ch: '='})
-			fill(1, maxY-1, 64, 1, termbox.Cell{Ch: '='})
-			fill(JUDGE_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(JUDGE_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-			fill(HOST_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(HOST_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-			fill(RTT_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(RTT_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-			fill(DES_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(DES_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-			fill(64, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(64, 1, 1, 1, termbox.Cell{Ch: '|'})
+			if i <= 1 {
+				drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
+				drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
+				drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
+				fill(START_X, 0, EDGE_X, 1, termbox.Cell{Ch: '='})
+				fill(START_X, 2, EDGE_X, 1, termbox.Cell{Ch: '='})
+				fill(START_X, maxY-1, EDGE_X, 1, termbox.Cell{Ch: '='})
+				fill(JUDGE_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+				fill(JUDGE_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+				fill(HOST_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+				fill(HOST_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+				fill(RTT_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+				fill(RTT_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+				fill(DES_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+				fill(DES_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+				fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+				fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
+			}
 			//t := time.Now()
 			//drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(DATE)))
 			//drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(DATE)))
@@ -352,6 +376,19 @@ func drawFlag(x int, y int, flag string) {
 	} else if flag == "x" {
 		drawLineColor(x, y, fmt.Sprintf("%v", flag), RED256)
 	}
+}
+
+func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
+	if flag == "o" {
+		drawLine(hx, y, fmt.Sprintf("%v", r1))
+		drawLine(rx, y, fmt.Sprintf("%v", r2))
+		drawLine(dx, y, fmt.Sprintf("%v", des))
+	} else if flag == "x" {
+		drawLineColor(hx, y, fmt.Sprintf("%v", r1), RED256)
+		drawLineColor(rx, y, fmt.Sprintf("%v", r2), RED256)
+		drawLineColor(dx, y, fmt.Sprintf("%v", des), RED256)
+	}
+
 }
 
 func drawHostList() {
@@ -416,7 +453,30 @@ func keyEventLoop(killKey chan termbox.Key) {
 }
 
 func init() {
-	pl, err := os.Open("ping-list")
+	u, err := user.Current()
+	if err != nil {
+		fatal(err)
+	}
+	rdir := filepath.Join(u.HomeDir, RESULT_DIR)
+	err = os.MkdirAll(rdir, 0755)
+	if err != nil {
+		fatal(err)
+	}
+	/*	Timeout = flag.Duration("t", 1, "")
+		Interval = flag.Duration("i", 1, "")
+
+		flag.Usage = func() {
+			fmt.Printf(usage)
+		}
+		flag.Parse()
+
+		if flag.NArg() == 0 {
+			flag.Usage()
+			return
+		}
+	*/
+	pl, err := os.Open(PING_LIST)
+	//pl, err := os.Open(flag.Arg(0))
 	fatal(err)
 	defer pl.Close()
 	scanner := bufio.NewScanner(pl)
