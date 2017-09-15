@@ -43,6 +43,7 @@ const (
 	LIST_H_X     = 70
 	LIST_P_X     = 90
 	LIST_L_X     = 98
+	LIST_D_X     = 110
 	ICMP_TIMEOUT = 3
 	DRAW_UP_Y    = 3
 	DRAW_DW_Y    = 2
@@ -249,6 +250,11 @@ func drawLoop() {
 			rbf.WriteString(pres)
 			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), GREEN256)
 			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v loss", drawLoss(index)), GREEN256)
+			if res_ary[0] == "x" {
+				drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), RED256)
+			} else if res_ary[0] == "o" {
+				fill(LIST_D_X, index, 9, 1, termbox.Cell{Ch: ' '})
+			}
 			drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
 			drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
 			drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
@@ -297,10 +303,11 @@ func drawFlag(x int, y int, flag string) {
 func drawHostList() {
 	hi := 3
 	//drawLineColor(LIST_H_X, 1, fmt.Sprintf("%v", "Loss counter Per host."), GREEN256)
-	drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "      Now, Loss counting Per host.     "), WHITE256, BENI256)
+	drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), WHITE256, BENI256)
 	drawLine(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"))
 	drawLine(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"))
 	drawLine(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"))
+	drawLine(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"))
 	scanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 	for scanner.Scan() {
 		pres := scanner.Text()
