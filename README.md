@@ -4,6 +4,22 @@ pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application.  
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).
   
+## Usage
+```bash
+Usage:
+    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list]
+
+Option:
+    -i Sending ICMP interval time(Default:500ms, should not be lower this).
+       You must use "200ms" or "1s", so use with time's unit.
+
+    -t Sending ICMP timeout time(Default:3s)
+       You must use "200ms" or "1s", so use with time's unit.
+       this "timeout" is Exact meaning, Pinger() receives go-fastping function send value interval.
+
+    -f Using Ping-list(Default:current_dir/ping-list.txt)
+```
+  
 ## Demo (Linux)
 ![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_linux.gif)
 
