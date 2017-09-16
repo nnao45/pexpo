@@ -1,5 +1,5 @@
 # pexpo
-pexpo is ping sending tui tool with cool clomun & logging loss-count in the Multi platform(Windows, Mac, Linux...).  
+pexpo is ping sending tui tool with cool clomun & logging loss-count in the multi platforms(Windows, Mac, Linux...).  
 pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending ICMP engine is [go-fastping](https://github.com/tatsushid/go-fastping).  
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application.  
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).
@@ -21,7 +21,7 @@ Option:
        You must not use "200" or "1" or..., must use "200ms" or "1s" or ... , so use with time's unit.
        this "timeout" is Exact meaning, Pinger() receives go-fastping function send value interval.
 
-    -f Using Ping-list(Default:current_dir/ping-list.txt)
+    -f Using Filepath of Ping-list(Default:current_dir/ping-list.txt).
 ```
   
 ## Demo (Linux)
