@@ -197,7 +197,7 @@ func Pinger(host string, index int) (s string) {
 	//p.MaxRTT = time.Millisecond * Interval
 	var out string
 	var res string
-	receiver := make(chan string, 100000)
+	receiver := make(chan string, EDGE_X)
 	go func() {
 		p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
 			//out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
@@ -205,6 +205,7 @@ func Pinger(host string, index int) (s string) {
 			//out = host + " " + rtt.String() + "\n"
 			out = host + " " + rtt.String()
 			receiver <- out
+			defer close(receiver)
 		}
 	}()
 	p.OnIdle = func() {
@@ -244,7 +245,7 @@ func drawLoop() {
 		drawHostList()
 		var maxX int
 		var maxY int
-		index := 3
+		index := DRAW_UP_Y
 		maxX, maxY = termbox.Size()
 		drawLine(maxX-27, 0, "Press Esc ,Ctrl+C to exit.")
 		//_, maxY = getTermSize()
@@ -393,12 +394,13 @@ func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
 
 func drawHostList() {
 	hi := 3
-	//drawLineColor(LIST_H_X, 1, fmt.Sprintf("%v", "Loss counter Per host."), GREEN256)
-	drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), WHITE256, BENI256)
-	drawLine(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"))
-	drawLine(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"))
-	drawLine(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"))
-	drawLine(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"))
+	if j <= 1 {
+		drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), WHITE256, BENI256)
+		drawLine(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"))
+		drawLine(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"))
+		drawLine(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"))
+		drawLine(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"))
+	}
 	scanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 	for scanner.Scan() {
 		pres := scanner.Text()
