@@ -21,7 +21,7 @@ Option:
        You must not use "200" or "1" or..., must use "200ms" or "1s" or ... , so use with time's unit.
        this "timeout" is Exact meaning, Pinger() receives go-fastping function send value interval.
 
-    -f Using Ping-list(Default:current_dir/ping-list.txt)
+    -f Using Filepath of Ping-list(Default:current_dir/ping-list.txt).
 ```
   
 ## Demo (Linux)
