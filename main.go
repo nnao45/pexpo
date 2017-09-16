@@ -60,6 +60,7 @@ import (
 	//	"flag"
 	"fmt"
 	"github.com/dariubs/percent"
+	"github.com/mattn/go-runewidth"
 	"github.com/nsf/termbox-go"
 	"github.com/tatsushid/go-fastping"
 	//	"io/ioutil"
@@ -95,12 +96,13 @@ const (
 	GREEN256      = 48
 	WHITE256      = 255
 	BENI256       = 13
+	COLUMN        = 18
 	JUDGE_X       = 3
 	HOST_X        = 7
 	RTT_X         = 27
 	DES_X         = 47
 	START_X       = 1
-	EDGE_X        = 64
+	EDGE_X        = 65
 	LIST_H_X      = 70
 	LIST_P_X      = 90
 	LIST_L_X      = 100
@@ -285,10 +287,10 @@ func drawLoop() {
 				drawSeq(HOST_X, RTT_X, DES_X, i+DRAW_UP_Y, res_ary[0], res_ary[1], res_ary[2], des)
 			} else {
 				/*ping-list clear*/
-				fill(JUDGE_X+1, DRAW_UP_Y, HOST_X-JUDGE_X-3, maxY-4, termbox.Cell{Ch: ' '})
-				fill(HOST_X+1, DRAW_UP_Y, RTT_X-HOST_X-3, maxY-4, termbox.Cell{Ch: ' '})
-				fill(RTT_X+1, DRAW_UP_Y, DES_X-RTT_X-3, maxY-4, termbox.Cell{Ch: ' '})
-				fill(DES_X+1, DRAW_UP_Y, EDGE_X-DES_X-3, maxY-4, termbox.Cell{Ch: ' '})
+				fill(JUDGE_X+1, DRAW_UP_Y, 1, maxY-4, termbox.Cell{Ch: ' '})
+				fill(HOST_X+1, DRAW_UP_Y, COLUMN-1, maxY-4, termbox.Cell{Ch: ' '})
+				fill(RTT_X+1, DRAW_UP_Y, COLUMN-1, maxY-4, termbox.Cell{Ch: ' '})
+				fill(DES_X+1, DRAW_UP_Y, COLUMN-1, maxY-4, termbox.Cell{Ch: ' '})
 
 				drawFlag(JUDGE_X, maxY-DRAW_DW_Y, res_ary[0])
 				drawFlag(JUDGE_X, 1, res_ary[0])
@@ -381,13 +383,13 @@ func drawFlag(x int, y int, flag string) {
 
 func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
 	if flag == "o" {
-		drawLine(hx, y, fmt.Sprintf("%v", r1))
-		drawLine(rx, y, fmt.Sprintf("%v", r2))
-		drawLine(dx, y, fmt.Sprintf("%v", des))
+		drawLine(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")))
+		drawLine(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")))
+		drawLine(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")))
 	} else if flag == "x" {
-		drawLineColor(hx, y, fmt.Sprintf("%v", r1), RED256)
-		drawLineColor(rx, y, fmt.Sprintf("%v", r2), RED256)
-		drawLineColor(dx, y, fmt.Sprintf("%v", des), RED256)
+		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), RED256)
+		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")), RED256)
+		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")), RED256)
 	}
 
 }
@@ -406,7 +408,7 @@ func drawHostList() {
 		pres := scanner.Text()
 		pres_ary := strings.SplitN(pres, " ", 2)
 		s := pres_ary[0]
-		drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", s), GREEN256)
+		drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "...")), GREEN256)
 		if j <= 1 {
 			drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), GREEN256)
 			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0 loss"), GREEN256)
@@ -431,6 +433,7 @@ func drawLoss(index int) int {
 	return c
 }
 
+/*
 func getTermSize(resizeTerm chan bool) {
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
@@ -440,7 +443,7 @@ func getTermSize(resizeTerm chan bool) {
 		}
 	}
 }
-
+*/
 func keyEventLoop(killKey chan termbox.Key) {
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
