@@ -31,9 +31,9 @@ Option:
 ![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_windows.gif)
 
 ## Implementation
-- very light, and quick application(for Pinging to the too many hosts):metal:
+- Very light, and quick application(for Pinging to the too many hosts):metal:
 - Run on multi platforms(Windows7, Windows10, Mac, Linux...) with ONLY one app!!:kissing_heart:
-- ipv4, and ipv6!!:open_mouth:
+- You can send ICMP ipv4, and ipv6!!:open_mouth:
 - Display Counting Ping loss per host:point_up_2:
 - Display Current Dead host(if host is revive, and dead mark is vanish):boom:
 ### more...
