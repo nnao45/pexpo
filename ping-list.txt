@@ -1,7 +1,8 @@
 www.yahoo.com
 #www.google.com	www.google.com
-  192.168.0.123 iphone
+  192.168.1.201 iphone
 
+2001:4860:4860::8888
 #192.168.189.148
 8.8.8.8      8.8.8.8nandedaaaaaaaaaaaaaaaaaaaaa
 8.8.4.4 8.8.4.4
