@@ -5,4 +5,9 @@ This is inspired [pinger](https://github.com/hirose31/pinger), [Exping](http://w
   
 ## Demo (Linux)
 ![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_linux.gif)
+
+## Demo (windows)
+![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_windows.gif)  
+
+## Writer & License
 This software is released under the MIT License, see LICENSE
