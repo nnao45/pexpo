@@ -18,4 +18,5 @@ This is inspired [pinger](https://github.com/hirose31/pinger), [Exping](http://w
 - Display Current Dead host.
 
 ## Writer & License
+pexpo's was writed by ![https://twitter.com/A_Resas](https://twitter.com/A_Resas)(n4sekai5y@gmail.com).  
 This software is released under the MIT License, see LICENSE
