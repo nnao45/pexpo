@@ -18,7 +18,7 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 - Display Current Dead host(if host is revive, and dead mark is vanish).
 ### more...
 - logging ping result($HOME/.pexpo/result_$DATE_.txt).
-- Check the syntax on the ping-list(# is comment out,ignoring blank line...).
+- Check the syntax on the ping-list(# is comment out, ignoring blank line, no description is ok...).
 
 ## Writer & License
 pexpo's was writed by nao4arale (Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
