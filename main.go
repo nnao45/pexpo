@@ -57,20 +57,17 @@ package main
 import (
 	"bufio"
 	"bytes"
-	//	"flag"
 	"fmt"
 	"github.com/dariubs/percent"
 	"github.com/mattn/go-runewidth"
 	"github.com/nsf/termbox-go"
 	"github.com/tatsushid/go-fastping"
-	//	"io/ioutil"
 	"log"
 	"math"
 	"net"
 	"os"
 	"os/user"
 	"path/filepath"
-	//	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -151,9 +148,11 @@ func drawLine(x, y int, str string) {
 	}
 }
 
-func drawLineColor(x, y int, str string, code int) {
+//func drawLineColor(x, y int, str string, code int) {
+func drawLineColor(x, y int, str string, code termbox.Attribute) {
 	termbox.SetOutputMode(termbox.Output256)
-	color := termbox.Attribute(code + 1)
+	//color := termbox.Attribute(code + 1)
+	color := code
 	backgroundColor := termbox.ColorDefault
 	runes := []rune(str)
 
@@ -162,10 +161,13 @@ func drawLineColor(x, y int, str string, code int) {
 	}
 }
 
-func drawLineColorful(x, y int, str string, strcode int, backcode int) {
+//func drawLineColorful(x, y int, str string, strcode int, backcode int) {
+func drawLineColorful(x, y int, str string, strcode, backcode termbox.Attribute) {
 	termbox.SetOutputMode(termbox.Output256)
-	color := termbox.Attribute(strcode + 1)
-	backgroundColor := termbox.Attribute(backcode + 1)
+	//color := termbox.Attribute(strcode + 1)
+	color := strcode
+	//backgroundColor := termbox.Attribute(backcode + 1)
+	backgroundColor := backcode
 	runes := []rune(str)
 
 	for i := 0; i < len(runes); i += 1 {
@@ -173,20 +175,7 @@ func drawLineColorful(x, y int, str string, strcode int, backcode int) {
 	}
 }
 
-//func Pinger(host string, index int) (s string, flag string) {
 func Pinger(host string, index int) (s string) {
-	/*	timeout := flag.Duration("t", 1, "")
-		interval := flag.Duration("i", 1, "")
-		flag.Usage = func() {
-			fmt.Printf(usage)
-		}
-		flag.Parse()
-
-		if flag.NArg() == 0 {
-			flag.Usage()
-			return
-		}
-	*/
 	p := fastping.NewPinger()
 	ra, err := net.ResolveIPAddr("ip4:icmp", host)
 	if err != nil {
@@ -196,15 +185,12 @@ func Pinger(host string, index int) (s string) {
 	p.AddIPAddr(ra)
 
 	p.MaxRTT = time.Millisecond * ICMP_INTERVAL
-	//p.MaxRTT = time.Millisecond * Interval
 	var out string
 	var res string
 	receiver := make(chan string, EDGE_X)
 	go func() {
 		p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
 			//out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
-			//out = "Host: " + host + " receive, RTT: " + rtt.String() + "\n"
-			//out = host + " " + rtt.String() + "\n"
 			out = host + " " + rtt.String()
 			receiver <- out
 			defer close(receiver)
@@ -218,23 +204,16 @@ func Pinger(host string, index int) (s string) {
 	}
 
 	timer := time.NewTimer(ICMP_TIMEOUT * time.Second)
-	//timer := time.NewTimer(Timeout)
 	for {
 		timer.Reset(ICMP_TIMEOUT * time.Second)
-		//timer.Reset(Timeout)
 		select {
 		case res = <-receiver:
-			//return res, "o"
 			res = "o " + res
 			return res
-		//case <-time.After(2 * time.Second):
 		case <-timer.C:
-			//res = "Host: " + host + " ping faild...\n"
-			//res = "x " + host + " ping faild...\n"
 			res = "x " + host + " ping...faild..."
 			fres := strconv.Itoa(index) + "\n"
 			hbf.WriteString(fres)
-			//return res, "x"
 			return res
 		}
 	}
@@ -243,7 +222,6 @@ func Pinger(host string, index int) (s string) {
 func drawLoop() {
 	for {
 		j++
-		//termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 		drawHostList()
 		var maxX int
 		var maxY int
@@ -251,8 +229,6 @@ func drawLoop() {
 		maxX, maxY = termbox.Size()
 		drawLine(maxX-27, 0, "Press Esc ,Ctrl+C to exit.")
 		//_, maxY = getTermSize()
-		//drawRed(20, 0, fmt.Sprintf("%v:%v", maxX, maxY))
-		//drawRed(50, 0, fmt.Sprintf("%v", maxY))
 
 		killKey := make(chan termbox.Key)
 		//		resizeTerm := make(chan bool)
@@ -327,10 +303,13 @@ func drawLoop() {
 			rfile := filepath.Join(u.HomeDir, RESULT_DIR, result)
 			addog(log, rfile)
 
-			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), GREEN256)
-			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v loss", drawLoss(index)), GREEN256)
+			//			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), GREEN256)
+			//			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v  loss", drawLoss(index)), GREEN256)
+			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), termbox.ColorGreen)
+			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v  loss", drawLoss(index)), termbox.ColorGreen)
 			if res_ary[0] == "x" {
-				drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), RED256)
+				//drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), RED256)
+				drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), termbox.ColorRed)
 			} else if res_ary[0] == "o" {
 				fill(LIST_D_X, index, 9, 1, termbox.Cell{Ch: ' '})
 			}
@@ -375,9 +354,11 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 
 func drawFlag(x int, y int, flag string) {
 	if flag == "o" {
-		drawLineColor(x, y, fmt.Sprintf("%v", flag), BLUE256)
+		//drawLineColor(x, y, fmt.Sprintf("%v", flag), BLUE256)
+		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorBlue)
 	} else if flag == "x" {
-		drawLineColor(x, y, fmt.Sprintf("%v", flag), RED256)
+		//drawLineColor(x, y, fmt.Sprintf("%v", flag), RED256)
+		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorRed)
 	}
 }
 
@@ -387,9 +368,12 @@ func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
 		drawLine(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")))
 		drawLine(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")))
 	} else if flag == "x" {
-		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), RED256)
-		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")), RED256)
-		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")), RED256)
+		//		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), RED256)
+		//		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")), RED256)
+		//		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")), RED256)
+		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), termbox.ColorRed)
+		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), termbox.ColorRed)
+		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), termbox.ColorRed)
 	}
 
 }
@@ -397,21 +381,29 @@ func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
 func drawHostList() {
 	hi := 3
 	if j <= 1 {
-		drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), WHITE256, BENI256)
-		drawLine(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"))
-		drawLine(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"))
-		drawLine(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"))
-		drawLine(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"))
+		//drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), WHITE256, BENI256)
+		drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), termbox.ColorDefault, termbox.ColorMagenta)
+		//drawLine(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"))
+		//drawLine(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"))
+		//drawLine(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"))
+		//drawLine(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"))
+		drawLineColor(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"), termbox.ColorWhite)
+		drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)
+		drawLineColor(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"), termbox.ColorWhite)
+		drawLineColor(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"), termbox.ColorWhite)
 	}
 	scanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 	for scanner.Scan() {
 		pres := scanner.Text()
 		pres_ary := strings.SplitN(pres, " ", 2)
 		s := pres_ary[0]
-		drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "...")), GREEN256)
+		//drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "...")), GREEN256)
+		drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "...")), termbox.ColorGreen)
 		if j <= 1 {
-			drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), GREEN256)
-			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0 loss"), GREEN256)
+			//drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), GREEN256)
+			drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), termbox.ColorGreen)
+			//drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0  loss"), GREEN256)
+			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0  loss"), termbox.ColorGreen)
 		}
 		hi++
 		if err := scanner.Err(); err != nil {
@@ -467,21 +459,7 @@ func init() {
 	if err != nil {
 		fatal(err)
 	}
-	/*	Timeout = flag.Duration("t", 1, "")
-		Interval = flag.Duration("i", 1, "")
-
-		flag.Usage = func() {
-			fmt.Printf(usage)
-		}
-		flag.Parse()
-
-		if flag.NArg() == 0 {
-			flag.Usage()
-			return
-		}
-	*/
 	pl, err := os.Open(PING_LIST)
-	//pl, err := os.Open(flag.Arg(0))
 	fatal(err)
 	defer pl.Close()
 	scanner := bufio.NewScanner(pl)
