@@ -111,7 +111,7 @@ Option:
 
 
 const (
-	DAY           = "20060102_150405"
+	DAY           = "20060102"
 	DATE          = "2006-01-02 15:04:05.000"
 	PING_LIST     = "ping-list.txt"
 	RESULT_DIR    = ".pexpo"
@@ -326,10 +326,12 @@ func drawLoop() {
 			logres := res_ary[0] + " " + res_ary[1] + " " + res_ary[2] + "\n"
 			rbf.WriteString(pres)
 
+			day  := time.Now()
 			date := time.Now()
+			formating_day := day.Format(DAY)
 			formating_date := date.Format(DATE)
 			log := "[" + formating_date + "]" + " " + logres
-			result := "result_" + DAY + ".txt"
+			result := "result_" + formating_day + ".txt"
 
 			u, err := user.Current()
 			if err != nil {
