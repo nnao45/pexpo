@@ -11,10 +11,10 @@ Usage:
 
 Option:
     -i Sending ICMP interval time(Default:500ms, should not be lower this).
-       You must use "200ms" or "1s", so use with time's unit.
+       You must not use "200" or "1" or..., must use "200ms" or "1s" or ... , so use with time's unit.
 
     -t Sending ICMP timeout time(Default:3s)
-       You must use "200ms" or "1s", so use with time's unit.
+       You must not use "200" or "1" or..., must use "200ms" or "1s" or ... , so use with time's unit.
        this "timeout" is Exact meaning, Pinger() receives go-fastping function send value interval.
 
     -f Using Ping-list(Default:current_dir/ping-list.txt)
