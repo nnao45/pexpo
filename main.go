@@ -57,6 +57,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"github.com/dariubs/percent"
 	"github.com/mattn/go-runewidth"
@@ -68,6 +69,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -82,6 +84,15 @@ var k int // "k" is scroll counter
 var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
 var hbf bytes.Buffer // hbf is ping loss mapping to host.
 var rbf bytes.Buffer // rbf is ping result list
+
+var timeout = flag.Duration("t", time.Second * ICMP_TIMEOUT, "")
+var interval = flag.Duration("i", time.Millisecond * ICMP_INTERVAL, "")
+var pinglist = flag.String("f", PING_LIST, "")
+
+var usage = `
+Usage:
+    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list]
+    `
 
 const (
 	DAY           = "20060102_150405"
@@ -188,7 +199,9 @@ func Pinger(host string, index int) (s string) {
 	}
 	p.AddIPAddr(ra)
 
-	p.MaxRTT = time.Millisecond * ICMP_INTERVAL
+
+	//p.MaxRTT = time.Millisecond * ICMP_INTERVAL
+	p.MaxRTT = *interval
 	var out string
 	var res string
 	receiver := make(chan string, EDGE_X)
@@ -207,9 +220,11 @@ func Pinger(host string, index int) (s string) {
 		fmt.Println(err)
 	}
 
-	timer := time.NewTimer(ICMP_TIMEOUT * time.Second)
+	//timer := time.NewTimer(ICMP_TIMEOUT * time.Second)
+	timer := time.NewTimer(*timeout)
 	for {
-		timer.Reset(ICMP_TIMEOUT * time.Second)
+		//timer.Reset(ICMP_TIMEOUT * time.Second)
+		timer.Reset(*timeout)
 		select {
 		case res = <-receiver:
 			res = "o " + res
@@ -360,10 +375,8 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 
 func drawFlag(x int, y int, flag string) {
 	if flag == "o" {
-		//drawLineColor(x, y, fmt.Sprintf("%v", flag), BLUE256)
 		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorBlue)
 	} else if flag == "x" {
-		//drawLineColor(x, y, fmt.Sprintf("%v", flag), RED256)
 		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorRed)
 	}
 }
@@ -374,9 +387,6 @@ func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
 		drawLine(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")))
 		drawLine(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")))
 	} else if flag == "x" {
-		//		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), RED256)
-		//		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")), RED256)
-		//		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")), RED256)
 		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), termbox.ColorRed)
 		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")), termbox.ColorRed)
 		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")), termbox.ColorRed)
@@ -387,12 +397,7 @@ func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
 func drawHostList() {
 	hi := 3
 	if j <= 1 {
-		//drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), WHITE256, BENI256)
 		drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), termbox.ColorDefault, termbox.ColorMagenta)
-		//drawLine(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"))
-		//drawLine(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"))
-		//drawLine(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"))
-		//drawLine(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"))
 		drawLineColor(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"), termbox.ColorWhite)
 		drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)
 		drawLineColor(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"), termbox.ColorWhite)
@@ -403,12 +408,9 @@ func drawHostList() {
 		pres := scanner.Text()
 		pres_ary := strings.SplitN(pres, " ", 2)
 		s := pres_ary[0]
-		//drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "...")), GREEN256)
 		drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "...")), termbox.ColorGreen)
 		if j <= 1 {
-			//drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), GREEN256)
 			drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), termbox.ColorGreen)
-			//drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0  loss"), GREEN256)
 			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
 		}
 		hi++
@@ -456,6 +458,8 @@ func keyEventLoop(killKey chan termbox.Key) {
 }
 
 func init() {
+	flag.Parse()
+
 	u, err := user.Current()
 	if err != nil {
 		fatal(err)
@@ -465,7 +469,8 @@ func init() {
 	if err != nil {
 		fatal(err)
 	}
-	pl, err := os.Open(PING_LIST)
+	//pl, err := os.Open(PING_LIST)
+	pl, err := os.Open(path.Base(*pinglist))
 	fatal(err)
 	defer pl.Close()
 	scanner := bufio.NewScanner(pl)
