@@ -28,7 +28,7 @@ Option:
 ![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_linux.gif)
 
 ## Demo (windows10)
-![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_win.gif)
+![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_wins.gif)
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
