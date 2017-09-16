@@ -326,9 +326,9 @@ func drawLoop() {
 			logres := res_ary[0] + " " + res_ary[1] + " " + res_ary[2] + "\n"
 			rbf.WriteString(pres)
 
-			t := time.Now()
-			k := t.Format(DATE)
-			log := "[" + k + "]" + " " + logres
+			date := time.Now()
+			formating_date := date.Format(DATE)
+			log := "[" + formating_date + "]" + " " + logres
 			result := "result_" + DAY + ".txt"
 
 			u, err := user.Current()
