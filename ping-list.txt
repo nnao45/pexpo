@@ -1,4 +1,12 @@
-# Examples the 
+# Under line is Examples for the pexpo. 
+#
+# Syntax:
+#	[host's address<ipv4|ipv6>] [description]
+# 
+# Examples:
+#	192.168.0.1 Home Gateway
+#	fd00:1234::beaf Araisan's server
+#
 
 
 www.yahoo.com Yahoo!!!
