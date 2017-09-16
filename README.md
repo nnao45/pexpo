@@ -1,6 +1,6 @@
 # pexpo
-pexpo is ping sending tool with cool clomun & logging loss-count in the Multi platform(Windows, Mac, Linux...).  
-pexpo has TUI Engine is [termbox-go](https://github.com/nsf/termbox-go), Sending ICMP Engine is [go-fastping](https://github.com/tatsushid/go-fastping).  
+pexpo is ping sending tui tool with cool clomun & logging loss-count in the Multi platform(Windows, Mac, Linux...).  
+pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending ICMP engine is [go-fastping](https://github.com/tatsushid/go-fastping).  
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application.  
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).
   
