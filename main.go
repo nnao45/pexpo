@@ -138,6 +138,15 @@ func Round(f float64, places int) float64 {
 	return math.Floor(f*shift+.5) / shift
 }
 
+/*
+func isIPv4(ip net.IP) bool {
+	return len(ip.To4()) == net.IPv4len
+}
+
+func isIPv6(ip net.IP) bool {
+	return len(ip) == net.IPv6len
+}
+*/
 func drawLine(x, y int, str string) {
 	color := termbox.ColorDefault
 	backgroundColor := termbox.ColorDefault
@@ -177,7 +186,11 @@ func drawLineColorful(x, y int, str string, strcode, backcode termbox.Attribute)
 
 func Pinger(host string, index int) (s string) {
 	p := fastping.NewPinger()
-	ra, err := net.ResolveIPAddr("ip4:icmp", host)
+	netProto := "ip4:icmp"
+	if strings.Index(host, ":") != -1 {
+		netProto = "ip6:ipv6-icmp"
+	}
+	ra, err := net.ResolveIPAddr(netProto, host)
 	if err != nil {
 		termbox.Close()
 		panic(err)
