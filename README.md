@@ -16,7 +16,7 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 - ipv4, and ipv6!!
 - logging ping result($HOME/.pexpo/result_$DATE_.txt).
 - Display Counting Ping loss per host.
-- Display Current Dead host(if host is revive, And dead mark is vanish).
+- Display Current Dead host(if host is revive, and dead mark is vanish).
 
 ## Writer & License
 pexpo's was writed by nao4arale (Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
