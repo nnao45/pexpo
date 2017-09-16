@@ -1,6 +1,6 @@
 # pexpo
 pexpo is ping sending tool with cool clomun & logging loss count int the Multi platform(Windos, Mac, Linux...).  
-And Moving under the ![termbox-go](https://github.com/nsf/termbox-go) engine.  
+Sendig TUI Engine is ![termbox-go](https://github.com/nsf/termbox-go), Sending ICMP Engine is ![go-fastping](https://github.com/tatsushid/go-fastping)
 This is inspired [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).
   
 ## Demo (Linux)
