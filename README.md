@@ -9,6 +9,10 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 Usage:
     pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list]
 
+Examples:
+    ./pexpo -i 500ms -t 1s -f /usr/local/ping-list
+    pexpo.exe -i 500ms -t 1s -f C:\Users\arale\Desktop\ping-list
+
 Option:
     -i Sending ICMP interval time(Default:500ms, should not be lower this).
        You must not use "200" or "1" or..., must use "200ms" or "1s" or ... , so use with time's unit.
