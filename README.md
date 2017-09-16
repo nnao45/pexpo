@@ -19,4 +19,4 @@ This is inspired [pinger](https://github.com/hirose31/pinger), [Exping](http://w
 
 ## Writer & License
 pexpo's was writed by nao4arale (Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
-This software is released under the MIT License, see LICENSE
+This software is released under the MIT License, see LICENSE.
