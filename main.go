@@ -5,51 +5,51 @@ pexpo Demo Console.
 console 130x45
 ###################
 
-=================================================================                                     Press Esc ,Ctrl+C to exit.
-| o | Host              | Response          | Description       |              Now, Loss counting Per host.
-=================================================================    Hostname            Loss(%)   Loss(sum) Dead Now?
-| o | www.yahoo.com     | 68.639012ms       | noname_host       |    www.yahoo.com       0.000     0 loss
-| x | 192.168.0.123     | ping...faild...   | iphone            |    192.168.0.123       100.00    2 loss    Dead Now!
-| o | 192.168.189.148   | 5.97958ms         | noname_host       |    192.168.189.148     0.000     0 loss
-| o | 8.8.8.8           | 1.380126ms        | 8.8.8.8           |    8.8.8.8             0.000     0 loss
-| o | 8.8.4.4           | 2.23591ms         | 8.8.4.4           |    8.8.4.4             0.000     0 loss
-| o | 208.67.222.123    | 76.559175ms       | 208.67.222.123    |    208.67.222.123      0.000     0 loss
-| o | 208.67.220.123    | 75.539689ms       | 208.67.220.123    |    208.67.220.123      0.000     0 loss
-| o | 216.146.35.35     | 1.523734ms        | 216.146.35.35     |    216.146.35.35       0.000     0 loss
-| o | 216.146.36.36     | 115.969097ms      | 216.146.36.36     |    216.146.36.36       0.000     0 loss
-| o | 77.88.8.8         | 301.666214ms      | 77.88.8.8         |    77.88.8.8           0.000     0 loss
-| o | 77.88.8.1         | 305.743499ms      | 77.88.8.1         |    77.88.8.1           0.000     0 loss
-| o | 77.88.8.88        | 284.105331ms      | 77.88.8.88        |    77.88.8.88          0.000     0 loss
-| o | 77.88.8.2         | 282.982251ms      | 77.88.8.2         |    77.88.8.2           0.000     0 loss
-| o | 77.88.8.7         | 276.085561ms      | 77.88.8.7         |    77.88.8.7           0.000     0 loss
-| o | 77.88.8.3         | 280.114413ms      | 77.88.8.3         |    77.88.8.3           0.000     0 loss
-| o | 180.76.76.76      | 80.320847ms       | 180.76.76.76      |    180.76.76.76        0.000     0 loss
-| o | 114.114.114.114   | 157.903229ms      | 114.114.114.114   |    114.114.114.114     0.000     0 loss
-| o | 80.80.80.80       | 1.610828ms        | 80.80.80.80       |    80.80.80.80         0.000     0 loss
-| o | 80.80.81.81       | 2.695585ms        | 80.80.81.81       |    80.80.81.81         0.000     0 loss
-| o | 8.26.56.26        | 111.160334ms      | 8.26.56.26        |    8.26.56.26          0.000     0 loss
-| o | 8.20.247.20       | 112.025458ms      | 8.20.247.20       |    8.20.247.20         0.000     0 loss
-| o | 106.186.17.181    | 3.235493ms        | 106.186.17.181    |    106.186.17.181      0.000     0 loss
-| o | 106.185.41.36     | 2.927936ms        | 106.185.41.36     |    106.185.41.36       0.000     0 loss
-| o | www.yahoo.com     | 68.673627ms       | noname_host       |
-| x | 192.168.0.123     | ping...faild...   | iphone            |
-| o | 192.168.189.148   | 2.48874ms         | noname_host       |
-| o | 8.8.8.8           | 2.255641ms        | 8.8.8.8           |
-| o | 8.8.4.4           | 1.426299ms        | 8.8.4.4           |
-| o | 208.67.222.123    | 77.390606ms       | 208.67.222.123    |
-| o | 208.67.220.123    | 74.670532ms       | 208.67.220.123    |
-| o | 216.146.35.35     | 2.359116ms        | 216.146.35.35     |
-| o | 216.146.36.36     | 115.08774ms       | 216.146.36.36     |
-| o | 77.88.8.8         | 301.979911ms      | 77.88.8.8         |
-| o | 77.88.8.1         | 304.790725ms      | 77.88.8.1         |
-| o | 77.88.8.88        | 284.551907ms      | 77.88.8.88        |
-| o | 77.88.8.2         | 282.012719ms      | 77.88.8.2         |
-| o | 77.88.8.7         | 276.935199ms      | 77.88.8.7         |
-| o | 77.88.8.3         | 279.34755ms       | 77.88.8.3         |
-| o | 180.76.76.76      | 81.130028ms       | 180.76.76.76      |
-| o | 114.114.114.114   | 157.071566ms      | 114.114.114.114   |
-| o | 80.80.80.80       | 2.304712ms        | 80.80.80.80       |
-=================================================================
+ =================================================================                                           Esc ,Ctrl+C to exit.
+ | o | Host              | Response          | Description       |              Now, Loss counting Per host.            
+ =================================================================    Hostname            Loss(%)   Loss(sum) Dead Now?
+ | o | 77.88.8.3         | 286.120512ms      | Yandex.DNS        |    www.yahoo.com       0.000     0   loss
+ | o | 180.76.76.76      | 37.444591ms       | Baidu DNS         |    192.168.1.201       100.00    10  loss  Dead Now!
+ | o | 114.114.114.114   | 288.835931ms      | Baidu DNS         |    2001:4860:4860:...  0.000     0   loss
+ | o | 80.80.80.80       | 74.98565ms        | Freenom World     |    8.8.8.8             0.000     0   loss
+ | o | 80.80.81.81       | 73.907249ms       | Freenom World     |    8.8.4.4             0.000     0   loss
+ | o | 8.26.56.26        | 213.717929ms      | Comodo Secure DNS |    208.67.222.123      0.000     0   loss
+ | o | 8.20.247.20       | 209.27997ms       | Comodo Secure DNS |    208.67.220.123      0.000     0   loss
+ | o | 106.186.17.181    | 74.254678ms       | OpenNIC           |    216.146.35.35       0.000     0   loss
+ | o | 106.185.41.36     | 66.059639ms       | OpenNIC           |    216.146.36.36       0.000     0   loss
+ | o | www.yahoo.com     | 75.149983ms       | Yahoo!!!          |    77.88.8.8           0.000     0   loss
+ | x | 192.168.1.201     | ping...faild...   | Host is Dead!     |    77.88.8.1           0.000     0   loss
+ | o | 2001:4860:4860:...| 1.197034ms        | Google_IPv6       |    77.88.8.88          0.000     0   loss
+ | o | 8.8.8.8           | 941.56µs          | nandedaaaaaaaaa...|    77.88.8.2           0.000     0   loss
+ | o | 8.8.4.4           | 991.28µs          | Google_IPv4       |    77.88.8.7           0.000     0   loss
+ | o | 208.67.222.123    | 944.168µs         | OpenDNS           |    77.88.8.3           0.000     0   loss
+ | o | 208.67.220.123    | 948.797µs         | OpenDNS           |    180.76.76.76        0.000     0   loss
+ | o | 216.146.35.35     | 954.225µs         | Dyn Internet Guide|    114.114.114.114     0.000     0   loss
+ | o | 216.146.36.36     | 240.103655ms      | Dyn Internet Guide|    80.80.80.80         0.000     0   loss
+ | o | 77.88.8.8         | 286.464099ms      | Yandex.DNS        |    80.80.81.81         0.000     0   loss
+ | o | 77.88.8.1         | 358.621804ms      | Yandex.DNS        |    8.26.56.26          0.000     0   loss
+ | o | 77.88.8.88        | 358.995054ms      | Yandex.DNS        |    8.20.247.20         0.000     0   loss
+ | o | 77.88.8.2         | 287.493195ms      | Yandex.DNS        |    106.186.17.181      0.000     0   loss
+ | o | 77.88.8.7         | 358.558967ms      | Yandex.DNS        |    106.185.41.36       0.000     0   loss
+ | o | 77.88.8.3         | 285.775403ms      | Yandex.DNS        |
+ | o | 180.76.76.76      | 37.389211ms       | Baidu DNS         |
+ | o | 114.114.114.114   | 288.735094ms      | Baidu DNS         |
+ | o | 80.80.80.80       | 75.043223ms       | Freenom World     |
+ | o | 80.80.81.81       | 73.908742ms       | Freenom World     |
+ | o | 8.26.56.26        | 213.743171ms      | Comodo Secure DNS |
+ | o | 8.20.247.20       | 209.260693ms      | Comodo Secure DNS |
+ | o | 106.186.17.181    | 74.223363ms       | OpenNIC           |
+ | o | 106.185.41.36     | 66.092089ms       | OpenNIC           |
+ | o | www.yahoo.com     | 75.187195ms       | Yahoo!!!          |
+ | x | 192.168.1.201     | ping...faild...   | Host is Dead!     |
+ | o | 2001:4860:4860:...| 1.264779ms        | Google_IPv6       |
+ | o | 8.8.8.8           | 977.278µs         | nandedaaaaaaaaa...|
+ | o | 8.8.4.4           | 979.161µs         | Google_IPv4       |
+ | o | 208.67.222.123    | 1.186372ms        | OpenDNS           |
+ | o | 208.67.220.123    | 951.586µs         | OpenDNS           |
+ | o | 216.146.35.35     | 930.594µs         | Dyn Internet Guide|
+ | o | 216.146.36.36     | 240.093372ms      | Dyn Internet Guide|
+ =================================================================
 */
 
 package main
@@ -310,7 +310,9 @@ func drawLoop() {
 			//			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), GREEN256)
 			//			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v  loss", drawLoss(index)), GREEN256)
 			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), termbox.ColorGreen)
-			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v  loss", drawLoss(index)), termbox.ColorGreen)
+			//drawLineColor(LIST_L_X, index, fmt.Sprintf("%v  loss", drawLoss(index)), termbox.ColorGreen)
+			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v", drawLoss(index)), termbox.ColorGreen)
+			drawLineColor(LIST_L_X+4, index, fmt.Sprintf("%v", "loss"), termbox.ColorGreen)
 			if res_ary[0] == "x" {
 				//drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), RED256)
 				drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), termbox.ColorRed)
@@ -407,7 +409,7 @@ func drawHostList() {
 			//drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), GREEN256)
 			drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), termbox.ColorGreen)
 			//drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0  loss"), GREEN256)
-			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0  loss"), termbox.ColorGreen)
+			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
 		}
 		hi++
 		if err := scanner.Err(); err != nil {
