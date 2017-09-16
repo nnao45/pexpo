@@ -227,7 +227,7 @@ func drawLoop() {
 		var maxY int
 		index := DRAW_UP_Y
 		maxX, maxY = termbox.Size()
-		drawLine(maxX-27, 0, "Press Esc ,Ctrl+C to exit.")
+		drawLine(maxX-21, 0, "Esc ,Ctrl+C to exit.")
 		//_, maxY = getTermSize()
 
 		killKey := make(chan termbox.Key)
