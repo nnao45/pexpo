@@ -3,6 +3,6 @@ pexpo is ping sending tool with cool clomun & logging loss count int the Multi p
 And Moving under the ![termbox-go](https://github.com/nsf/termbox-go) engine.  
 This is inspired [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).
   
-## Demo
-
+## Demo (Linux)
+![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_linux.gif)
 This software is released under the MIT License, see LICENSE
