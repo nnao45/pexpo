@@ -40,7 +40,7 @@ Option:
 - logging ping result($HOME/.pexpo/result_$DATE_.txt).
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, no description is ok...).
   
-Have a nice go hacking days:wink:
+Have a nice go hacking days:sparkles::wink:
 ## Writer & License
 pexpo's was writed by nao4arale (Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
 This software is released under the MIT License, see LICENSE.
