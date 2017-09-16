@@ -476,7 +476,7 @@ func keyEventLoop(killKey chan termbox.Key) {
 func init() {
 	flag.Usage = func() {
 				fmt.Printf(usage)
-					}
+	}
 
 	flag.Parse()
 
