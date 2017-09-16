@@ -11,7 +11,7 @@ This is inspired [pinger](https://github.com/hirose31/pinger), [Exping](http://w
 
 ## implemention
 - very light application.
-- supporting the windows(Run on multi platforms(Windows, Mac, Linux...) with ONLY one app!!)
+- Run on multi platforms(Windows, Mac, Linux...) with ONLY one app!!
 - ipv4, and ipv6!!
 - logging ping result($HOME/.pexpo/result_$DATE_.txt)
 - Display Counting Ping loss per host.
