@@ -11,7 +11,7 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 ![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_windows.gif)
 
 ## implemention
-- very light application.
+- very light application(for Pinging to the too many hosts).
 - Run on multi platforms(Windows7, Windows10, Mac, Linux...) with ONLY one app!!
 - ipv4, and ipv6!!
 - logging ping result($HOME/.pexpo/result_$DATE_.txt).
