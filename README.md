@@ -1,2 +1,4 @@
 # pexpo
-Developing now
+Developing now  
+  
+This software is released under the MIT License, see LICENSE
