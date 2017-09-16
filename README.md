@@ -13,7 +13,7 @@ This is inspired [pinger](https://github.com/hirose31/pinger), [Exping](http://w
 - very light application.
 - Run on multi platforms(Windows, Mac, Linux...) with ONLY one app!!
 - ipv4, and ipv6!!
-- logging ping result($HOME/.pexpo/result_$DATE_.txt)
+- logging ping result($HOME/.pexpo/result_$DATE_.txt).
 - Display Counting Ping loss per host.
 - Display Current Dead host(if host is revive, And dead mark is vanish).
 
