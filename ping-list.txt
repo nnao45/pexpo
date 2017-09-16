@@ -1,3 +1,6 @@
+# Examples the 
+
+
 www.yahoo.com Yahoo!!!
 #www.google.com	www.google.com
 192.168.1.201 Host is Dead!
