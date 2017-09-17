@@ -42,7 +42,7 @@ Option:
 - Display Counting Ping loss per host:point_up_2:
 - Display Current Dead host(if host is revive, and dead mark is vanish):boom:
 ### more...
-- logging ping result($HOME/.pexpo/result_$DATE_.txt).
+- Logging ping result($HOME/.pexpo/result_$DATE_.txt).
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, no description is ok...).
   
 Have a nice go hacking days:sparkles::wink:
