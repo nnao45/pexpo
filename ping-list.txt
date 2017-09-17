@@ -1,3 +1,5 @@
+#################################################################################
+#
 # Under line is Examples for the pexpo. 
 #
 # Syntax:
@@ -7,7 +9,13 @@
 #	192.168.0.1 Home Gateway
 #	fd00:1234::beaf Araisan's server
 #
-
+#
+# -a options:
+# Such as...you want to this line, It will be ok when using -a option.
+#
+#       Internet  10.0.0.1                -   ca01.18cc.0038  ARPA   Ethernet2/0
+#
+#################################################################################
 
 www.yahoo.com Yahoo!!!
 #www.google.com	www.google.com
