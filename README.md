@@ -28,10 +28,10 @@ Option:
        Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
 ```
   
-## Demo (Ubuntu16.04)
+## Demo (Ubuntu16.04):penguin:
 ![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_ubuntu16.gif)
 
-## Demo (windows10)
+## Demo (windows10):four_leaf_clover:
 ![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_windows.gif)
 
 ## Implementation
