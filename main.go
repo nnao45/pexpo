@@ -6,7 +6,7 @@ console 130x45
 ###################
 
 =================================================================                    Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.
- | o | Host              | Response          | Description       |              Now, Loss counting Per host.            
+ | o | Host              | Response          | Description       |              Now, Loss counting Per host.
  =================================================================    Hostname            Loss(%)   Loss(sum) Dead Now?
  | o | 77.88.8.3         | 286.120512ms      | Yandex.DNS        |    www.yahoo.com       0.000     0   loss
  | o | 180.76.76.76      | 37.444591ms       | Baidu DNS         |    192.168.1.201       100.00    10  loss  Dead Now!
@@ -68,8 +68,8 @@ import (
 	"net"
 	"os"
 	"os/user"
-	"path/filepath"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -85,8 +85,8 @@ var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
 var hbf bytes.Buffer // hbf is ping loss mapping to host.
 var rbf bytes.Buffer // rbf is ping result list
 
-var timeout = flag.Duration("t", time.Second * ICMP_TIMEOUT, "")
-var interval = flag.Duration("i", time.Millisecond * ICMP_INTERVAL, "")
+var timeout = flag.Duration("t", time.Second*ICMP_TIMEOUT, "")
+var interval = flag.Duration("i", time.Millisecond*ICMP_INTERVAL, "")
 var pinglist = flag.String("f", PING_LIST, "")
 var arp_entries = flag.Bool("a", false, "")
 
@@ -112,7 +112,6 @@ Option:
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
        Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
 `
-
 
 const (
 	DAY           = "20060102"
@@ -159,14 +158,19 @@ func addog(text string, filename string) {
 	defer write_file.Close()
 }
 
-func exists(filename string) bool {
-	_, err := os.Stat(filename)
-	return err == nil
-}
-
 func Round(f float64, places int) float64 {
 	shift := math.Pow(10, float64(places))
 	return math.Floor(f*shift+.5) / shift
+}
+
+func keyEventLoop(killKey chan termbox.Key) {
+	for {
+		switch ev := termbox.PollEvent(); ev.Type {
+		case termbox.EventKey:
+			killKey <- ev.Key
+		default:
+		}
+	}
 }
 
 func drawLine(x, y int, str string) {
@@ -201,6 +205,35 @@ func drawLineColorful(x, y int, str string, strcode, backcode termbox.Attribute)
 	}
 }
 
+func drawFlag(x int, y int, flag string) {
+	if flag == "o" {
+		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorBlue)
+	} else if flag == "x" {
+		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorRed)
+	}
+}
+
+func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
+	if flag == "o" {
+		drawLine(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")))
+		drawLine(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")))
+		drawLine(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")))
+	} else if flag == "x" {
+		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), termbox.ColorRed)
+		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")), termbox.ColorRed)
+		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")), termbox.ColorRed)
+	}
+
+}
+
+func fill(x, y, w, h int, cell termbox.Cell) {
+	for ly := 0; ly < h; ly++ {
+		for lx := 0; lx < w; lx++ {
+			termbox.SetCell(x+lx, y+ly, cell.Ch, cell.Fg, cell.Bg)
+		}
+	}
+}
+
 func Pinger(host string, index int) (s string) {
 	p := fastping.NewPinger()
 	netProto := "ip4:icmp"
@@ -213,7 +246,6 @@ func Pinger(host string, index int) (s string) {
 		panic(err)
 	}
 	p.AddIPAddr(ra)
-
 
 	p.MaxRTT = *interval
 	var out string
@@ -229,9 +261,10 @@ func Pinger(host string, index int) (s string) {
 	p.OnIdle = func() {
 	}
 	err = p.Run()
-	if err != nil {
+	/*if err != nil {
 		fmt.Println(err)
-	}
+	}*/
+	fatal(err)
 
 	timer := time.NewTimer(*timeout)
 	for {
@@ -260,11 +293,11 @@ func drawLoop(stop chan bool, restart chan bool) {
 		drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
 		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 		for pscanner.Scan() {
-			 select {
-		                case <-stop:
-		                      <-restart
-		                 default:
-		                 }
+			select {
+			case <-stop:
+				<-restart
+			default:
+			}
 			preps := pscanner.Text()
 			preps_ary := strings.SplitN(preps, " ", 2)
 			ps := preps_ary[0]
@@ -305,7 +338,7 @@ func drawLoop(stop chan bool, restart chan bool) {
 			logres := res_ary[0] + " " + res_ary[1] + " " + res_ary[2] + "\n"
 			rbf.WriteString(pres)
 
-			day  := time.Now()
+			day := time.Now()
 			date := time.Now()
 			formating_day := day.Format(DAY)
 			formating_date := date.Format(DATE)
@@ -355,35 +388,6 @@ func drawLoop(stop chan bool, restart chan bool) {
 	}
 }
 
-func fill(x, y, w, h int, cell termbox.Cell) {
-	for ly := 0; ly < h; ly++ {
-		for lx := 0; lx < w; lx++ {
-			termbox.SetCell(x+lx, y+ly, cell.Ch, cell.Fg, cell.Bg)
-		}
-	}
-}
-
-func drawFlag(x int, y int, flag string) {
-	if flag == "o" {
-		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorBlue)
-	} else if flag == "x" {
-		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorRed)
-	}
-}
-
-func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
-	if flag == "o" {
-		drawLine(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")))
-		drawLine(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")))
-		drawLine(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")))
-	} else if flag == "x" {
-		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), termbox.ColorRed)
-		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")), termbox.ColorRed)
-		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")), termbox.ColorRed)
-	}
-
-}
-
 func drawHostList() {
 	hi := 3
 	if j <= 1 {
@@ -423,32 +427,18 @@ func drawLoss(index int) int {
 	return c
 }
 
-func keyEventLoop(killKey chan termbox.Key) {
-	for {
-		switch ev := termbox.PollEvent(); ev.Type {
-		case termbox.EventKey:
-			killKey <- ev.Key
-		default:
-		}
-	}
-}
-
 func init() {
 	flag.Usage = func() {
-				fmt.Printf(usage)
+		fmt.Printf(usage)
 	}
 
 	flag.Parse()
 
 	u, err := user.Current()
-	if err != nil {
-		fatal(err)
-	}
+	fatal(err)
 	rdir := filepath.Join(u.HomeDir, RESULT_DIR)
 	err = os.MkdirAll(rdir, 0755)
-	if err != nil {
-		fatal(err)
-	}
+	fatal(err)
 	pl, err := os.Open(path.Base(*pinglist))
 	fatal(err)
 	defer pl.Close()
@@ -491,33 +481,31 @@ func init() {
 
 func main() {
 	err := termbox.Init()
-	if err != nil {
-		panic(err)
-	}
+	fatal(err)
 
 	defer termbox.Close()
 
 	stop := make(chan bool)
+	restart := make(chan bool)
 	killKey := make(chan termbox.Key)
 	sleep := false
-	restart := make(chan bool)
 	go keyEventLoop(killKey)
 	go drawLoop(stop, restart)
-    for {
-	 select {
-	 case wait := <-killKey:
-		 switch wait {
-		 case termbox.KeyEsc, termbox.KeyCtrlC:
-			 return
-		 case termbox.KeyCtrlS:
-			 if sleep == false {
-				 stop <- true
-				 sleep = true
-		 	 } else if sleep == true {
-				 restart <- true
-				 sleep = false
-				 }
-			 }
-		 }
+	for {
+		select {
+		case wait := <-killKey:
+			switch wait {
+			case termbox.KeyEsc, termbox.KeyCtrlC:
+				return
+			case termbox.KeyCtrlS:
+				if sleep == false {
+					stop <- true
+					sleep = true
+				} else if sleep == true {
+					restart <- true
+					sleep = false
+				}
+			}
+		}
 	}
 }
