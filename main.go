@@ -5,7 +5,7 @@ pexpo Demo Console.
 console 130x45
 ###################
 
- =================================================================                                           Esc ,Ctrl+C to exit.
+=================================================================                    Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.
  | o | Host              | Response          | Description       |              Now, Loss counting Per host.            
  =================================================================    Hostname            Loss(%)   Loss(sum) Dead Now?
  | o | 77.88.8.3         | 286.120512ms      | Yandex.DNS        |    www.yahoo.com       0.000     0   loss
