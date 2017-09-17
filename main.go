@@ -352,6 +352,7 @@ func drawLoop(stop chan bool, restart chan bool) {
 			rfile := filepath.Join(u.HomeDir, RESULT_DIR, result)
 			addog(log, rfile)
 
+			fill(LIST_P_X, index, 10, 1, termbox.Cell{Ch: ' '})
 			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), termbox.ColorGreen)
 			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v", drawLoss(index)), termbox.ColorGreen)
 			drawLineColor(LIST_L_X+4, index, fmt.Sprintf("%v", "loss"), termbox.ColorGreen)
@@ -404,7 +405,7 @@ func drawHostList() {
 		s := pres_ary[0]
 		drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "...")), termbox.ColorGreen)
 		if j <= 1 {
-			drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.000"), termbox.ColorGreen)
+			drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.00"), termbox.ColorGreen)
 			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
 		}
 		hi++
