@@ -88,10 +88,11 @@ var rbf bytes.Buffer // rbf is ping result list
 var timeout = flag.Duration("t", time.Second * ICMP_TIMEOUT, "")
 var interval = flag.Duration("i", time.Millisecond * ICMP_INTERVAL, "")
 var pinglist = flag.String("f", PING_LIST, "")
+var arp_entries = flag.Bool("a", false, "")
 
 var usage = `
 Usage:
-    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list]
+    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-a arp_entries]
 
 Examples:
     ./pexpo -i 500ms -t 1s -f /usr/local/ping-list
@@ -103,10 +104,13 @@ Option:
 
     -t Sending ICMP timeout time(Default:3s)
        You must not use "200" or "1" or..., must use "200ms" or "1s" or ... , so use with time's unit.
-       this "timeout" is Exact meaning, Pinger() receives go-fastping function send value interval.
+       this "timeout" is Exact meaning, fastping.NewPinger() receives OnRecv struct value interval.
 
-    -f Using Filepath of Ping-list(Default:current_dir/ping-list.txt).
+    -f Using Filepath of ping-list(Default:current_dir/ping-list.txt).
 
+    -a If you want to write on ping-list -- such as Cisco's show ip arp -- , 
+       "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
+       Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
 `
 
 
@@ -513,6 +517,10 @@ func init() {
 			if !strings.Contains(s, " ") {
 				s = s + " noname_host"
 			} else {
+				if *arp_entries && strings.HasPrefix(s, "Internet") {
+					s_ary := strings.SplitN(s, "  ", 2)
+					s = s_ary[1]
+				}
 				s_ary := strings.SplitN(s, " ", 2)
 				s_ary[1] = strings.TrimSpace(s_ary[1])
 				s = s_ary[0] + " " + s_ary[1]
