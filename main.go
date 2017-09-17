@@ -258,18 +258,13 @@ func drawLoop(stop chan bool, restart chan bool) {
 		index := DRAW_UP_Y
 		maxX, maxY = termbox.Size()
 		drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
-		//_, maxY = getTermSize()
-		sleep := false
 		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 		for pscanner.Scan() {
 			 select {
 		                case <-stop:
-		                       sleep =true
 		                      <-restart
-		                       sleep = false
 		                 default:
 		                 }
-		        if !sleep {
 			preps := pscanner.Text()
 			preps_ary := strings.SplitN(preps, " ", 2)
 			ps := preps_ary[0]
@@ -355,7 +350,6 @@ func drawLoop(stop chan bool, restart chan bool) {
 			index++
 			if err := pscanner.Err(); err != nil {
 				panic(err)
-				}
 			}
 		}
 	}
@@ -429,25 +423,11 @@ func drawLoss(index int) int {
 	return c
 }
 
-/*
-func getTermSize(resizeTerm chan bool) {
-	for {
-		switch ev := termbox.PollEvent(); ev.Type {
-		case termbox.EventResize:
-			resizeTerm <- true
-		default:
-		}
-	}
-}
-*/
 func keyEventLoop(killKey chan termbox.Key) {
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
 		case termbox.EventKey:
 			killKey <- ev.Key
-		//case termbox.EventResize:
-		//			layout.termW, layout.termH = termbox.Size()
-		//			drawHeader()
 		default:
 		}
 	}
