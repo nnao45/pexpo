@@ -41,6 +41,7 @@ Option:
 - pexpo has several options. You can change ping interval, timeout, select ping-list, & help Cisco using:octocat:
 - Display Counting Ping loss per host:point_up_2:
 - Display Current Dead host(if host is revive, and dead mark is vanish):boom:
+- pexpo has Pausing Implementation. if you want, push "Crtl+S":traffic_light:
 ### more...
 - Logging ping result($HOME/.pexpo/result_$DATE_.txt).
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, no description is ok...).
