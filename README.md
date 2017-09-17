@@ -7,7 +7,7 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 ## Usage
 ```bash
 Usage:
-    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list]
+    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-a arp_entries]
 
 Examples:
     ./pexpo -i 500ms -t 1s -f /usr/local/ping-list
@@ -19,9 +19,13 @@ Option:
 
     -t Sending ICMP timeout time(Default:3s)
        You must not use "200" or "1" or..., must use "200ms" or "1s" or ... , so use with time's unit.
-       this "timeout" is Exact meaning, Pinger() receives go-fastping function send value interval.
+       this "timeout" is Exact meaning, fastping.NewPinger() receives OnRecv struct value interval.
 
-    -f Using Filepath of Ping-list(Default:current_dir/ping-list.txt).
+    -f Using Filepath of ping-list(Default:current_dir/ping-list.txt).
+
+    -a If you want to write on ping-list -- such as Cisco's show ip arp -- , 
+       "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
+       Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
 ```
   
 ## Demo (Linux)
@@ -34,6 +38,7 @@ Option:
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
 - ONLY one app run on multi platforms(Windows7, Windows10, Mac, Linux...)!!:kissing_heart:
 - You can send ICMP ipv4, and ipv6!!:open_mouth:
+- pexpo has few options. You can hange ping interval, timeout, selecting ping-list, & help Cisco using:octocat:
 - Display Counting Ping loss per host:point_up_2:
 - Display Current Dead host(if host is revive, and dead mark is vanish):boom:
 ### more...
