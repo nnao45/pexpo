@@ -249,7 +249,7 @@ func Pinger(host string, index int) (s string) {
 	}
 }
 
-func drawLoop() {
+func drawLoop(stop chan bool, restart chan bool) {
 	for {
 		j++
 		drawHostList()
@@ -259,41 +259,17 @@ func drawLoop() {
 		maxX, maxY = termbox.Size()
 		drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
 		//_, maxY = getTermSize()
-
-		killKey := make(chan termbox.Key)
 		sleep := false
-		restart := make(chan bool)
-		//		resizeTerm := make(chan bool)
-		go keyEventLoop(killKey)
-		//		go getTermSize(resizeTerm)
-		go func() {
-			for {
-				select {
-				case wait := <-killKey:
-					switch wait {
-					case termbox.KeyEsc, termbox.KeyCtrlC:
-						termbox.Close()
-						os.Exit(0)
-					case termbox.KeyCtrlS:
-						if sleep == false {
-						sleep = true
-						} else {
-						sleep = false
-						restart <- true
-						}
-					}
-					//				case <-resizeTerm:
-					//					_, maxY = termbox.Size()
-				}
-			}
-		}()
-
 		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 		for pscanner.Scan() {
-		if sleep == true {
-			<-restart
-			continue
-		} else {
+			 select {
+		                case <-stop:
+		                       sleep =true
+		                      <-restart
+		                       sleep = false
+		                 default:
+		                 }
+		        if !sleep {
 			preps := pscanner.Text()
 			preps_ary := strings.SplitN(preps, " ", 2)
 			ps := preps_ary[0]
@@ -540,5 +516,28 @@ func main() {
 	}
 
 	defer termbox.Close()
-	drawLoop()
+
+	stop := make(chan bool)
+	killKey := make(chan termbox.Key)
+	sleep := false
+	restart := make(chan bool)
+	go keyEventLoop(killKey)
+	go drawLoop(stop, restart)
+    for {
+	 select {
+	 case wait := <-killKey:
+		 switch wait {
+		 case termbox.KeyEsc, termbox.KeyCtrlC:
+			 return
+		 case termbox.KeyCtrlS:
+			 if sleep == false {
+				 stop <- true
+				 sleep = true
+		 	 } else if sleep == true {
+				 restart <- true
+				 sleep = false
+				 }
+			 }
+		 }
+	}
 }
