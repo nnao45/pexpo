@@ -170,8 +170,8 @@ func drawLine(x, y int, str string) {
 	backgroundColor := termbox.ColorDefault
 	runes := []rune(str)
 
-	for i := 0; i < len(runes); i += 1 {
-		termbox.SetCell(x+i, y, runes[i], color, backgroundColor)
+	for n := 0; n < len(runes); n += 1 {
+		termbox.SetCell(x+n, y, runes[n], color, backgroundColor)
 	}
 }
 
@@ -183,8 +183,8 @@ func drawLineColor(x, y int, str string, code termbox.Attribute) {
 	backgroundColor := termbox.ColorDefault
 	runes := []rune(str)
 
-	for i := 0; i < len(runes); i += 1 {
-		termbox.SetCell(x+i, y, runes[i], color, backgroundColor)
+	for n := 0; n < len(runes); n += 1 {
+		termbox.SetCell(x+n, y, runes[n], color, backgroundColor)
 	}
 }
 
@@ -197,8 +197,8 @@ func drawLineColorful(x, y int, str string, strcode, backcode termbox.Attribute)
 	backgroundColor := backcode
 	runes := []rune(str)
 
-	for i := 0; i < len(runes); i += 1 {
-		termbox.SetCell(x+i, y, runes[i], color, backgroundColor)
+	for n := 0; n < len(runes); n += 1 {
+		termbox.SetCell(x+n, y, runes[n], color, backgroundColor)
 	}
 }
 
