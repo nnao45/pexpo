@@ -179,10 +179,8 @@ func drawLine(x, y int, str string) {
 	}
 }
 
-//func drawLineColor(x, y int, str string, code int) {
 func drawLineColor(x, y int, str string, code termbox.Attribute) {
 	termbox.SetOutputMode(termbox.Output256)
-	//color := termbox.Attribute(code + 1)
 	color := code
 	backgroundColor := termbox.ColorDefault
 	runes := []rune(str)
@@ -192,12 +190,9 @@ func drawLineColor(x, y int, str string, code termbox.Attribute) {
 	}
 }
 
-//func drawLineColorful(x, y int, str string, strcode int, backcode int) {
 func drawLineColorful(x, y int, str string, strcode, backcode termbox.Attribute) {
 	termbox.SetOutputMode(termbox.Output256)
-	//color := termbox.Attribute(strcode + 1)
 	color := strcode
-	//backgroundColor := termbox.Attribute(backcode + 1)
 	backgroundColor := backcode
 	runes := []rune(str)
 
@@ -220,14 +215,12 @@ func Pinger(host string, index int) (s string) {
 	p.AddIPAddr(ra)
 
 
-	//p.MaxRTT = time.Millisecond * ICMP_INTERVAL
 	p.MaxRTT = *interval
 	var out string
 	var res string
 	receiver := make(chan string, EDGE_X)
 	go func() {
 		p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
-			//out = "Host: " + host + " IP Addr: " + addr.String() + " receive, RTT: " + rtt.String() + "\n"
 			out = host + " " + rtt.String()
 			receiver <- out
 			defer close(receiver)
@@ -240,10 +233,8 @@ func Pinger(host string, index int) (s string) {
 		fmt.Println(err)
 	}
 
-	//timer := time.NewTimer(ICMP_TIMEOUT * time.Second)
 	timer := time.NewTimer(*timeout)
 	for {
-		//timer.Reset(ICMP_TIMEOUT * time.Second)
 		timer.Reset(*timeout)
 		select {
 		case res = <-receiver:
@@ -271,7 +262,6 @@ func drawLoop() {
 
 		killKey := make(chan termbox.Key)
 		sleep := false
-		//stop := make(chan bool)
 		restart := make(chan bool)
 		//		resizeTerm := make(chan bool)
 		go keyEventLoop(killKey)
@@ -288,8 +278,8 @@ func drawLoop() {
 						if sleep == false {
 						sleep = true
 						} else {
-						restart <- true
 						sleep = false
+						restart <- true
 						}
 					}
 					//				case <-resizeTerm:
@@ -358,14 +348,10 @@ func drawLoop() {
 			rfile := filepath.Join(u.HomeDir, RESULT_DIR, result)
 			addog(log, rfile)
 
-			//			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), GREEN256)
-			//			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v  loss", drawLoss(index)), GREEN256)
 			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), termbox.ColorGreen)
-			//drawLineColor(LIST_L_X, index, fmt.Sprintf("%v  loss", drawLoss(index)), termbox.ColorGreen)
 			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v", drawLoss(index)), termbox.ColorGreen)
 			drawLineColor(LIST_L_X+4, index, fmt.Sprintf("%v", "loss"), termbox.ColorGreen)
 			if res_ary[0] == "x" {
-				//drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), RED256)
 				drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), termbox.ColorRed)
 			} else if res_ary[0] == "o" {
 				fill(LIST_D_X, index, 9, 1, termbox.Cell{Ch: ' '})
@@ -388,9 +374,6 @@ func drawLoop() {
 				fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
 				fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
 			}
-			//t := time.Now()
-			//drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(DATE)))
-			//drawLine(2, 1, fmt.Sprintf("date: %v", t.Format(DATE)))
 			termbox.Flush()
 			i++
 			index++
@@ -510,7 +493,6 @@ func init() {
 	if err != nil {
 		fatal(err)
 	}
-	//pl, err := os.Open(PING_LIST)
 	pl, err := os.Open(path.Base(*pinglist))
 	fatal(err)
 	defer pl.Close()
