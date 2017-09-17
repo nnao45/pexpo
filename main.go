@@ -266,10 +266,13 @@ func drawLoop() {
 		var maxY int
 		index := DRAW_UP_Y
 		maxX, maxY = termbox.Size()
-		drawLine(maxX-21, 0, "Esc ,Ctrl+C to exit.")
+		drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
 		//_, maxY = getTermSize()
 
 		killKey := make(chan termbox.Key)
+		sleep := false
+		//stop := make(chan bool)
+		restart := make(chan bool)
 		//		resizeTerm := make(chan bool)
 		go keyEventLoop(killKey)
 		//		go getTermSize(resizeTerm)
@@ -281,6 +284,13 @@ func drawLoop() {
 					case termbox.KeyEsc, termbox.KeyCtrlC:
 						termbox.Close()
 						os.Exit(0)
+					case termbox.KeyCtrlS:
+						if sleep == false {
+						sleep = true
+						} else {
+						restart <- true
+						sleep = false
+						}
 					}
 					//				case <-resizeTerm:
 					//					_, maxY = termbox.Size()
@@ -290,6 +300,10 @@ func drawLoop() {
 
 		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
 		for pscanner.Scan() {
+		if sleep == true {
+			<-restart
+			continue
+		} else {
 			preps := pscanner.Text()
 			preps_ary := strings.SplitN(preps, " ", 2)
 			ps := preps_ary[0]
@@ -382,6 +396,7 @@ func drawLoop() {
 			index++
 			if err := pscanner.Err(); err != nil {
 				panic(err)
+				}
 			}
 		}
 	}
