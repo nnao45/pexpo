@@ -320,9 +320,7 @@ func drawLoop(stop chan bool, restart chan bool) {
 		
 		/*For Stop & Restart*/
 			select {
-			/*1st Puth Crtl+S, "STOP"*/
 			case <-stop:
-			/*2nd Puth Crtl+S, "RESTART"*/
 				<-restart
 				
 			/*Default behavior*/
