@@ -502,7 +502,7 @@ func main() {
 			case termbox.KeyCtrlS:
 				if sleep == false {
 					fill(maxX-44, 0, 45, 1, termbox.Cell{Ch: ' '})
-                                        drawLineColor(maxX-25, 0, "Stop Now!!Restart: Crtl+S", termbox.ColorRed)
+                                        drawLineColor(maxX-25, 0, "Stop Now!!Restart: Crtl+S", termbox.ColorYellow)
 					stop <- true
 					sleep = true
 				} else if sleep == true {
