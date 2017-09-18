@@ -291,7 +291,7 @@ func Pinger(host string, index int) (s string) {
 }
 
 /*This is Main loop*/
-func drawLoop(stop chan bool, restart chan bool) {
+func drawLoop(stop, restart, received chan struct{}) {
 
 	var i int // "i" is all pings count.
 	var j int // "j" is all pings "per host" count.
@@ -311,6 +311,10 @@ func drawLoop(stop chan bool, restart chan bool) {
 	var maxX int
 	var maxY int
 	maxX, maxY = termbox.Size()
+	
+	/*1st key loop lock open*/
+	//received <- true
+	received <- struct{}{}
 	
 	for {
 		/*Counting per running This function*/
@@ -435,7 +439,9 @@ func drawLoop(stop chan bool, restart chan bool) {
 		/*For Stop & Restart*/
 			select {
 			case <-stop:
+				received <- struct{}{}
 				<-restart
+				received <- struct{}{}
 				
 			/*Default behavior*/
 			default:
@@ -578,10 +584,13 @@ func main() {
 	maxX, _ = termbox.Size()
 	
 	/*stop channel is for stopping drawLoop()*/
-	stop := make(chan bool)
+	stop := make(chan struct{}, 0)
 	
 	/*stop channel is for restarting drawLoop()*/
-	restart := make(chan bool)
+	restart := make(chan struct{}, 0)
+	
+	/*received channel is received message from drawLoop()*/
+	received := make(chan struct{}, 0)
 	
 	/*killKey channel is received HW key interrupt*/
 	killKey := make(chan termbox.Key)
@@ -590,7 +599,10 @@ func main() {
 	sleep := false
 	
 	go keyEventLoop(killKey)
-	go drawLoop(stop, restart)
+	go drawLoop(stop, restart, received)
+	
+loop:
+<-received	
 	for {
 		select {
 		case wait := <-killKey:
@@ -601,13 +613,15 @@ func main() {
 				if sleep == false {
 					fill(maxX-44, 0, 45, 1, termbox.Cell{Ch: ' '})
 					drawLineColor(maxX-48, 0, "Stop Now!! Crtl+S: Restart, Esc or Ctrl+C: Exit.", termbox.ColorYellow)
-					stop <- true
+					stop <- struct{}{}
 					sleep = true
+					goto loop
 				} else if sleep == true {
 					fill(maxX-48, 0, 49, 1, termbox.Cell{Ch: ' '})
 					drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
-					restart <- true
+					restart <- struct{}{}
 					sleep = false
+					goto loop
 				}
 			}
 		}
