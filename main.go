@@ -229,11 +229,11 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 }
 
 func intCounter() func(int) int {
-        counter := 0
-        return func(x int) int {
-			counter++
-			x = counter
-			return x
+	counter := 0
+	return func(x int) int {
+		counter++
+		x = counter
+		return x
         }
 }
 
