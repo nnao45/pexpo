@@ -367,7 +367,8 @@ func drawLoop(stop chan bool, restart chan bool) {
 								break
 							}
 						}
-						/*Deleting consecutive white space*/
+						/*Deleting consecutive white space "head"
+						  "                 8.8.8.8 google.com" */
 						for {
 							if strings.HasPrefix(s, " ") {
 								s_ary := strings.SplitN(s, " ", 2)
@@ -390,6 +391,8 @@ func drawLoop(stop chan bool, restart chan bool) {
 								s_ary := strings.SplitN(s, "  ", 2)
 								s = s_ary[1]
 							}
+							/*Deleting consecutive white space "between"
+						  "8.8.8.8                          google.com" */
 							s_ary := strings.SplitN(s, " ", 2)
 							s_ary[1] = strings.TrimSpace(s_ary[1])
 							s = s_ary[0] + " " + s_ary[1]
