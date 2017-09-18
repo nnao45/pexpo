@@ -70,21 +70,10 @@ import (
 	"os/user"
 	"path"
 	"path/filepath"
-	"strconv"
+//	"strconv"
 	"strings"
 	"time"
 )
-
-/*This global counter*/
-var i int // "i" is all pings count.
-var j int // "j" is all pings "per host" count.
-var k int // "k" is scroll counter
-
-/*This global buffer*/
-var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
-var hbf bytes.Buffer // hbf is ping loss counter map to per host.
-var rbf bytes.Buffer // rbf is ping result list.
-
 /*This global flag*/
 var timeout = flag.Duration("t", time.Second*ICMP_TIMEOUT, "")
 var interval = flag.Duration("i", time.Millisecond*ICMP_INTERVAL, "")
@@ -287,20 +276,38 @@ func Pinger(host string, index int) (s string) {
 			return res
 		case <-timer.C:
 			res = "x " + host + " ping...faild..."
-			
-			/*For counting loss count*/
-			fres := strconv.Itoa(index) + "\n"
-			hbf.WriteString(fres)
 			return res
 		}
 	}
 }
 
+func intCounter() func(int) int {
+        counter := 0
+        return func(x int) int {
+					counter++
+					x = counter
+				    return x
+        }
+}
+
 /*This is Main loop*/
 func drawLoop(stop chan bool, restart chan bool) {
+
+	var i int // "i" is all pings count.
+	var j int // "j" is all pings "per host" count.
+	var k int // "k" is scroll counter
+
+	fi := intCounter() // fi is having i counter value.
+	fj := intCounter() // fj is having j counter value.
+	fk := intCounter() // fk is having k counter value.
+	
+	var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
+	var rbf bytes.Buffer // hbf is ping loss counter map to per host.
+	var hbf bytes.Buffer // rbf is ping result list.
+	
 	for {
 		/*Counting per running This function*/
-		j++
+		j = fj(j)
 		
 		/*Getting terminal X & Y Coordinate
 		  Purposely, 1st Getting terminal size using ever.
@@ -310,9 +317,115 @@ func drawLoop(stop chan bool, restart chan bool) {
 		index := DRAW_UP_Y
 		maxX, maxY = termbox.Size()
 		
-		/*draw header & host-list*/
-		drawHostList()
-		drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
+		/*This Aciton, Only 1st loop!!*/
+		if j <= 1{
+				drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
+				drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), termbox.ColorDefault, termbox.ColorMagenta)
+				drawLineColor(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"), termbox.ColorWhite)
+				drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)	
+				drawLineColor(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"), termbox.ColorWhite)
+				drawLineColor(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"), termbox.ColorWhite)
+				drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
+				drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
+				drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
+				fill(START_X, 0, EDGE_X, 1, termbox.Cell{Ch: '='})
+				fill(START_X, 2, EDGE_X, 1, termbox.Cell{Ch: '='})
+				fill(START_X, maxY-1, EDGE_X, 1, termbox.Cell{Ch: '='})
+				fill(JUDGE_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+				fill(JUDGE_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+				fill(HOST_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+				fill(HOST_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+				fill(RTT_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+				fill(RTT_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+				fill(DES_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+				fill(DES_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+				fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+				fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
+				
+				pl, err := os.Open(path.Base(*pinglist))
+				fatal(err)
+				defer pl.Close()
+				plscanner := bufio.NewScanner(pl)
+				for plscanner.Scan() {
+					s := plscanner.Text()
+					
+					/*if blank line, transform to "#"*/
+					if s == "" {
+						s = "#" + s
+					}
+					
+					if strings.HasPrefix(s, "//"){
+						s = ""
+					}
+					
+					/*# & // is comment out line*/
+					if !strings.HasPrefix(s, "#") {
+					
+					
+						/*Deleting "\t"...tab key*/
+						for {
+							if strings.Contains(s, "\t") {
+								s_ary := strings.SplitN(s, "\t", 2)
+								s = s_ary[0] + " " + s_ary[1]
+							} else {
+								break
+							}
+						}
+						/*Deleting consecutive white space*/
+						for {
+							if strings.HasPrefix(s, " ") {
+								s_ary := strings.SplitN(s, " ", 2)
+								s = s_ary[1]
+							} else {
+								break
+							}
+						}
+						
+						/*No description, Put in "noname_host"
+						If not this statement, After, Will read blank array,
+						So, occuring panic error*/
+							if !strings.Contains(s, " ") {
+							s = s + " noname_host"
+						} else {
+						
+							/*For -a option
+							Ignoring string, "Internet"*/
+							if *arp_entries && strings.HasPrefix(s, "Internet") {
+								s_ary := strings.SplitN(s, "  ", 2)
+								s = s_ary[1]
+							}
+							s_ary := strings.SplitN(s, " ", 2)
+							s_ary[1] = strings.TrimSpace(s_ary[1])
+							s = s_ary[0] + " " + s_ary[1]
+						}
+						s = s + "\n"
+						
+					/*# is comment out*/
+					} else {
+						s = ""
+					}
+					
+					/*ping-list -> pbf*/
+					pbf.WriteString(s)
+					if err := plscanner.Err(); err != nil {
+						panic(err)
+					}
+				}
+				scanner := bufio.NewScanner(strings.NewReader(pbf.String()))
+				n := index
+					for scanner.Scan() {
+					pres := scanner.Text()
+					s_ary := strings.SplitN(pres, " ", 2)
+					s := s_ary[0]
+					drawLineColor(LIST_H_X, n, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "...")), termbox.ColorGreen)
+					drawLineColor(LIST_P_X, n, fmt.Sprintf("%v", "0.00"), termbox.ColorGreen)
+					drawLineColor(LIST_L_X, n, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
+							if err := scanner.Err(); err != nil {
+								panic(err)
+						}
+						n++
+					}
+			}
 		
 		/*Reading Ping-list per line*/
 		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
@@ -332,6 +445,10 @@ func drawLoop(stop chan bool, restart chan bool) {
 			des := preps_ary[1]
 			res := Pinger(ps, index)
 			res_ary := strings.SplitN(res, " ", 3)
+			if res_ary[0] == "x" {
+					lossc := res_ary[1] + "\n"
+					hbf.WriteString(lossc)
+			}
 			/*Before Scrolling To the bottom*/
 			if maxY > i+DRAW_UP_Y+1 {
 				drawFlag(JUDGE_X, i+DRAW_UP_Y, res_ary[0])
@@ -365,7 +482,7 @@ func drawLoop(stop chan bool, restart chan bool) {
 					}
 					rc++
 				}
-				k++
+				k = fk(k)
 			}
 			/*finish Reading Ping-list & Drawing Result.
 			  After, Logging, & Drawing Loss Counter*/
@@ -390,8 +507,20 @@ func drawLoop(stop chan bool, restart chan bool) {
 
 			/*Drawing Loss Counter*/
 			fill(LIST_P_X, index, 10, 1, termbox.Cell{Ch: ' '})
-			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(drawLoss(index), j), 2)), termbox.ColorGreen)
-			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v", drawLoss(index)), termbox.ColorGreen)
+			
+			var c int 
+				losscanner := bufio.NewScanner(strings.NewReader(hbf.String()))
+					for losscanner.Scan() {
+						s := losscanner.Text()
+		
+						/*So, If pexpo had been sending ICMP loss, pexpo logging per host to the hbf
+						This func loss counting*/
+						if s == res_ary[1] {
+						c++
+						}
+			}
+			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(c, j), 2)), termbox.ColorGreen)
+			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v", c), termbox.ColorGreen)
 			drawLineColor(LIST_L_X+4, index, fmt.Sprintf("%v", "loss"), termbox.ColorGreen)
 			
 			/*Drawing the Dead stamp*/
@@ -403,31 +532,11 @@ func drawLoop(stop chan bool, restart chan bool) {
 				fill(LIST_D_X, index, 9, 1, termbox.Cell{Ch: ' '})
 			}
 			
-			/*Only 1st loop, Drawing pexpo's column*/
-			if i <= 1 {
-				drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
-				drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
-				drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
-				fill(START_X, 0, EDGE_X, 1, termbox.Cell{Ch: '='})
-				fill(START_X, 2, EDGE_X, 1, termbox.Cell{Ch: '='})
-				fill(START_X, maxY-1, EDGE_X, 1, termbox.Cell{Ch: '='})
-				fill(JUDGE_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-				fill(JUDGE_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-				fill(HOST_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-				fill(HOST_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-				fill(RTT_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-				fill(RTT_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-				fill(DES_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-				fill(DES_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-				fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-				fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
-			}
-			
 			/*Drawing Done*/
 			termbox.Flush()
 			
 			/*All couting per sending ICMP*/
-			i++
+			i = fi(i)
 			
 			/*"index" for the mapping host to the Loss counter*/
 			index++
@@ -439,59 +548,6 @@ func drawLoop(stop chan bool, restart chan bool) {
 	}
 }
 
-func drawHostList() {
-	hi := DRAW_UP_Y
-	
-	/*Only 1st loop, Drawing pexpo's heder of host-list*/
-	if j <= 1 {
-		drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), termbox.ColorDefault, termbox.ColorMagenta)
-		drawLineColor(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"), termbox.ColorWhite)
-		drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)
-		drawLineColor(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"), termbox.ColorWhite)
-		drawLineColor(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"), termbox.ColorWhite)
-	}
-	
-	/*Reading ping-list*/
-	scanner := bufio.NewScanner(strings.NewReader(pbf.String()))
-	for scanner.Scan() {
-		pres := scanner.Text()
-		pres_ary := strings.SplitN(pres, " ", 2)
-		s := pres_ary[0]
-		drawLineColor(LIST_H_X, hi, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "...")), termbox.ColorGreen)
-		
-		/*Only 1st loop, Drawing pexpo's loss counter in the dummy value*/
-		if j <= 1 {
-			drawLineColor(LIST_P_X, hi, fmt.Sprintf("%v", "0.00"), termbox.ColorGreen)
-			drawLineColor(LIST_L_X, hi, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
-		}
-		hi++
-		if err := scanner.Err(); err != nil {
-			panic(err)
-		}
-	}
-
-}
-
-func drawLoss(index int) int {
-	var c int
-	
-	/*Reading host-list + index*/
-	scanner := bufio.NewScanner(strings.NewReader(hbf.String()))
-	for scanner.Scan() {
-		s := scanner.Text()
-		
-		/*So, If pexpo had been sending ICMP loss, pexpo logging per host to the hbf
-		  This func loss counting*/
-		if s == strconv.Itoa(index) {
-			c++
-		}
-	}
-	return c
-}
-
-/*Before Sending ICMP,
-  Reading ping-list with file I/O,
-  Syntax-checking ping-list.*/
 func init() {
 	flag.Usage = func() {
 		fmt.Printf(usage)
@@ -504,70 +560,6 @@ func init() {
 	rdir := filepath.Join(u.HomeDir, RESULT_DIR)
 	err = os.MkdirAll(rdir, 0755)
 	fatal(err)
-	pl, err := os.Open(path.Base(*pinglist))
-	fatal(err)
-	defer pl.Close()
-	scanner := bufio.NewScanner(pl)
-	for scanner.Scan() {
-		s := scanner.Text()
-		
-		/*if blank line, transform to "#"*/
-		if s == "" {
-			s = "#" + s
-		}
-		
-		/*# is comment out line*/
-		if !strings.HasPrefix(s, "#") {
-		
-			/*Deleting "\t"...tab key*/
-			for {
-				if strings.Contains(s, "\t") {
-					s_ary := strings.SplitN(s, "\t", 2)
-					s = s_ary[0] + " " + s_ary[1]
-				} else {
-					break
-				}
-			}
-			/*Deleting consecutive white space*/
-			for {
-				if strings.HasPrefix(s, " ") {
-					s_ary := strings.SplitN(s, " ", 2)
-					s = s_ary[1]
-				} else {
-					break
-				}
-			}
-			
-			/*No description, Put in "noname_host"
-			  If not this statement, After, Will read blank array,
-			  So, occuring panic error*/
-			if !strings.Contains(s, " ") {
-				s = s + " noname_host"
-			} else {
-			
-				/*For -a option
-				  Ignoring string, "Internet"*/
-				if *arp_entries && strings.HasPrefix(s, "Internet") {
-					s_ary := strings.SplitN(s, "  ", 2)
-					s = s_ary[1]
-				}
-				s_ary := strings.SplitN(s, " ", 2)
-				s_ary[1] = strings.TrimSpace(s_ary[1])
-				s = s_ary[0] + " " + s_ary[1]
-			}
-			s = s + "\n"
-			
-		/*# is comment out*/
-		} else {
-			s = ""
-		}
-		
-		/*ping-list -> pbf*/
-		pbf.WriteString(s)
-		if err := scanner.Err(); err != nil {
-			panic(err)
-		}
-	}
 }
 
 func main() {
