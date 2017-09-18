@@ -302,8 +302,8 @@ func drawLoop(stop chan bool, restart chan bool) {
 	fk := intCounter() // fk is having k counter value.
 	
 	var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
-	var rbf bytes.Buffer // hbf is ping loss counter map to per host.
-	var hbf bytes.Buffer // rbf is ping result list.
+	var rbf bytes.Buffer // rbf is ping result list.
+	var hbf bytes.Buffer // hbf is ping loss counter map to per host.
 	
 	for {
 		/*Counting per running This function*/
