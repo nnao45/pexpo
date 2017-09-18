@@ -489,7 +489,7 @@ func drawLoss(index int) int {
 	return c
 }
 
-/*Beforer Sending ICMP,
+/*Before Sending ICMP,
   Reading ping-list with file I/O,
   Syntax-checking ping-list.*/
 func init() {
