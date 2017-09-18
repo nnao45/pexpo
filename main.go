@@ -509,6 +509,7 @@ func drawLoop(stop chan bool, restart chan bool) {
 			/*Drawing Loss Counter*/
 			fill(LIST_P_X, index, 10, 1, termbox.Cell{Ch: ' '})
 			
+			/*Loss counting from hbf*/
 			var c int 
 				losscanner := bufio.NewScanner(strings.NewReader(hbf.String()))
 					for losscanner.Scan() {
