@@ -228,6 +228,15 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 	}
 }
 
+func intCounter() func(int) int {
+        counter := 0
+        return func(x int) int {
+			counter++
+			x = counter
+			return x
+        }
+}
+
 /*This Core of the sendig ICMP engine*/
 func Pinger(host string, index int) (s string) {
 	p := fastping.NewPinger()
@@ -279,15 +288,6 @@ func Pinger(host string, index int) (s string) {
 			return res
 		}
 	}
-}
-
-func intCounter() func(int) int {
-        counter := 0
-        return func(x int) int {
-					counter++
-					x = counter
-				    return x
-        }
 }
 
 /*This is Main loop*/
