@@ -44,7 +44,7 @@ Option:
 - pexpo has Pausing Implementation. if you want, push "Crtl+S":traffic_light:
 ### more...
 - Logging ping result($HOME/.pexpo/result_$DATE_.txt).
-- Check the syntax on the ping-list(# is comment out, ignoring blank line, no description is ok...).
+- Check the syntax on the ping-list(# is comment out, ignoring blank line, using tab is ok, no description is ok...).
   
 Have a nice go hacking days:sparkles::wink:
 ## Writer & License
