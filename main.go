@@ -6,50 +6,50 @@ console 130x45
 ###################
 
 =================================================================                    Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.
- | o | Host              | Response          | Description       |              Now, Loss counting Per host.
- =================================================================    Hostname            Loss(%)   Loss(sum) Dead Now?
- | o | 77.88.8.3         | 286.120512ms      | Yandex.DNS        |    www.yahoo.com       0.000     0   loss
- | o | 180.76.76.76      | 37.444591ms       | Baidu DNS         |    192.168.1.201       100.00    10  loss  Dead Now!
- | o | 114.114.114.114   | 288.835931ms      | Baidu DNS         |    2001:4860:4860:...  0.000     0   loss
- | o | 80.80.80.80       | 74.98565ms        | Freenom World     |    8.8.8.8             0.000     0   loss
- | o | 80.80.81.81       | 73.907249ms       | Freenom World     |    8.8.4.4             0.000     0   loss
- | o | 8.26.56.26        | 213.717929ms      | Comodo Secure DNS |    208.67.222.123      0.000     0   loss
- | o | 8.20.247.20       | 209.27997ms       | Comodo Secure DNS |    208.67.220.123      0.000     0   loss
- | o | 106.186.17.181    | 74.254678ms       | OpenNIC           |    216.146.35.35       0.000     0   loss
- | o | 106.185.41.36     | 66.059639ms       | OpenNIC           |    216.146.36.36       0.000     0   loss
- | o | www.yahoo.com     | 75.149983ms       | Yahoo!!!          |    77.88.8.8           0.000     0   loss
- | x | 192.168.1.201     | ping...faild...   | Host is Dead!     |    77.88.8.1           0.000     0   loss
- | o | 2001:4860:4860:...| 1.197034ms        | Google_IPv6       |    77.88.8.88          0.000     0   loss
- | o | 8.8.8.8           | 941.56µs          | nandedaaaaaaaaa...|    77.88.8.2           0.000     0   loss
- | o | 8.8.4.4           | 991.28µs          | Google_IPv4       |    77.88.8.7           0.000     0   loss
- | o | 208.67.222.123    | 944.168µs         | OpenDNS           |    77.88.8.3           0.000     0   loss
- | o | 208.67.220.123    | 948.797µs         | OpenDNS           |    180.76.76.76        0.000     0   loss
- | o | 216.146.35.35     | 954.225µs         | Dyn Internet Guide|    114.114.114.114     0.000     0   loss
- | o | 216.146.36.36     | 240.103655ms      | Dyn Internet Guide|    80.80.80.80         0.000     0   loss
- | o | 77.88.8.8         | 286.464099ms      | Yandex.DNS        |    80.80.81.81         0.000     0   loss
- | o | 77.88.8.1         | 358.621804ms      | Yandex.DNS        |    8.26.56.26          0.000     0   loss
- | o | 77.88.8.88        | 358.995054ms      | Yandex.DNS        |    8.20.247.20         0.000     0   loss
- | o | 77.88.8.2         | 287.493195ms      | Yandex.DNS        |    106.186.17.181      0.000     0   loss
- | o | 77.88.8.7         | 358.558967ms      | Yandex.DNS        |    106.185.41.36       0.000     0   loss
- | o | 77.88.8.3         | 285.775403ms      | Yandex.DNS        |
- | o | 180.76.76.76      | 37.389211ms       | Baidu DNS         |
- | o | 114.114.114.114   | 288.735094ms      | Baidu DNS         |
- | o | 80.80.80.80       | 75.043223ms       | Freenom World     |
- | o | 80.80.81.81       | 73.908742ms       | Freenom World     |
- | o | 8.26.56.26        | 213.743171ms      | Comodo Secure DNS |
- | o | 8.20.247.20       | 209.260693ms      | Comodo Secure DNS |
- | o | 106.186.17.181    | 74.223363ms       | OpenNIC           |
- | o | 106.185.41.36     | 66.092089ms       | OpenNIC           |
- | o | www.yahoo.com     | 75.187195ms       | Yahoo!!!          |
- | x | 192.168.1.201     | ping...faild...   | Host is Dead!     |
- | o | 2001:4860:4860:...| 1.264779ms        | Google_IPv6       |
- | o | 8.8.8.8           | 977.278µs         | nandedaaaaaaaaa...|
- | o | 8.8.4.4           | 979.161µs         | Google_IPv4       |
- | o | 208.67.222.123    | 1.186372ms        | OpenDNS           |
- | o | 208.67.220.123    | 951.586µs         | OpenDNS           |
- | o | 216.146.35.35     | 930.594µs         | Dyn Internet Guide|
- | o | 216.146.36.36     | 240.093372ms      | Dyn Internet Guide|
- =================================================================
+| o | Host              | Response          | Description       |              Now, Loss counting Per host.
+=================================================================    Hostname            Loss(%)   Loss(sum) Dead Now?
+| o | 77.88.8.3         | 286.120512ms      | Yandex.DNS        |    www.yahoo.com       0.000     0   loss
+| o | 180.76.76.76      | 37.444591ms       | Baidu DNS         |    192.168.1.201       100.00    10  loss  Dead Now!
+| o | 114.114.114.114   | 288.835931ms      | Baidu DNS         |    2001:4860:4860:...  0.000     0   loss
+| o | 80.80.80.80       | 74.98565ms        | Freenom World     |    8.8.8.8             0.000     0   loss
+| o | 80.80.81.81       | 73.907249ms       | Freenom World     |    8.8.4.4             0.000     0   loss
+| o | 8.26.56.26        | 213.717929ms      | Comodo Secure DNS |    208.67.222.123      0.000     0   loss
+| o | 8.20.247.20       | 209.27997ms       | Comodo Secure DNS |    208.67.220.123      0.000     0   loss
+| o | 106.186.17.181    | 74.254678ms       | OpenNIC           |    216.146.35.35       0.000     0   loss
+| o | 106.185.41.36     | 66.059639ms       | OpenNIC           |    216.146.36.36       0.000     0   loss
+| o | www.yahoo.com     | 75.149983ms       | Yahoo!!!          |    77.88.8.8           0.000     0   loss
+| x | 192.168.1.201     | ping...faild...   | Host is Dead!     |    77.88.8.1           0.000     0   loss
+| o | 2001:4860:4860:...| 1.197034ms        | Google_IPv6       |    77.88.8.88          0.000     0   loss
+| o | 8.8.8.8           | 941.56µs          | nandedaaaaaaaaa...|    77.88.8.2           0.000     0   loss
+| o | 8.8.4.4           | 991.28µs          | Google_IPv4       |    77.88.8.7           0.000     0   loss
+| o | 208.67.222.123    | 944.168µs         | OpenDNS           |    77.88.8.3           0.000     0   loss
+| o | 208.67.220.123    | 948.797µs         | OpenDNS           |    180.76.76.76        0.000     0   loss
+| o | 216.146.35.35     | 954.225µs         | Dyn Internet Guide|    114.114.114.114     0.000     0   loss
+| o | 216.146.36.36     | 240.103655ms      | Dyn Internet Guide|    80.80.80.80         0.000     0   loss
+| o | 77.88.8.8         | 286.464099ms      | Yandex.DNS        |    80.80.81.81         0.000     0   loss
+| o | 77.88.8.1         | 358.621804ms      | Yandex.DNS        |    8.26.56.26          0.000     0   loss
+| o | 77.88.8.88        | 358.995054ms      | Yandex.DNS        |    8.20.247.20         0.000     0   loss
+| o | 77.88.8.2         | 287.493195ms      | Yandex.DNS        |    106.186.17.181      0.000     0   loss
+| o | 77.88.8.7         | 358.558967ms      | Yandex.DNS        |    106.185.41.36       0.000     0   loss
+| o | 77.88.8.3         | 285.775403ms      | Yandex.DNS        |
+| o | 180.76.76.76      | 37.389211ms       | Baidu DNS         |
+| o | 114.114.114.114   | 288.735094ms      | Baidu DNS         |
+| o | 80.80.80.80       | 75.043223ms       | Freenom World     |
+| o | 80.80.81.81       | 73.908742ms       | Freenom World     |
+| o | 8.26.56.26        | 213.743171ms      | Comodo Secure DNS |
+| o | 8.20.247.20       | 209.260693ms      | Comodo Secure DNS |
+| o | 106.186.17.181    | 74.223363ms       | OpenNIC           |
+| o | 106.185.41.36     | 66.092089ms       | OpenNIC           |
+| o | www.yahoo.com     | 75.187195ms       | Yahoo!!!          |
+| x | 192.168.1.201     | ping...faild...   | Host is Dead!     |
+| o | 2001:4860:4860:...| 1.264779ms        | Google_IPv6       |
+| o | 8.8.8.8           | 977.278µs         | nandedaaaaaaaaa...|
+| o | 8.8.4.4           | 979.161µs         | Google_IPv4       |
+| o | 208.67.222.123    | 1.186372ms        | OpenDNS           |
+| o | 208.67.220.123    | 951.586µs         | OpenDNS           |
+| o | 216.146.35.35     | 930.594µs         | Dyn Internet Guide|
+| o | 216.146.36.36     | 240.093372ms      | Dyn Internet Guide|
+=================================================================
 */
 
 package main
