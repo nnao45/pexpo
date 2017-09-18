@@ -40,7 +40,7 @@ Option:
 - You can send ICMP ipv4, and ipv6!!:open_mouth:
 - pexpo has several options. You can change ping interval, timeout, select ping-list, & help Cisco using:octocat:
 - Display Counting Ping loss per host:point_up_2:
-- Display Current Dead host(if host is revive, and dead mark is vanish):boom:
+- Display Current Dead host(if host is revive, and dead mark will be vanish):boom:
 - pexpo has Pausing Implementation. if you want, push "Crtl+S":traffic_light:
 ### more...
 - Logging ping result($HOME/.pexpo/result_$DATE_.txt).
