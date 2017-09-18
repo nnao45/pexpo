@@ -313,7 +313,6 @@ func drawLoop(stop, restart, received chan struct{}) {
 	maxX, maxY = termbox.Size()
 	
 	/*1st key loop lock open*/
-	//received <- true
 	received <- struct{}{}
 	
 	for {
