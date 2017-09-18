@@ -316,7 +316,7 @@ func drawLoop(stop chan bool, restart chan bool) {
 		/*Counting per running This function*/
 		j = fj(j)
 		
-		/*Userd by hbf*/
+		/*Userd by hbf, index must be Reinitialize in per loop*/
 		index := DRAW_UP_Y
 		
 		/*This Aciton, Only 1st loop!!*/
