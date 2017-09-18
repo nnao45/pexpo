@@ -305,17 +305,19 @@ func drawLoop(stop chan bool, restart chan bool) {
 	var rbf bytes.Buffer // rbf is ping result list.
 	var hbf bytes.Buffer // hbf is ping loss counter map to per host.
 	
+	/*Getting terminal X & Y Coordinate
+	  Purposely, 1st Getting terminal size using ever.
+	  Why you ask? If follow Resizing terminal, Often Loss ICMP Sending*/
+	var maxX int
+	var maxY int
+	maxX, maxY = termbox.Size()
+	
 	for {
 		/*Counting per running This function*/
 		j = fj(j)
 		
-		/*Getting terminal X & Y Coordinate
-		  Purposely, 1st Getting terminal size using ever.
-		  Why you ask? If follow Resizing terminal, Often Loss ICMP Sending*/
-		var maxX int
-		var maxY int
+		/*Userd by hbf*/
 		index := DRAW_UP_Y
-		maxX, maxY = termbox.Size()
 		
 		/*This Aciton, Only 1st loop!!*/
 		if j <= 1{
