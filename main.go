@@ -450,6 +450,14 @@ func init() {
 		}
 		if !strings.HasPrefix(s, "#") {
 			for {
+				if strings.Contains(s, "\t") {
+					s_ary := strings.SplitN(s, "\t", 2)
+					s = s_ary[0] + " " + s_ary[1]
+				} else {
+					break
+				}
+			}
+			for {
 				if strings.HasPrefix(s, " ") {
 					s_ary := strings.SplitN(s, " ", 2)
 					s = s_ary[1]
@@ -502,7 +510,7 @@ func main() {
 			case termbox.KeyCtrlS:
 				if sleep == false {
 					fill(maxX-44, 0, 45, 1, termbox.Cell{Ch: ' '})
-                                        drawLineColor(maxX-25, 0, "Stop Now!!Restart: Crtl+S", termbox.ColorYellow)
+					drawLineColor(maxX-25, 0, "Stop Now!!Restart: Crtl+S", termbox.ColorYellow)
 					stop <- true
 					sleep = true
 				} else if sleep == true {
