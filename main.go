@@ -485,6 +485,8 @@ func main() {
 
 	defer termbox.Close()
 
+	var maxX int
+	maxX, _ = termbox.Size()
 	stop := make(chan bool)
 	restart := make(chan bool)
 	killKey := make(chan termbox.Key)
@@ -499,9 +501,13 @@ func main() {
 				return
 			case termbox.KeyCtrlS:
 				if sleep == false {
+					fill(maxX-44, 0, 45, 1, termbox.Cell{Ch: ' '})
+                                        drawLineColor(maxX-25, 0, "Stop Now!!Restart: Crtl+S", termbox.ColorRed)
 					stop <- true
 					sleep = true
 				} else if sleep == true {
+					fill(maxX-25, 0, 26, 1, termbox.Cell{Ch: ' '})
+					drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
 					restart <- true
 					sleep = false
 				}
