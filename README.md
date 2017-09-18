@@ -29,7 +29,7 @@ Option:
 ```
   
 ## Demo (Ubuntu16.04):penguin:
-![result](hhttps://github.com/nao4arale/naoGifRepo/blob/master/pexpo_ubuntu16.gif)
+![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_ubuntu16.gif)
 
 ## Demo (windows10):four_leaf_clover:
 ![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_wins.gif)
