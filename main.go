@@ -506,7 +506,7 @@ func drawLoop(stop chan bool, restart chan bool) {
 			rfile := filepath.Join(u.HomeDir, RESULT_DIR, result)
 			addog(log, rfile)
 
-			/*Drawing Loss Counter*/
+			/*Refreshing Loss Counter*/
 			fill(LIST_P_X, index, 10, 1, termbox.Cell{Ch: ' '})
 			
 			/*Loss counting from hbf*/
@@ -521,6 +521,8 @@ func drawLoop(stop chan bool, restart chan bool) {
 						c++
 						}
 			}
+			
+			/*Drawing Loss Counter*/
 			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(c, j), 2)), termbox.ColorGreen)
 			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v", c), termbox.ColorGreen)
 			drawLineColor(LIST_L_X+4, index, fmt.Sprintf("%v", "loss"), termbox.ColorGreen)
