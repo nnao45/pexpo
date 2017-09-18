@@ -347,9 +347,7 @@ func drawLoop(stop chan bool, restart chan bool) {
 			result := "result_" + formating_day + ".txt"
 
 			u, err := user.Current()
-			if err != nil {
-				fatal(err)
-			}
+			fatal(err)
 			rfile := filepath.Join(u.HomeDir, RESULT_DIR, result)
 			addog(log, rfile)
 
