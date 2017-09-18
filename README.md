@@ -29,10 +29,10 @@ Option:
 ```
   
 ## Demo (Ubuntu16.04):penguin:
-![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_ubuntu16.gif)
+![result](hhttps://github.com/nao4arale/naoGifRepo/blob/master/pexpo_ubuntu16.gif)
 
 ## Demo (windows10):four_leaf_clover:
-![result](https://github.com/nao4arale/pexpo/blob/master/pexpo_win.gif)
+![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_wins.gif)
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
