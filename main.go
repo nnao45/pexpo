@@ -379,8 +379,8 @@ func drawLoop(stop chan bool, restart chan bool) {
 						}
 						
 						/*No description, Put in "noname_host"
-						If not this statement, After, Will read blank array,
-						So, occuring panic error*/
+						  If not this statement, After, Will read blank array,
+						  So, occuring panic error*/
 							if !strings.Contains(s, " ") {
 							s = s + " noname_host"
 						} else {
@@ -392,7 +392,7 @@ func drawLoop(stop chan bool, restart chan bool) {
 								s = s_ary[1]
 							}
 							/*Deleting consecutive white space "between"
-						  "8.8.8.8                          google.com" */
+						      "8.8.8.8                          google.com" */
 							s_ary := strings.SplitN(s, " ", 2)
 							s_ary[1] = strings.TrimSpace(s_ary[1])
 							s = s_ary[0] + " " + s_ary[1]
