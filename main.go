@@ -239,7 +239,7 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 	}
 }
 
-/*This Core if sendig ICMP engine*/
+/*This Core of the sendig ICMP engine*/
 func Pinger(host string, index int) (s string) {
 	p := fastping.NewPinger()
 	
@@ -296,6 +296,7 @@ func Pinger(host string, index int) (s string) {
 	}
 }
 
+/*This is Main loop*/
 func drawLoop(stop chan bool, restart chan bool) {
 	for {
 		/*Counting per running This function*/
