@@ -480,8 +480,8 @@ func drawLoss(index int) int {
 	for scanner.Scan() {
 		s := scanner.Text()
 		
-		/*So, If had been sending ICMP loss, per host was logging hbf*/
-		/*This func loss counting*/
+		/*So, If pexpo had been sending ICMP loss, pexpo logging per host to the hbf
+		  This func loss counting*/
 		if s == strconv.Itoa(index) {
 			c++
 		}
