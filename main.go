@@ -349,16 +349,12 @@ func drawLoop(stop chan bool, restart chan bool) {
 				for plscanner.Scan() {
 					s := plscanner.Text()
 					
-					/*if blank line, transform to "#"*/
+					/*If blank line, transform to "#"*/
 					if s == "" {
 						s = "#" + s
 					}
 					
-					if strings.HasPrefix(s, "//"){
-						s = ""
-					}
-					
-					/*# & // is comment out line*/
+					/*# is comment out line*/
 					if !strings.HasPrefix(s, "#") {
 					
 					
