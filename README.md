@@ -32,7 +32,7 @@ Option:
 ![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_ubuntu16.gif)
 
 ## Demo (windows10):four_leaf_clover:
-![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_windows.gif)
+![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_win.gif)
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
