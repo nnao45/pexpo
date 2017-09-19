@@ -64,7 +64,6 @@ import (
 	"net"
 	"os"
 	"os/user"
-	"path"
 	"path/filepath"
 
 	"strings"
@@ -336,7 +335,8 @@ func drawLoop(stop, restart, received chan struct{}) {
 			fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
 			fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
 
-			pl, err := os.Open(path.Base(*pinglist))
+			//pl, err := os.Open(path.Base(*pinglist))
+			pl, err := os.Open(*pinglist)
 			fatal(err)
 			defer pl.Close()
 			plscanner := bufio.NewScanner(pl)
