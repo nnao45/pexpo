@@ -337,7 +337,10 @@ func drawLoop(stop, restart, received chan struct{}) {
 
 			//pl, err := os.Open(path.Base(*pinglist))
 			pl, err := os.Open(*pinglist)
-			fatal(err)
+			if err != nil {
+				termbox.Close()
+				panic(err)
+			}
 			defer pl.Close()
 			plscanner := bufio.NewScanner(pl)
 			for plscanner.Scan() {
