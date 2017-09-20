@@ -71,8 +71,8 @@ Examples:
   
 ## Release note
 - version 1.20...Wow!!:heart_eyes:Adding "HTTP PING"!!
-  - -H, http_ping -S https_ping. Using Both, Sending Both with not error.
-  - Accompanied by the http ping implementation, little change variavle, channel. There is no change in ICMP behavior.
+  - "-H", http_ping "-S", https_ping. Using Both, Sending Both with not error.
+  - Accompanied by the http ping implementation, little change variavle, channel. There is no change in ICMP behavior.
 - version 1.10...Too little additinal change under line, There is no change in Basic behavior.
   - Print version.
   - Readability up(not using global variable).
