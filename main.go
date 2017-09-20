@@ -82,8 +82,8 @@ var timeout = flag.Duration("t", time.Second*ICMP_TIMEOUT, "")
 var interval = flag.Duration("i", time.Millisecond*ICMP_INTERVAL, "")
 var pinglist = flag.String("f", PING_LIST, "")
 var arp_entries = flag.Bool("A", false, "")
-var curl = flag.Bool("C", false, "")
-var ssl = flag.Bool("S", false, "")
+var httping = flag.Bool("H", false, "")
+var sslping = flag.Bool("S", false, "")
 
 /*This Used by func flag.Usage()*/
 var usage = `
@@ -294,7 +294,7 @@ func curlCheck(url string) string {
 	var res string
 	receiver := make(chan string, EDGE_X)
 	done := make(chan struct{}, 0)
-	if *ssl {
+	if *sslping {
 		url = "https://" + url
 	} else {
 		url = "http://" + url
@@ -307,8 +307,6 @@ func curlCheck(url string) string {
 		}
 		resp, err := client.Get(url)
 		if err != nil {
-			//out := "000 " + url + " 0s"
-			//receiver <- out
 			<-done
 		}
 
@@ -318,10 +316,6 @@ func curlCheck(url string) string {
 		defer resp.Body.Close()
 	}()
 
-	//return "000 " + url + " 0s"
-	//out := "000 " + url + " 0s"
-	//receiver <- out
-
 	timer := time.NewTimer(*timeout)
 	for {
 		timer.Reset(*timeout)
@@ -329,10 +323,18 @@ func curlCheck(url string) string {
 		case res = <-receiver:
 			return res
 		case <-timer.C:
-			res = "000 " + url + " 0s"
+			if *sslping {
+			res = "000 " + url + " sslping...faild..."
+			} else {
+			res = "000 " + url + " httping...faild..."
+			}
 			return res
 		case <-done:
-			res = "000 " + url + " 0s"
+			if *sslping {
+			res = "000 " + url + " sslping...faild..."
+			} else {
+			res = "000 " + url + " httping...faild..."
+			}
 			return res
 		}
 	}
@@ -360,7 +362,7 @@ func drawLoop(stop, restart, received chan struct{}) {
 	received <- struct{}{}
 
 	var JUDGE_X int
-	if *curl {
+	if *httping || *sslping {
 		JUDGE_X = 2
 	} else {
 		JUDGE_X = 3
@@ -505,7 +507,7 @@ func drawLoop(stop, restart, received chan struct{}) {
 			ps := preps_ary[0]
 			des := preps_ary[1]
 			var res string
-			if *curl {
+			if *httping || *sslping {
 				time.Sleep(*interval)
 				res = curlCheck(ps)
 			} else {
