@@ -6,7 +6,7 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
   
 ***Current pexpo's version: 1.10***  
 
-  ## Usage
+## Usage
 ```bash
 Usage:
     pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-a arp_entries]
