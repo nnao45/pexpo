@@ -53,7 +53,7 @@ Option:
 - version 1.10...Too little additinal change under line, There is no change in Basic behavior.
   - Print version.
   - Readability up(not using global variable).
-  - Add channel, "received"(Both directions key interrupt channels.) 
+  - Add channel, "received"(Both directions key interrupt channels).
 - version 1.00...Implementated Basic functions.
   
 Have a nice go hacking days:sparkles::wink:
