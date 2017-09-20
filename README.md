@@ -35,7 +35,7 @@ Option:
 Examples:
     ./pexpo -H -i 500ms -t 1s -f /usr/local/curl-list.txt
     pexpo.exe -S -i 500ms -t 1s -f C:\Users\arale\Desktop\curl-list.txt
-	(If you want to "Request, http and https", Using Both -H & -S.)
+	(If you want to Request, "http and https", Using Both -H & -S.)
 	   
 	-H This optison is like "curl". So you Sending HTTP(:80) GET Request instead of the PING...!
 	   
