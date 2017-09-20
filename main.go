@@ -403,7 +403,7 @@ func drawLoop(stop, restart, received chan struct{}) {
 		/*This Aciton, Only 1st loop!!*/
 		if j <= 1 {
 			drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
-			drawLine(maxX-10, maxY-1, fmt.Sprintf("ver. %v", VERSION))
+			drawLine(maxX-9, maxY-1, fmt.Sprintf("ver. %v", VERSION))
 			drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), termbox.ColorDefault, termbox.ColorMagenta)
 			drawLineColor(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"), termbox.ColorWhite)
 			drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)
