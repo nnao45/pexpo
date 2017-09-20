@@ -10,11 +10,11 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 ## Usage
 ```bash
 Usage:
-    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-a arp_entries]
+    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-A] [-H] [-S]
 
 Examples:
-    ./pexpo -i 500ms -t 1s -f /usr/local/ping-list
-    pexpo.exe -i 500ms -t 1s -f C:\Users\arale\Desktop\ping-list
+    ./pexpo -i 500ms -t 1s -f /usr/local/ping-list.txt
+    pexpo.exe -i 500ms -t 1s -f C:\Users\arale\Desktop\ping-list.txt
 
 Option:
     -i Sending ICMP interval time(Default:500ms, should not be lower this).
@@ -26,21 +26,41 @@ Option:
 
     -f Using Filepath of ping-list(Default:current_dir/ping-list.txt).
 
-    -a If you want to write on ping-list -- such as Cisco's show ip arp -- , 
+    -A If you want to write on ping-list -- such as Cisco's show ip arp -- , 
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
        Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
+
+<HTTP mode options!>
+
+Examples:
+    ./pexpo -H -i 500ms -t 1s -f /usr/local/curl-list.txt
+    pexpo.exe -S -i 500ms -t 1s -f C:\Users\arale\Desktop\curl-list.txt
+	(If you want to "Request, http and https", Using Both -H & -S.)
+	   
+	-H This optison is like "curl". So you Sending HTTP(:80) GET Request instead of the PING...!
+	   
+	-S This optison is like "curl". So you Sending HTTP"S"(:443) GET Request instead of the PING...!
+	
+	-H or -S options is sending HTTP/HTTPS GET Request instead of the PING.
+	(Just like, curl -LIs www.google.com -o /dev/null -w '%{http_code}\n')
+	This Request is ververy simple GET Request, Only Getting status code(No header, No form, No getting data.)
+
+	And, if http status code is "200", string color is Blue, else Red.
 ```
   
 ## Demo (Ubuntu16.04):penguin:
-![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_ubuntu16.gif)
+![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_1.20_linux.gif)
 
 ## Demo (windows10):four_leaf_clover:
-![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_win.gif)
+![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_1.20_win.gif)
+
+## Demo (windows10 & HTTPING):earth_asia:
+![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_HS_1.20_win.gif)
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
 - ONLY one app run on multi platforms(Windows7, Windows10, Mac, Linux...)!!:kissing_heart:
-- You can send ICMP ipv4, and ipv6!!:open_mouth:
+- You can send ICMP or HTTP GET or HTTPS GET ipv4, and ipv6!!:open_mouth:
 - pexpo has several options. You can change ping interval, timeout, select ping-list, & help Cisco using:octocat:
 - Display Counting Ping loss per host:point_up_2:
 - Display Current Dead host(if host is revive, and dead mark will be vanish):boom:
@@ -50,6 +70,9 @@ Option:
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, using tab is ok, no description is ok...).
   
 ## Release note
+- version 1.20...Wow!!:heart_eyes:Adding "HTTP PING"!!
+  - -H, http_ping -S https_ping. Using Both, Sending Both with not error.
+  - Accompanied by the http ping implementation, little change variavle, channel. There is no change in ICMP behavior.
 - version 1.10...Too little additinal change under line, There is no change in Basic behavior.
   - Print version.
   - Readability up(not using global variable).
@@ -57,7 +80,7 @@ Option:
   - When push Ctrl+S, change key interrupt message.
 - version 1.00...Implementated Basic functions.
   
-***Have a nice go hacking days:sparkles::wink:***
+***Have a nice go hacking days***:sparkles::wink:
 ## Writer & License
 pexpo was writed by nao4arale (WORK:Network Engineer, Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
 This software is released under the MIT License, see LICENSE.
