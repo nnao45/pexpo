@@ -2,8 +2,10 @@
 pexpo is ping sending tui tool with cool clomun & logging loss-count in the multi platforms(Windows, Mac, Linux...).  
 pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending ICMP engine is [go-fastping](https://github.com/tatsushid/go-fastping).  
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application. 
-This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).
+This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
   
+***Current pexpo's version: 1.10***  
+
 ## Usage
 ```bash
 Usage:
@@ -46,7 +48,15 @@ Option:
 - Logging ping result($HOME/.pexpo/result_$DATE_.txt).
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, using tab is ok, no description is ok...).
   
-Have a nice go hacking days:sparkles::wink:
+## Release note
+- version 1.10...Too little additinal change under line, There is no change in Basic behavior.
+  - Print version.
+  - Readability up(not using global variable).
+  - Add channel, "received"(Both directions key interrupt channels).
+  - When push Ctrl+S, change key interrupt message.
+- version 1.00...Implementated Basic functions.
+  
+***Have a nice go hacking days:sparkles::wink:***
 ## Writer & License
 pexpo was writed by nao4arale (WORK:Network Engineer, Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
 This software is released under the MIT License, see LICENSE.
