@@ -4,7 +4,8 @@ pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application. 
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
   
-***Current pexpo's version: 1.10***  
+***Current pexpo's version: 1.20***  
+(Adding "curl cmd"!Now, Writing README...Please wait...)
 
 ## Usage
 ```bash
