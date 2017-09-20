@@ -334,9 +334,11 @@ func curlCheck(url string) string {
 		resp, err := client.Get(url)
 		if err != nil {
 			<-done
+			defer close(done)
 		}
 		out = strconv.Itoa(resp.StatusCode) + " " + url + " " + time.Since(time_start).String()
 		receiver <- out
+		defer close(receiver)
 
 		defer resp.Body.Close()
 	}()
