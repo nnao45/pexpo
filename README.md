@@ -5,8 +5,8 @@ So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) appl
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
   
 ***Current pexpo's version: 1.10***  
-  
-## Usage
+
+  ## Usage
 ```bash
 Usage:
     pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-a arp_entries]
