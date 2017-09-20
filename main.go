@@ -81,9 +81,9 @@ import (
 var timeout = flag.Duration("t", time.Second*ICMP_TIMEOUT, "")
 var interval = flag.Duration("i", time.Millisecond*ICMP_INTERVAL, "")
 var pinglist = flag.String("f", PING_LIST, "")
-var arp_entries = flag.Bool("a", false, "")
-var curl = flag.Bool("curl", false, "")
-var ssl = flag.Bool("ssl", false, "")
+var arp_entries = flag.Bool("A", false, "")
+var curl = flag.Bool("C", false, "")
+var ssl = flag.Bool("S", false, "")
 
 /*This Used by func flag.Usage()*/
 var usage = `
