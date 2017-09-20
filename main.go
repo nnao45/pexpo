@@ -62,10 +62,12 @@ import (
 	"log"
 	"math"
 	"net"
+	"net/http"
 	"os"
 	"os/user"
 	"path/filepath"
 
+	"strconv"
 	"strings"
 	"time"
 
@@ -80,6 +82,8 @@ var timeout = flag.Duration("t", time.Second*ICMP_TIMEOUT, "")
 var interval = flag.Duration("i", time.Millisecond*ICMP_INTERVAL, "")
 var pinglist = flag.String("f", PING_LIST, "")
 var arp_entries = flag.Bool("a", false, "")
+var curl = flag.Bool("curl", false, "")
+var ssl = flag.Bool("ssl", false, "")
 
 /*This Used by func flag.Usage()*/
 var usage = `
@@ -116,8 +120,8 @@ const (
 	PING_LIST = "ping-list.txt"
 
 	/*This values disigning terminal*/
-	COLUMN    = 18
-	JUDGE_X   = 3
+	COLUMN = 18
+	//JUDGE_X   = 3
 	HOST_X    = 7
 	RTT_X     = 27
 	DES_X     = 47
@@ -135,7 +139,7 @@ const (
 	ICMP_TIMEOUT  = 3
 
 	/*pexpo's version*/
-	VERSION = "1.10"
+	VERSION = "1.20"
 )
 
 func fatal(err error) {
@@ -204,19 +208,19 @@ func drawLineColorful(x, y int, str string, strcode, backcode termbox.Attribute)
 }
 
 func drawFlag(x int, y int, flag string) {
-	if flag == "o" {
+	if flag == "o" || flag == "200" {
 		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorBlue)
-	} else if flag == "x" {
+	} else {
 		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorRed)
 	}
 }
 
 func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
-	if flag == "o" {
+	if flag == "o" || flag == "200" {
 		drawLine(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")))
 		drawLine(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")))
 		drawLine(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")))
-	} else if flag == "x" {
+	} else {
 		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), termbox.ColorRed)
 		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")), termbox.ColorRed)
 		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")), termbox.ColorRed)
@@ -233,7 +237,7 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 }
 
 /*This Core of the sendig ICMP engine*/
-func Pinger(host string, index int) (s string) {
+func Pinger(host string) (s string) {
 	p := fastping.NewPinger()
 
 	/*Selecting IPv4 or IPv6*/
@@ -285,6 +289,55 @@ func Pinger(host string, index int) (s string) {
 	}
 }
 
+func curlCheck(url string) string {
+	var out string
+	var res string
+	receiver := make(chan string, EDGE_X)
+	done := make(chan struct{}, 0)
+	if *ssl {
+		url = "https://" + url
+	} else {
+		url = "http://" + url
+	}
+	time_start := time.Now()
+	c_timeout := time.Duration(*timeout * time.Second)
+	go func() {
+		client := http.Client{
+			Timeout: c_timeout,
+		}
+		resp, err := client.Get(url)
+		if err != nil {
+			//out := "000 " + url + " 0s"
+			//receiver <- out
+			<-done
+		}
+
+		out = strconv.Itoa(resp.StatusCode) + " " + url + " " + time.Since(time_start).String()
+		receiver <- out
+
+		defer resp.Body.Close()
+	}()
+
+	//return "000 " + url + " 0s"
+	//out := "000 " + url + " 0s"
+	//receiver <- out
+
+	timer := time.NewTimer(*timeout)
+	for {
+		timer.Reset(*timeout)
+		select {
+		case res = <-receiver:
+			return res
+		case <-timer.C:
+			res = "000 " + url + " 0s"
+			return res
+		case <-done:
+			res = "000 " + url + " 0s"
+			return res
+		}
+	}
+}
+
 /*This is Main loop*/
 func drawLoop(stop, restart, received chan struct{}) {
 
@@ -305,6 +358,13 @@ func drawLoop(stop, restart, received chan struct{}) {
 
 	/*1st key loop lock open*/
 	received <- struct{}{}
+
+	var JUDGE_X int
+	if *curl {
+		JUDGE_X = 2
+	} else {
+		JUDGE_X = 3
+	}
 
 	for {
 		/*Counting per running This function*/
@@ -328,8 +388,8 @@ func drawLoop(stop, restart, received chan struct{}) {
 			fill(START_X, 0, EDGE_X, 1, termbox.Cell{Ch: '='})
 			fill(START_X, 2, EDGE_X, 1, termbox.Cell{Ch: '='})
 			fill(START_X, maxY-1, EDGE_X, 1, termbox.Cell{Ch: '='})
-			fill(JUDGE_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(JUDGE_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+			fill(START_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(START_X, 1, 1, 1, termbox.Cell{Ch: '|'})
 			fill(HOST_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
 			fill(HOST_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
 			fill(RTT_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
@@ -444,9 +504,15 @@ func drawLoop(stop, restart, received chan struct{}) {
 			preps_ary := strings.SplitN(preps, " ", 2)
 			ps := preps_ary[0]
 			des := preps_ary[1]
-			res := Pinger(ps, index)
+			var res string
+			if *curl {
+				time.Sleep(*interval)
+				res = curlCheck(ps)
+			} else {
+				res = Pinger(ps)
+			}
 			res_ary := strings.SplitN(res, " ", 3)
-			if res_ary[0] == "x" {
+			if res_ary[0] != "o" && res_ary[0] != "200" {
 				lossc := res_ary[1] + "\n"
 				hbf.WriteString(lossc)
 			}
@@ -528,12 +594,10 @@ func drawLoop(stop, restart, received chan struct{}) {
 			drawLineColor(LIST_L_X+4, index, fmt.Sprintf("%v", "loss"), termbox.ColorGreen)
 
 			/*Drawing the Dead stamp*/
-			if res_ary[0] == "x" {
-				drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), termbox.ColorRed)
-
-				/*If host revive, Vanishing the Dead stamp*/
-			} else if res_ary[0] == "o" {
+			if res_ary[0] == "o" || res_ary[0] == "200" {
 				fill(LIST_D_X, index, 9, 1, termbox.Cell{Ch: ' '})
+			} else {
+				drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), termbox.ColorRed)
 			}
 
 			/*Drawing Done*/
