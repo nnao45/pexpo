@@ -49,6 +49,13 @@ Option:
 - Logging ping result($HOME/.pexpo/result_$DATE_.txt).
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, using tab is ok, no description is ok...).
   
+## Release note
+- version 1.10...Too little additinal change under line, There is no change in Basic behavior.
+  - Print version.
+  - Readability up(not using global variable).
+  - Add channel, "received"(Both directions key interrupt channels.) 
+- version 1.00...Implementated Basic functions.
+  
 Have a nice go hacking days:sparkles::wink:
 ## Writer & License
 pexpo was writed by nao4arale (WORK:Network Engineer, Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
