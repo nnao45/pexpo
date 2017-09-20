@@ -88,7 +88,7 @@ var sslping = flag.Bool("S", false, "")
 /*This Used by func flag.Usage()*/
 var usage = `
 Usage:
-    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-a arp_entries]
+    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-A] [-H] [-S]
 
 Examples:
     ./pexpo -i 500ms -t 1s -f /usr/local/ping-list
@@ -104,10 +104,21 @@ Option:
 
     -f Using Filepath of ping-list(Default:current_dir/ping-list.txt).
 
-    -a If you want to write on ping-list -- such as Cisco's show ip arp -- , 
+    -A If you want to write on ping-list -- such as Cisco's show ip arp -- , 
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
        Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
 
+	<HTTP mode options!>
+	   
+	-H This optison is like "curl". So you Sending HTTP(:80) GET Request instead of the PING...!
+	   
+	-S This optison is like "curl". So you Sending HTTP"S"(:443) GET Request instead of the PING...!
+	
+	-H or -S options HTTP/HTTPS GET Request instead of the PING.
+	(Just like, curl -LIs www.google.com -o /dev/null -w '%{http_code}\n')
+	This Request is ververy simple GET Request, Only Getting status code(No header, No form, No getting data.)
+
+	And, if http status code is "200", string color is Blue, else Red.
 `
 
 const (
@@ -294,10 +305,20 @@ func curlCheck(url string) string {
 	var res string
 	receiver := make(chan string, EDGE_X)
 	done := make(chan struct{}, 0)
-	if *sslping {
-		url = "https://" + url
+	if *httping && *sslping {
+		if !strings.Contains(url, "https://") && !strings.Contains(url, "http://") {
+			url = "https://" + url
+		}
 	} else {
-		url = "http://" + url
+		if *sslping{
+			if !strings.Contains(url, "https://") {
+				url = "https://" + url
+			}
+		} else if *httping{
+			if !strings.Contains(url, "http://") {
+			url = "http://" + url
+			}
+		}
 	}
 	time_start := time.Now()
 	c_timeout := time.Duration(*timeout * time.Second)
@@ -309,7 +330,6 @@ func curlCheck(url string) string {
 		if err != nil {
 			<-done
 		}
-
 		out = strconv.Itoa(resp.StatusCode) + " " + url + " " + time.Since(time_start).String()
 		receiver <- out
 
@@ -324,16 +344,16 @@ func curlCheck(url string) string {
 			return res
 		case <-timer.C:
 			if *sslping {
-			res = "000 " + url + " sslping...faild..."
+			res = "000 " + url + " ssl...no_response."
 			} else {
-			res = "000 " + url + " httping...faild..."
+			res = "000 " + url + " http...no_response."
 			}
 			return res
 		case <-done:
 			if *sslping {
-			res = "000 " + url + " sslping...faild..."
+			res = "000 " + url + " ssl...no_response."
 			} else {
-			res = "000 " + url + " httping...faild..."
+			res = "000 " + url + " http...no_response."
 			}
 			return res
 		}
@@ -459,6 +479,22 @@ func drawLoop(stop, restart, received chan struct{}) {
 						s_ary[1] = strings.TrimSpace(s_ary[1])
 						s = s_ary[0] + " " + s_ary[1]
 					}
+					
+					if !*httping || !*sslping {
+						s_ary := strings.SplitN(s, " ", 2)
+						if *httping && strings.Contains(s_ary[0], "https://"){
+							termbox.Close()
+							fmt.Printf("Sorry, %v is not http protocol.\n", s_ary[0])
+							fmt.Printf("Please, Check your %v.\n", *pinglist)
+							os.Exit(1)
+						} else if *sslping && strings.Contains(s_ary[0], "http://"){
+							termbox.Close()
+							fmt.Printf("Sorry, %v is not https protocol.\n", s_ary[0])
+							fmt.Printf("Please, Check your %v.\n", *pinglist)
+							os.Exit(1)
+						}
+					}
+					
 					s = s + "\n"
 
 					/*# is comment out*/

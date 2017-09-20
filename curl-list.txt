@@ -1,3 +1,8 @@
 www.google.com
 www.yahoo.com
 8.8.8.8
+192.168.1.1
+github.com
+getpocket.com
+https://menthas.com
+http://www.youtube.com
