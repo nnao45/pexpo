@@ -4,7 +4,7 @@ pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application. 
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
   
-***Current pexpo's version: 1.10***  
+Current pexpo's version: 1.10
 (If not display version, you may use verison Before 1.00...Sorry, You shuold reinstall.)
   
 ## Usage
@@ -56,7 +56,7 @@ Option:
   - Add channel, "received"(Both directions key interrupt channels).
 - version 1.00...Implementated Basic functions.
   
-Have a nice go hacking days:sparkles::wink:
+***Have a nice go hacking days:sparkles::wink:
 ## Writer & License
 pexpo was writed by nao4arale (WORK:Network Engineer, Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
 This software is released under the MIT License, see LICENSE.
