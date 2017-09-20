@@ -91,8 +91,8 @@ Usage:
     pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-A] [-H] [-S]
 
 Examples:
-    ./pexpo -i 500ms -t 1s -f /usr/local/ping-list
-    pexpo.exe -i 500ms -t 1s -f C:\Users\arale\Desktop\ping-list
+    ./pexpo -i 500ms -t 1s -f /usr/local/ping-list.txt
+    pexpo.exe -i 500ms -t 1s -f C:\Users\arale\Desktop\ping-list.txt
 
 Option:
     -i Sending ICMP interval time(Default:500ms, should not be lower this).
@@ -108,7 +108,12 @@ Option:
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
        Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
 
-	<HTTP mode options!>
+<HTTP mode options!>
+
+Examples:
+    ./pexpo -H -i 500ms -t 1s -f /usr/local/curl-list.txt
+    pexpo.exe -S -i 500ms -t 1s -f C:\Users\arale\Desktop\curl-list.txt
+	(If you want to "Request, http and https", Using Both -H & -S.)
 	   
 	-H This optison is like "curl". So you Sending HTTP(:80) GET Request instead of the PING...!
 	   
