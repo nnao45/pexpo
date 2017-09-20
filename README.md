@@ -52,10 +52,10 @@ Examples:
 ![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_1.20_linux.gif)
 
 ## Demo (windows10):four_leaf_clover:
-![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_1.20_wins.gif)
+![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_1.20_win.gif)
 
 ## Demo (windows10 & HTTPING):earth_asia:
-![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_HS_1.20_win.gif)
+![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_HS_1.20_wins.gif)
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
