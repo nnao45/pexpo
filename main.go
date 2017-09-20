@@ -349,16 +349,16 @@ func curlCheck(url string) string {
 			return res
 		case <-timer.C:
 			if *sslping {
-			res = "000 " + url + " ssl...no_response."
+			res = "000 " + url + " ssl...no_response"
 			} else {
-			res = "000 " + url + " http...no_response."
+			res = "000 " + url + " http...no_response"
 			}
 			return res
 		case <-done:
 			if *sslping {
-			res = "000 " + url + " ssl...no_response."
+			res = "000 " + url + " ssl...no_response"
 			} else {
-			res = "000 " + url + " http...no_response."
+			res = "000 " + url + " http...no_response"
 			}
 			return res
 		}
