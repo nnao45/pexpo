@@ -53,6 +53,7 @@ Option:
   - Print version.
   - Readability up(not using global variable).
   - Add channel, "received"(Both directions key interrupt channels).
+  - When push Ctrl+S, change key interrupt message.
 - version 1.00...Implementated Basic functions.
   
 ***Have a nice go hacking days:sparkles::wink:***
