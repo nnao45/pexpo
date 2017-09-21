@@ -223,7 +223,7 @@ func drawLineColorful(x, y int, str string, strcode, backcode termbox.Attribute)
 	}
 }
 
-func drawFlag(x int, y int, flag string) {
+func drawFlag(x, y int, flag string) {
 	if flag == "o" || flag == "200" {
 		drawLineColor(x, y, fmt.Sprintf("%v", flag), termbox.ColorBlue)
 	} else {
