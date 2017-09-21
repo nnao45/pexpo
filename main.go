@@ -368,7 +368,7 @@ func curlCheck(url string) string {
 }
 
 /*This is Main loop*/
-func drawLoop(stop, restart, received chan struct{}) {
+func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 	var i int // "i" is all pings count.
 	var j int // "j" is all pings "per host" count.
@@ -377,13 +377,6 @@ func drawLoop(stop, restart, received chan struct{}) {
 	var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
 	var rbf bytes.Buffer // rbf is ping result list.
 	var hbf bytes.Buffer // hbf is ping loss counter map to per host.
-
-	/*Getting terminal X & Y Coordinate
-	  Purposely, 1st Getting terminal size using ever.
-	  Why you ask? If follow Resizing terminal, Often Loss ICMP Sending*/
-	var maxX int
-	var maxY int
-	maxX, maxY = termbox.Size()
 
 	/*1st key loop lock open*/
 	received <- struct{}{}
@@ -683,8 +676,7 @@ func main() {
 
 	defer termbox.Close()
 
-	var maxX int
-	maxX, _ = termbox.Size()
+	maxX, maxY := termbox.Size()
 
 	/*stop channel is for stopping drawLoop()*/
 	stop := make(chan struct{}, 0)
@@ -702,7 +694,7 @@ func main() {
 	sleep := false
 
 	go keyEventLoop(killKey)
-	go drawLoop(stop, restart, received)
+	go drawLoop(maxX, maxY, stop, restart, received)
 
 loop:
 	<-received
