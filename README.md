@@ -7,6 +7,9 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 ***Current pexpo's version: 1.20***  
 (Adding http & https ping!!)
 
+## Install
+Install Page: https://github.com/nao4arale/pexpo/releases/tag/1.20
+
 ## Usage
 ```bash
 Usage:
