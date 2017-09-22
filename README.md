@@ -61,7 +61,7 @@ Examples:
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
 - ONLY one app run on multi platforms(Windows7, Windows10, Mac, Linux...)!!:kissing_heart:
 - You can send ICMP or HTTP GET or HTTPS GET ipv4, and ipv6!!:open_mouth:
-- pexpo has several options. You can change ping interval, timeout, select ping-list, & help Cisco using:octocat:
+- pexpo has several options. You can change ping interval, timeout, select ping-list, ,help Cisco using, & http ping mode!:octocat:
 - Display Counting Ping loss per host:point_up_2:
 - Display Current Dead host(if host is revive, and dead mark will be vanish):boom:
 - pexpo has Pausing Implementation. if you want, push "Crtl+S":traffic_light:
