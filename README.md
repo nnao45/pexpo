@@ -5,7 +5,7 @@ So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) appl
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
   
 ***Current pexpo's version: 1.21***  
-add icon
+(add icon)
 
 ## Install
 Install Page: https://github.com/nao4arale/pexpo/releases/tag/1.21
