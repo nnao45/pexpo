@@ -136,7 +136,7 @@ const (
 	PING_LIST = "ping-list.txt"
 
 	/*This values disigning terminal*/
-	COLUMN = 18
+	COLUMN = 17
 	//JUDGE_X   = 3
 	HOST_X    = 7
 	RTT_X     = 27
@@ -155,7 +155,7 @@ const (
 	ICMP_TIMEOUT  = 3
 
 	/*pexpo's version*/
-	VERSION = "1.21"
+	VERSION = "1.22"
 )
 
 func fatal(err error) {
@@ -233,13 +233,13 @@ func drawFlag(x, y int, flag string) {
 
 func drawSeq(hx, rx, dx, y int, flag, r1, r2, des string) {
 	if flag == "o" || flag == "200" {
-		drawLine(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")))
-		drawLine(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")))
-		drawLine(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")))
+		drawLine(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "")))
+		drawLine(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "")))
+		drawLine(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "")))
 	} else {
-		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "...")), termbox.ColorRed)
-		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "...")), termbox.ColorRed)
-		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "...")), termbox.ColorRed)
+		drawLineColor(hx, y, fmt.Sprintf("%v", runewidth.Truncate(r1, COLUMN, "")), termbox.ColorRed)
+		drawLineColor(rx, y, fmt.Sprintf("%v", runewidth.Truncate(r2, COLUMN, "")), termbox.ColorRed)
+		drawLineColor(dx, y, fmt.Sprintf("%v", runewidth.Truncate(des, COLUMN, "")), termbox.ColorRed)
 	}
 
 }
@@ -253,7 +253,7 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 }
 
 /*This Core of the sendig ICMP engine*/
-func Pinger(host string) (s string) {
+func Pinger(host string) (s []string) {
 	p := fastping.NewPinger()
 
 	/*Selecting IPv4 or IPv6*/
@@ -270,14 +270,14 @@ func Pinger(host string) (s string) {
 	p.AddIPAddr(ra)
 
 	p.MaxRTT = *interval
-	var out string
-	var res string
-	receiver := make(chan string, EDGE_X)
+	var out []string
+	var res []string
+	receiver := make(chan []string, 3)
 
 	/*Received value from fastping.NewPinger()*/
 	go func() {
 		p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
-			out = host + " " + rtt.String()
+			out = append(out, host, rtt.String())
 			receiver <- out
 			defer close(receiver)
 		}
@@ -286,8 +286,8 @@ func Pinger(host string) (s string) {
 	}
 	err = p.Run()
 	/*if err != nil {
-		fmt.Println(err)
-	}*/
+	                fmt.Println(err)
+			        }*/
 	fatal(err)
 
 	/*Set the timeout timer*/
@@ -296,32 +296,32 @@ func Pinger(host string) (s string) {
 		timer.Reset(*timeout)
 		select {
 		case res = <-receiver:
-			res = "o " + res
+			res = append([]string{"o"}, res...)
 			return res
 		case <-timer.C:
-			res = "x " + host + " ping...faild..."
+			res = append(res, "x", host, "ping...faild...")
 			return res
 		}
 	}
 }
 
-func curlCheck(url string) string {
-	var out string
-	var res string
-	receiver := make(chan string, EDGE_X)
+func curlCheck(url string) []string {
+	var out []string
+	var res []string
+	receiver := make(chan []string, 3)
 	done := make(chan struct{}, 0)
 	if *httping && *sslping {
 		if !strings.Contains(url, "https://") && !strings.Contains(url, "http://") {
 			url = "https://" + url
 		}
 	} else {
-		if *sslping{
+		if *sslping {
 			if !strings.Contains(url, "https://") {
 				url = "https://" + url
 			}
-		} else if *httping{
+		} else if *httping {
 			if !strings.Contains(url, "http://") {
-			url = "http://" + url
+				url = "http://" + url
 			}
 		}
 	}
@@ -336,7 +336,7 @@ func curlCheck(url string) string {
 			<-done
 			defer close(done)
 		}
-		out = strconv.Itoa(resp.StatusCode) + " " + url + " " + time.Since(time_start).String()
+		out = append(out, strconv.Itoa(resp.StatusCode), url, time.Since(time_start).String())
 		receiver <- out
 		defer close(receiver)
 
@@ -351,16 +351,16 @@ func curlCheck(url string) string {
 			return res
 		case <-timer.C:
 			if *sslping {
-			res = "000 " + url + " ssl...no_response"
+				res = append(res, "000", url, "ssl...no_response")
 			} else {
-			res = "000 " + url + " http...no_response"
+				res = append(res, "000", url, " http...no_response")
 			}
 			return res
 		case <-done:
 			if *sslping {
-			res = "000 " + url + " ssl...no_response"
+				res = append(res, "000", url, "ssl...no_response")
 			} else {
-			res = "000 " + url + " http...no_response"
+				res = append(res, "000", url, "http...no_response")
 			}
 			return res
 		}
@@ -479,22 +479,22 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 						s_ary[1] = strings.TrimSpace(s_ary[1])
 						s = s_ary[0] + " " + s_ary[1]
 					}
-					
+
 					if !*httping || !*sslping {
 						s_ary := strings.SplitN(s, " ", 2)
-						if *httping && strings.Contains(s_ary[0], "https://"){
+						if *httping && strings.Contains(s_ary[0], "https://") {
 							termbox.Close()
 							fmt.Printf("Sorry, %v is not http protocol.\n", s_ary[0])
 							fmt.Printf("Please, Check your %v.\n", *pinglist)
 							os.Exit(1)
-						} else if *sslping && strings.Contains(s_ary[0], "http://"){
+						} else if *sslping && strings.Contains(s_ary[0], "http://") {
 							termbox.Close()
 							fmt.Printf("Sorry, %v is not https protocol.\n", s_ary[0])
 							fmt.Printf("Please, Check your %v.\n", *pinglist)
 							os.Exit(1)
 						}
 					}
-					
+
 					s = s + "\n"
 
 					/*# is comment out*/
@@ -514,7 +514,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				pres := scanner.Text()
 				s_ary := strings.SplitN(pres, " ", 2)
 				s := s_ary[0]
-				drawLineColor(LIST_H_X, n, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "...")), termbox.ColorGreen)
+				drawLineColor(LIST_H_X, n, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "")), termbox.ColorGreen)
 				drawLineColor(LIST_P_X, n, fmt.Sprintf("%v", "0.00"), termbox.ColorGreen)
 				drawLineColor(LIST_L_X, n, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
 				if err := scanner.Err(); err != nil {
@@ -542,14 +542,15 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			preps_ary := strings.SplitN(preps, " ", 2)
 			ps := preps_ary[0]
 			des := preps_ary[1]
-			var res string
+			//var res string
+			var res_ary []string
 			if *httping || *sslping {
 				time.Sleep(*interval)
-				res = curlCheck(ps)
+				res_ary = curlCheck(ps)
 			} else {
-				res = Pinger(ps)
+				res_ary = Pinger(ps)
 			}
-			res_ary := strings.SplitN(res, " ", 3)
+			//res_ary := strings.SplitN(res, " ", 3)
 			if res_ary[0] != "o" && res_ary[0] != "200" {
 				lossc := res_ary[1] + "\n"
 				hbf.WriteString(lossc)
@@ -592,18 +593,18 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			/*finish Reading Ping-list & Drawing Result.
 			  After, Logging, & Drawing Loss Counter*/
 
-			pres := res_ary[0] + " " + res_ary[1] + " " + res_ary[2] + " " + des + "\n"
-			logres := res_ary[0] + " " + res_ary[1] + " " + res_ary[2] + "\n"
+			var pres []string
+			pres = append(pres, res_ary[0], res_ary[1], res_ary[2], des, "\n")
 
 			/*Logging rbf -> This buffer Called by Next Drawing*/
-			rbf.WriteString(pres)
+			rbf.WriteString(strings.Join(pres, " "))
 
 			/*Logging All Result with time stamp*/
 			day := time.Now()
 			date := time.Now()
 			formating_day := day.Format(DAY)
 			formating_date := date.Format(DATE)
-			log := "[" + formating_date + "]" + " " + logres
+			log := "[" + formating_date + "]" + " " + strings.Join(pres, " ")
 			result := "result_" + formating_day + ".txt"
 			u, err := user.Current()
 			fatal(err)
