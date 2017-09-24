@@ -557,9 +557,11 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				drawFlag(JUDGE_X, maxY-DRAW_DW_Y, res_ary[0])
 				drawFlag(JUDGE_X, 1, res_ary[0])
 				drawSeq(HOST_X, RTT_X, DES_X, maxY-DRAW_DW_Y, res_ary[0], res_ary[1], res_ary[2], des)
+				
 				/*rc is count Reading rbf After Scrolling To the bottom*/
 				var rc int
 				var tmp_ary []string
+				
 				/*"rc" -"k" -> "All Result" - "Line of Don't want to see" */
 				rc = rc - k
 				for _, rs := range rbf_ary {
