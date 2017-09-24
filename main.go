@@ -376,9 +376,9 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 	var j int // "j" is all pings "per host" count.
 	var k int // "k" is scroll counter
 
-	var pbf_ary []string // pbf is ping-list(textfile -> buffer).
-	var rbf_ary []string // rbf is ping result list.
-	var hbf_ary []string // hbf is ping loss counter map to per host.
+	var pbf_ary []string // pbf_ary is ping-list(textfile -> buffer).
+	var rbf_ary []string // rbf_ary is ping result list.
+	var hbf_ary []string // hbf_ary is ping loss counter map to per host.
 
 	/*1st key loop lock open*/
 	received <- struct{}{}
