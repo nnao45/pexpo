@@ -628,7 +628,6 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 			/*"index" for the mapping host to the Loss counter*/
 			index++
-
 		}
 	}
 }
