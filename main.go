@@ -253,7 +253,7 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 }
 
 /*This Core of the sendig ICMP engine*/
-func Pinger(host string) (s []string) {
+func Pinger(host string) []string {
 	p := fastping.NewPinger()
 
 	/*Selecting IPv4 or IPv6*/
