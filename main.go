@@ -496,8 +496,8 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 						}
 					}
 
-					/*ping-list -> pbf*/
-					pbf_ary = append(pbf_ary, s)
+				/*ping-list -> pbf*/
+				pbf_ary = append(pbf_ary, s)
 
 				} 
 				
