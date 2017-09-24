@@ -559,6 +559,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				drawSeq(HOST_X, RTT_X, DES_X, maxY-DRAW_DW_Y, res_ary[0], res_ary[1], res_ary[2], des)
 				/*rc is count Reading rbf After Scrolling To the bottom*/
 				var rc int
+				var tmp_ary []string
 				/*"rc" -"k" -> "All Result" - "Line of Don't want to see" */
 				rc = rc - k
 				for _, rs := range rbf_ary {
@@ -566,13 +567,12 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 						rs_ary := strings.SplitN(rs, " ", 4)
 						drawFlag(JUDGE_X, rc+2, rs_ary[0])
 						drawSeq(HOST_X, RTT_X, DES_X, rc+2, rs_ary[0], rs_ary[1], rs_ary[2], rs_ary[3])
-						
-					} else {
-						rs = ""
-					}
+						tmp_ary = append(tmp_ary, rs)
+					} 
 					rc++
 				}
 				k++
+				copy(tmp_ary, rbf_ary)
 			}
 			/*finish Reading Ping-list & Drawing Result.
 			  After, Logging, & Drawing Loss Counter*/
