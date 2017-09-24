@@ -56,7 +56,7 @@ package main
 
 import (
 	"bufio"
-	"bytes"
+//	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -64,6 +64,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+//	"os/exec"
 	"os/user"
 	"path/filepath"
 
@@ -84,6 +85,7 @@ var pinglist = flag.String("f", PING_LIST, "")
 var arp_entries = flag.Bool("A", false, "")
 var httping = flag.Bool("H", false, "")
 var sslping = flag.Bool("S", false, "")
+var editor = flag.Bool("E", true, "")
 
 /*This Used by func flag.Usage()*/
 var usage = `
@@ -374,9 +376,9 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 	var j int // "j" is all pings "per host" count.
 	var k int // "k" is scroll counter
 
-	var pbf bytes.Buffer // pbf is ping-list(textfile -> buffer).
-	var rbf bytes.Buffer // rbf is ping result list.
-	var hbf bytes.Buffer // hbf is ping loss counter map to per host.
+	var pbf_ary []string // pbf is ping-list(textfile -> buffer).
+	var rbf_ary []string // rbf is ping result list.
+	var hbf_ary []string // hbf is ping loss counter map to per host.
 
 	/*1st key loop lock open*/
 	received <- struct{}{}
@@ -421,7 +423,6 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
 			fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
 
-			//pl, err := os.Open(path.Base(*pinglist))
 			pl, err := os.Open(*pinglist)
 			if err != nil {
 				termbox.Close()
@@ -495,38 +496,26 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 						}
 					}
 
-					s = s + "\n"
+					/*ping-list -> pbf*/
+					pbf_ary = append(pbf_ary, s)
 
-					/*# is comment out*/
-				} else {
-					s = ""
-				}
-
-				/*ping-list -> pbf*/
-				pbf.WriteString(s)
+				} 
+				
 				if err := plscanner.Err(); err != nil {
 					panic(err)
 				}
 			}
-			scanner := bufio.NewScanner(strings.NewReader(pbf.String()))
-			n := index
-			for scanner.Scan() {
-				pres := scanner.Text()
+			for n, pres := range pbf_ary {
 				s_ary := strings.SplitN(pres, " ", 2)
 				s := s_ary[0]
-				drawLineColor(LIST_H_X, n, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "")), termbox.ColorGreen)
-				drawLineColor(LIST_P_X, n, fmt.Sprintf("%v", "0.00"), termbox.ColorGreen)
-				drawLineColor(LIST_L_X, n, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
-				if err := scanner.Err(); err != nil {
-					panic(err)
-				}
-				n++
+				drawLineColor(LIST_H_X, n+DRAW_UP_Y, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "")), termbox.ColorGreen)
+				drawLineColor(LIST_P_X, n+DRAW_UP_Y, fmt.Sprintf("%v", "0.00"), termbox.ColorGreen)
+				drawLineColor(LIST_L_X, n+DRAW_UP_Y, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
 			}
 		}
 
 		/*Reading Ping-list per line*/
-		pscanner := bufio.NewScanner(strings.NewReader(pbf.String()))
-		for pscanner.Scan() {
+		for _, preps := range pbf_ary {
 
 			/*For Stop & Restart*/
 			select {
@@ -538,11 +527,9 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			/*Default behavior*/
 			default:
 			}
-			preps := pscanner.Text()
 			preps_ary := strings.SplitN(preps, " ", 2)
 			ps := preps_ary[0]
 			des := preps_ary[1]
-			//var res string
 			var res_ary []string
 			if *httping || *sslping {
 				time.Sleep(*interval)
@@ -550,10 +537,8 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			} else {
 				res_ary = Pinger(ps)
 			}
-			//res_ary := strings.SplitN(res, " ", 3)
 			if res_ary[0] != "o" && res_ary[0] != "200" {
-				lossc := res_ary[1] + "\n"
-				hbf.WriteString(lossc)
+				hbf_ary = append(hbf_ary, res_ary[1])
 			}
 			/*Before Scrolling To the bottom*/
 			if maxY > i+DRAW_UP_Y+1 {
@@ -576,13 +561,12 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				var rc int
 				/*"rc" -"k" -> "All Result" - "Line of Don't want to see" */
 				rc = rc - k
-				rscanner := bufio.NewScanner(strings.NewReader(rbf.String()))
-				for rscanner.Scan() {
-					rs := rscanner.Text()
+				for _, rs := range rbf_ary {
 					if rc > 0 {
 						rs_ary := strings.SplitN(rs, " ", 4)
 						drawFlag(JUDGE_X, rc+2, rs_ary[0])
 						drawSeq(HOST_X, RTT_X, DES_X, rc+2, rs_ary[0], rs_ary[1], rs_ary[2], rs_ary[3])
+						
 					} else {
 						rs = ""
 					}
@@ -594,10 +578,10 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			  After, Logging, & Drawing Loss Counter*/
 
 			var pres []string
-			pres = append(pres, res_ary[0], res_ary[1], res_ary[2], des, "\n")
-
+			pres = append(pres, res_ary[0], res_ary[1], res_ary[2], des)
+			
 			/*Logging rbf -> This buffer Called by Next Drawing*/
-			rbf.WriteString(strings.Join(pres, " "))
+			rbf_ary = append(rbf_ary, strings.Join(pres, " "))
 
 			/*Logging All Result with time stamp*/
 			day := time.Now()
@@ -616,13 +600,10 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 			/*Loss counting from hbf*/
 			var c int
-			losscanner := bufio.NewScanner(strings.NewReader(hbf.String()))
-			for losscanner.Scan() {
-				s := losscanner.Text()
-
+			for _, loss := range hbf_ary {
 				/*So, If pexpo had been sending ICMP loss, pexpo logging per host to the hbf
 				This func loss counting*/
-				if s == res_ary[1] {
+				if loss == res_ary[1] {
 					c++
 				}
 			}
@@ -648,9 +629,6 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			/*"index" for the mapping host to the Loss counter*/
 			index++
 
-			if err := pscanner.Err(); err != nil {
-				panic(err)
-			}
 		}
 	}
 }
@@ -667,6 +645,26 @@ func init() {
 	rdir := filepath.Join(u.HomeDir, RESULT_DIR)
 	err = os.MkdirAll(rdir, 0755)
 	fatal(err)
+	
+	/*
+	if *editor {
+	
+	edited := make(chan struct{}, 0)
+		go func () {
+		cmd := exec.Command(`C:\Program Files\Notepad++\notepad++.exe`, *pinglist)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		err := cmd.Run()
+		if err != nil{
+			panic(err)
+			}
+		edited <- struct{}{}
+		}()
+		<- edited
+	}
+	*/
 }
 
 func main() {
