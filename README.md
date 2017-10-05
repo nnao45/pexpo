@@ -5,8 +5,8 @@ pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application. 
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
   
-***Current pexpo's version: 1.22***  
-(bug fix)
+***Current pexpo's version: 1.23***  
+(performance up)
 
 ## Install
 Install Page: https://github.com/nao4arale/pexpo/releases/tag/1.22
@@ -74,7 +74,8 @@ Examples:
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, using tab is ok, no description is ok...).
   
 ## Release note
-- version 1.22...Too Lttle bug fix(string join -> append []string)
+- version 1.23...Littole performance up(assign cap in the string[])
+- version 1.22...Too Little bug fix(string join -> append []string)
 - version 1.21...Too Little change in code & icon+
 - version 1.20...Wow!!:heart_eyes:Adding "HTTP PING"!!
   - "-H", http_ping "-S", https_ping. Using Both, Sending Both with not error.
