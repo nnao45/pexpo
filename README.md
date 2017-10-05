@@ -9,7 +9,7 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 (performance up)
 
 ## Install
-Install Page: https://github.com/nao4arale/pexpo/releases/tag/1.22
+Install Page: https://github.com/nao4arale/pexpo/releases/tag/1.23
 
 ## Usage
 ```bash
