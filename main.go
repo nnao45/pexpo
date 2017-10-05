@@ -274,9 +274,9 @@ func Pinger(host string) []string {
 	p.MaxRTT = *interval
 	//var out []string
 	//var res []string
-	out := make([]string, 0, 3)
-	res := make([]string, 0, 4)
-	receiver := make(chan []string, 3)
+	out := make([]string, 0, 2)
+	res := make([]string, 0, 3)
+	receiver := make(chan []string, 2)
 
 	/*Received value from fastping.NewPinger()*/
 	go func() {
