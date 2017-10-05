@@ -115,17 +115,18 @@ Option:
 Examples:
     ./pexpo -H -i 500ms -t 1s -f /usr/local/curl-list.txt
     pexpo.exe -S -i 500ms -t 1s -f C:\Users\arale\Desktop\curl-list.txt
-	(If you want to "Request, http and https", Using Both -H & -S.)
-	   
-	-H This optison is like "curl". So you Sending HTTP(:80) GET Request instead of the PING...!
-	   
-	-S This optison is like "curl". So you Sending HTTP"S"(:443) GET Request instead of the PING...!
+       (If you want to "Request, http and https", Using Both -H & -S.)
 	
-	-H or -S options HTTP/HTTPS GET Request instead of the PING.
-	(Just like, curl -LIs www.google.com -o /dev/null -w '%{http_code}\n')
-	This Request is ververy simple GET Request, Only Getting status code(No header, No form, No getting data.)
+Option:
+    -H This optison is like "curl". So you Sending HTTP(:80) GET Request instead of the PING...!
+	   
+    -S This optison is like "curl". So you Sending HTTP"S"(:443) GET Request instead of the PING...!
+	
+       -H or -S options HTTP/HTTPS GET Request instead of the PING.
+       (Just like, curl -LIs www.google.com -o /dev/null -w '%{http_code}\n')
+       This Request is ververy simple GET Request, Only Getting status code(No header, No form, No getting data.)
 
-	And, if http status code is "200", string color is Blue, else Red.
+       And, if http status code is "200", string color is Blue, else Red.
 `
 
 const (
