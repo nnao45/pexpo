@@ -56,7 +56,7 @@ package main
 
 import (
 	"bufio"
-//	"bytes"
+	//	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -64,7 +64,7 @@ import (
 	"net"
 	"net/http"
 	"os"
-//	"os/exec"
+	//	"os/exec"
 	"os/user"
 	"path/filepath"
 
@@ -157,7 +157,7 @@ const (
 	ICMP_TIMEOUT  = 3
 
 	/*pexpo's version*/
-	VERSION = "1.22"
+	VERSION = "1.23"
 )
 
 func fatal(err error) {
@@ -272,8 +272,10 @@ func Pinger(host string) []string {
 	p.AddIPAddr(ra)
 
 	p.MaxRTT = *interval
-	var out []string
-	var res []string
+	//var out []string
+	//var res []string
+	out := make([]string, 0, 3)
+	res := make([]string, 0, 4)
 	receiver := make(chan []string, 3)
 
 	/*Received value from fastping.NewPinger()*/
@@ -308,8 +310,10 @@ func Pinger(host string) []string {
 }
 
 func curlCheck(url string) []string {
-	var out []string
-	var res []string
+	//	var out []string
+	//	var res []string
+	out := make([]string, 0, 3)
+	res := make([]string, 0, 3)
 	receiver := make(chan []string, 3)
 	done := make(chan struct{}, 0)
 	if *httping && *sslping {
@@ -376,9 +380,12 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 	var j int // "j" is all pings "per host" count.
 	var k int // "k" is scroll counter
 
-	var pbf_ary []string // pbf_ary is ping-list(textfile -> buffer).
-	var rbf_ary []string // rbf_ary is ping result list.
-	var hbf_ary []string // hbf_ary is ping loss counter map to per host.
+	//var pbf_ary []string // pbf_ary is ping-list(textfile -> buffer).
+	//var rbf_ary []string // rbf_ary is ping result list.
+	//var hbf_ary []string // hbf_ary is ping loss counter map to per host.
+	pbf_ary := make([]string, 0, 200) // pbf_ary is ping-list(textfile -> buffer).
+	rbf_ary := make([]string, 0, 200) // rbf_ary is ping result list.
+	hbf_ary := make([]string, 0, 200) // hbf_ary is ping loss counter map to per host.
 
 	/*1st key loop lock open*/
 	received <- struct{}{}
@@ -390,7 +397,10 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 		JUDGE_X = 3
 	}
 
+	//var maxX, maxY int
+
 	for {
+
 		/*Counting per running This function*/
 		j++
 
@@ -398,31 +408,31 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 		index := DRAW_UP_Y
 
 		/*This Aciton, Only 1st loop!!*/
+		//if j <= 1 {
+		drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
+		drawLine(maxX-9, maxY-1, fmt.Sprintf("ver. %v", VERSION))
+		drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), termbox.ColorDefault, termbox.ColorMagenta)
+		drawLineColor(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"), termbox.ColorWhite)
+		drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)
+		drawLineColor(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"), termbox.ColorWhite)
+		drawLineColor(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"), termbox.ColorWhite)
+		drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
+		drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
+		drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
+		fill(START_X, 0, EDGE_X, 1, termbox.Cell{Ch: '='})
+		fill(START_X, 2, EDGE_X, 1, termbox.Cell{Ch: '='})
+		fill(START_X, maxY-1, EDGE_X, 1, termbox.Cell{Ch: '='})
+		fill(START_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+		fill(START_X, 1, 1, 1, termbox.Cell{Ch: '|'})
+		fill(HOST_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+		fill(HOST_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+		fill(RTT_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+		fill(RTT_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+		fill(DES_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+		fill(DES_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+		fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+		fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
 		if j <= 1 {
-			drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
-			drawLine(maxX-9, maxY-1, fmt.Sprintf("ver. %v", VERSION))
-			drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), termbox.ColorDefault, termbox.ColorMagenta)
-			drawLineColor(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"), termbox.ColorWhite)
-			drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)
-			drawLineColor(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"), termbox.ColorWhite)
-			drawLineColor(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"), termbox.ColorWhite)
-			drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
-			drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
-			drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
-			fill(START_X, 0, EDGE_X, 1, termbox.Cell{Ch: '='})
-			fill(START_X, 2, EDGE_X, 1, termbox.Cell{Ch: '='})
-			fill(START_X, maxY-1, EDGE_X, 1, termbox.Cell{Ch: '='})
-			fill(START_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(START_X, 1, 1, 1, termbox.Cell{Ch: '|'})
-			fill(HOST_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(HOST_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-			fill(RTT_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(RTT_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-			fill(DES_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(DES_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-			fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-			fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
-
 			pl, err := os.Open(*pinglist)
 			if err != nil {
 				termbox.Close()
@@ -496,11 +506,11 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 						}
 					}
 
-				/*ping-list -> pbf*/
-				pbf_ary = append(pbf_ary, s)
+					/*ping-list -> pbf*/
+					pbf_ary = append(pbf_ary, s)
 
-				} 
-				
+				}
+
 				if err := plscanner.Err(); err != nil {
 					panic(err)
 				}
@@ -530,7 +540,8 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			preps_ary := strings.SplitN(preps, " ", 2)
 			ps := preps_ary[0]
 			des := preps_ary[1]
-			var res_ary []string
+			//var res_ary []string
+			res_ary := make([]string, 0, 3)
 			if *httping || *sslping {
 				time.Sleep(*interval)
 				res_ary = curlCheck(ps)
@@ -557,11 +568,12 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				drawFlag(JUDGE_X, maxY-DRAW_DW_Y, res_ary[0])
 				drawFlag(JUDGE_X, 1, res_ary[0])
 				drawSeq(HOST_X, RTT_X, DES_X, maxY-DRAW_DW_Y, res_ary[0], res_ary[1], res_ary[2], des)
-				
+
 				/*rc is count Reading rbf After Scrolling To the bottom*/
 				var rc int
-				var tmp_ary []string
-				
+				//var tmp_ary []string
+				tmp_ary := make([]string, 0, 200)
+
 				/*"rc" -"k" -> "All Result" - "Line of Don't want to see" */
 				rc = rc - k
 				for _, rs := range rbf_ary {
@@ -570,7 +582,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 						drawFlag(JUDGE_X, rc+2, rs_ary[0])
 						drawSeq(HOST_X, RTT_X, DES_X, rc+2, rs_ary[0], rs_ary[1], rs_ary[2], rs_ary[3])
 						tmp_ary = append(tmp_ary, rs)
-					} 
+					}
 					rc++
 				}
 				k++
@@ -579,9 +591,10 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			/*finish Reading Ping-list & Drawing Result.
 			  After, Logging, & Drawing Loss Counter*/
 
-			var pres []string
+			//var pres []string
+			pres := make([]string, 0, 4)
 			pres = append(pres, res_ary[0], res_ary[1], res_ary[2], des)
-			
+
 			/*Logging rbf -> This buffer Called by Next Drawing*/
 			rbf_ary = append(rbf_ary, strings.Join(pres, " "))
 
@@ -646,25 +659,25 @@ func init() {
 	rdir := filepath.Join(u.HomeDir, RESULT_DIR)
 	err = os.MkdirAll(rdir, 0755)
 	fatal(err)
-	
-	/*
-	if *editor {
-	
-	edited := make(chan struct{}, 0)
-		go func () {
-		cmd := exec.Command(`C:\Program Files\Notepad++\notepad++.exe`, *pinglist)
-		cmd.Stdin = os.Stdin
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
 
-		err := cmd.Run()
-		if err != nil{
-			panic(err)
-			}
-		edited <- struct{}{}
-		}()
-		<- edited
-	}
+	/*
+		if *editor {
+
+		edited := make(chan struct{}, 0)
+			go func () {
+			cmd := exec.Command(`C:\Program Files\Notepad++\notepad++.exe`, *pinglist)
+			cmd.Stdin = os.Stdin
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+
+			err := cmd.Run()
+			if err != nil{
+				panic(err)
+				}
+			edited <- struct{}{}
+			}()
+			<- edited
+		}
 	*/
 }
 
@@ -677,6 +690,9 @@ func main() {
 	defer termbox.Close()
 
 	maxX, maxY := termbox.Size()
+	//chanMaxX, chanMaxY := make(chan int, maxX), make(chan int, maxY)
+
+	//terch := make(chan struct{})
 
 	/*stop channel is for stopping drawLoop()*/
 	stop := make(chan struct{}, 0)
@@ -719,6 +735,12 @@ loop:
 					goto loop
 				}
 			}
+			/*
+				case <-terch:
+					maxX, maxY := termbox.Size()
+					chanMaxX <- maxX
+					chanMaxY <- maxY
+			*/
 		}
 	}
 }
