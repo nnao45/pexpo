@@ -408,31 +408,30 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 		index := DRAW_UP_Y
 
 		/*This Aciton, Only 1st loop!!*/
-		//if j <= 1 {
-		drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
-		drawLine(maxX-9, maxY-1, fmt.Sprintf("ver. %v", VERSION))
-		drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), termbox.ColorDefault, termbox.ColorMagenta)
-		drawLineColor(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"), termbox.ColorWhite)
-		drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)
-		drawLineColor(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"), termbox.ColorWhite)
-		drawLineColor(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"), termbox.ColorWhite)
-		drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
-		drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
-		drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
-		fill(START_X, 0, EDGE_X, 1, termbox.Cell{Ch: '='})
-		fill(START_X, 2, EDGE_X, 1, termbox.Cell{Ch: '='})
-		fill(START_X, maxY-1, EDGE_X, 1, termbox.Cell{Ch: '='})
-		fill(START_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-		fill(START_X, 1, 1, 1, termbox.Cell{Ch: '|'})
-		fill(HOST_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-		fill(HOST_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-		fill(RTT_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-		fill(RTT_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-		fill(DES_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-		fill(DES_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
-		fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
-		fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
 		if j <= 1 {
+			drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
+			drawLine(maxX-9, maxY-1, fmt.Sprintf("ver. %v", VERSION))
+			drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), termbox.ColorDefault, termbox.ColorMagenta)
+			drawLineColor(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"), termbox.ColorWhite)
+			drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)
+			drawLineColor(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"), termbox.ColorWhite)
+			drawLineColor(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"), termbox.ColorWhite)
+			drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
+			drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
+			drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
+			fill(START_X, 0, EDGE_X, 1, termbox.Cell{Ch: '='})
+			fill(START_X, 2, EDGE_X, 1, termbox.Cell{Ch: '='})
+			fill(START_X, maxY-1, EDGE_X, 1, termbox.Cell{Ch: '='})
+			fill(START_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(START_X, 1, 1, 1, termbox.Cell{Ch: '|'})
+			fill(HOST_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(HOST_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+			fill(RTT_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(RTT_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+			fill(DES_X-2, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(DES_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
+			fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
+			fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
 			pl, err := os.Open(*pinglist)
 			if err != nil {
 				termbox.Close()
@@ -523,7 +522,6 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				drawLineColor(LIST_L_X, n+DRAW_UP_Y, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
 			}
 		}
-
 		/*Reading Ping-list per line*/
 		for _, preps := range pbf_ary {
 
