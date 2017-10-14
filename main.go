@@ -602,7 +602,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			date := time.Now()
 			formating_day := day.Format(DAY)
 			formating_date := date.Format(DATE)
-			log := "[" + formating_date + "]" + " " + strings.Join(pres, " ")
+			log := "[" + formating_date + "]" + " " + strings.Join(pres, " ") + "\n"
 			result := "result_" + formating_day + ".txt"
 			u, err := user.Current()
 			fatal(err)
