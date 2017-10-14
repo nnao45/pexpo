@@ -158,7 +158,7 @@ const (
 	ICMP_TIMEOUT  = 3
 
 	/*pexpo's version*/
-	VERSION = "1.23"
+	VERSION = "1.24"
 )
 
 func fatal(err error) {
