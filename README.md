@@ -1,5 +1,6 @@
 [![v1.23](https://img.shields.io/badge/package-v1.23-ff69b4.svg)](https://github.com/nao4arale/pexpo/releases/tag/1.23)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nao4arale/pexpo/master/LICENSE)
+[![platform](https://img.shields.io/conda/pn/conda-forge/python.svg?maxAge=2592000)]()
 # pexpo
 ![result](https://user-images.githubusercontent.com/17565502/30773031-041851a6-a0a3-11e7-90be-81199aa12676.png)  
 pexpo is ping sending tui tool with cool clomun & logging loss-count in the multi platforms(Windows, Mac, Linux...).  
