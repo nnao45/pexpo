@@ -672,7 +672,7 @@ func init() {
 				}
 			edited <- struct{}{}
 			}()
-			<- edited
+			<- edited 
 		}
 	*/
 }
