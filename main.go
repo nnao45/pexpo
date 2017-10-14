@@ -82,7 +82,7 @@ import (
 var timeout = flag.Duration("t", time.Second*ICMP_TIMEOUT, "")
 var interval = flag.Duration("i", time.Millisecond*ICMP_INTERVAL, "")
 var pinglist = flag.String("f", PING_LIST, "")
-var arp_entries = flag.Bool("A", false, "")
+var arpentries = flag.Bool("A", false, "")
 var httping = flag.Bool("H", false, "")
 var sslping = flag.Bool("S", false, "")
 var editor = flag.Bool("E", true, "")
@@ -169,17 +169,17 @@ func fatal(err error) {
 
 func addog(text string, filename string) {
 	var writer *bufio.Writer
-	text_data := []byte(text)
+	textData := []byte(text)
 
-	write_file, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
-	writer = bufio.NewWriter(write_file)
-	writer.Write(text_data)
+	writeFile, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
+	writer = bufio.NewWriter(writeFile)
+	writer.Write(textData)
 	writer.Flush()
 	fatal(err)
-	defer write_file.Close()
+	defer writeFile.Close()
 }
 
-func Round(f float64, places int) float64 {
+func round(f float64, places int) float64 {
 	shift := math.Pow(10, float64(places))
 	return math.Floor(f*shift+.5) / shift
 }
@@ -256,7 +256,7 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 }
 
 /*This Core of the sendig ICMP engine*/
-func Pinger(host string) []string {
+func pinger(host string) []string {
 	p := fastping.NewPinger()
 
 	/*Selecting IPv4 or IPv6*/
@@ -332,18 +332,18 @@ func curlCheck(url string) []string {
 			}
 		}
 	}
-	time_start := time.Now()
-	c_timeout := time.Duration(*timeout * time.Second)
+	timeStart := time.Now()
+	cTimeout := time.Duration(*timeout * time.Second)
 	go func() {
 		client := http.Client{
-			Timeout: c_timeout,
+			Timeout: cTimeout,
 		}
 		resp, err := client.Get(url)
 		if err != nil {
 			<-done
 			defer close(done)
 		}
-		out = append(out, strconv.Itoa(resp.StatusCode), url, time.Since(time_start).String())
+		out = append(out, strconv.Itoa(resp.StatusCode), url, time.Since(timeStart).String())
 		receiver <- out
 		defer close(receiver)
 
@@ -381,12 +381,9 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 	var j int // "j" is all pings "per host" count.
 	var k int // "k" is scroll counter
 
-	//var pbf_ary []string // pbf_ary is ping-list(textfile -> buffer).
-	//var rbf_ary []string // rbf_ary is ping result list.
-	//var hbf_ary []string // hbf_ary is ping loss counter map to per host.
-	pbf_ary := make([]string, 0, 200) // pbf_ary is ping-list(textfile -> buffer).
-	rbf_ary := make([]string, 0, 200) // rbf_ary is ping result list.
-	hbf_ary := make([]string, 0, 200) // hbf_ary is ping loss counter map to per host.
+	pbfAry := make([]string, 0, 200) // pbfAry is ping-list(textfile -> buffer).
+	rbfAry := make([]string, 0, 200) // rbfAry is ping result list.
+	hbfAry := make([]string, 0, 200) // hbfAry is ping loss counter map to per host.
 
 	/*1st key loop lock open*/
 	received <- struct{}{}
@@ -454,8 +451,8 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 					/*Deleting "\t"...tab key*/
 					for {
 						if strings.Contains(s, "\t") {
-							s_ary := strings.SplitN(s, "\t", 2)
-							s = s_ary[0] + " " + s_ary[1]
+							sAry := strings.SplitN(s, "\t", 2)
+							s = sAry[0] + " " + sAry[1]
 						} else {
 							break
 						}
@@ -464,8 +461,8 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 					  "                 8.8.8.8 google.com" */
 					for {
 						if strings.HasPrefix(s, " ") {
-							s_ary := strings.SplitN(s, " ", 2)
-							s = s_ary[1]
+							sAry := strings.SplitN(s, " ", 2)
+							s = sAry[1]
 						} else {
 							break
 						}
@@ -473,41 +470,41 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 					/*No description, Put in "noname_host"
 					  If not this statement, After, Will read blank array,
-					  So, occuring panic error*/
+					  So, occurring panic error*/
 					if !strings.Contains(s, " ") {
 						s = s + " noname_host"
 					} else {
 
 						/*For -a option
 						Ignoring string, "Internet"*/
-						if *arp_entries && strings.HasPrefix(s, "Internet") {
-							s_ary := strings.SplitN(s, "  ", 2)
-							s = s_ary[1]
+						if *arpentries && strings.HasPrefix(s, "Internet") {
+							sAry := strings.SplitN(s, "  ", 2)
+							s = sAry[1]
 						}
 						/*Deleting consecutive white space "between"
 						  "8.8.8.8                          google.com" */
-						s_ary := strings.SplitN(s, " ", 2)
-						s_ary[1] = strings.TrimSpace(s_ary[1])
-						s = s_ary[0] + " " + s_ary[1]
+						sAry := strings.SplitN(s, " ", 2)
+						sAry[1] = strings.TrimSpace(sAry[1])
+						s = sAry[0] + " " + sAry[1]
 					}
 
 					if !*httping || !*sslping {
-						s_ary := strings.SplitN(s, " ", 2)
-						if *httping && strings.Contains(s_ary[0], "https://") {
+						sAry := strings.SplitN(s, " ", 2)
+						if *httping && strings.Contains(sAry[0], "https://") {
 							termbox.Close()
-							fmt.Printf("Sorry, %v is not http protocol.\n", s_ary[0])
+							fmt.Printf("Sorry, %v is not http protocol.\n", sAry[0])
 							fmt.Printf("Please, Check your %v.\n", *pinglist)
 							os.Exit(1)
-						} else if *sslping && strings.Contains(s_ary[0], "http://") {
+						} else if *sslping && strings.Contains(sAry[0], "http://") {
 							termbox.Close()
-							fmt.Printf("Sorry, %v is not https protocol.\n", s_ary[0])
+							fmt.Printf("Sorry, %v is not https protocol.\n", sAry[0])
 							fmt.Printf("Please, Check your %v.\n", *pinglist)
 							os.Exit(1)
 						}
 					}
 
 					/*ping-list -> pbf*/
-					pbf_ary = append(pbf_ary, s)
+					pbfAry = append(pbfAry, s)
 
 				}
 
@@ -515,16 +512,16 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 					panic(err)
 				}
 			}
-			for n, pres := range pbf_ary {
-				s_ary := strings.SplitN(pres, " ", 2)
-				s := s_ary[0]
+			for n, pres := range pbfAry {
+				sAry := strings.SplitN(pres, " ", 2)
+				s := sAry[0]
 				drawLineColor(LIST_H_X, n+DRAW_UP_Y, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "")), termbox.ColorGreen)
 				drawLineColor(LIST_P_X, n+DRAW_UP_Y, fmt.Sprintf("%v", "0.00"), termbox.ColorGreen)
 				drawLineColor(LIST_L_X, n+DRAW_UP_Y, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
 			}
 		}
 		/*Reading Ping-list per line*/
-		for _, preps := range pbf_ary {
+		for _, preps := range pbfAry {
 
 			/*For Stop & Restart*/
 			select {
@@ -536,25 +533,25 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			/*Default behavior*/
 			default:
 			}
-			preps_ary := strings.SplitN(preps, " ", 2)
-			ps := preps_ary[0]
-			des := preps_ary[1]
-			//var res_ary []string
-			res_ary := make([]string, 0, 3)
+			prepsAry := strings.SplitN(preps, " ", 2)
+			ps := prepsAry[0]
+			des := prepsAry[1]
+			//var resAry []string
+			resAry := make([]string, 0, 3)
 			if *httping || *sslping {
 				time.Sleep(*interval)
-				res_ary = curlCheck(ps)
+				resAry = curlCheck(ps)
 			} else {
-				res_ary = Pinger(ps)
+				resAry = pinger(ps)
 			}
-			if res_ary[0] != "o" && res_ary[0] != "200" {
-				hbf_ary = append(hbf_ary, res_ary[1])
+			if resAry[0] != "o" && resAry[0] != "200" {
+				hbfAry = append(hbfAry, resAry[1])
 			}
 			/*Before Scrolling To the bottom*/
 			if maxY > i+DRAW_UP_Y+1 {
-				drawFlag(JUDGE_X, i+DRAW_UP_Y, res_ary[0])
-				drawFlag(JUDGE_X, 1, res_ary[0])
-				drawSeq(HOST_X, RTT_X, DES_X, i+DRAW_UP_Y, res_ary[0], res_ary[1], res_ary[2], des)
+				drawFlag(JUDGE_X, i+DRAW_UP_Y, resAry[0])
+				drawFlag(JUDGE_X, 1, resAry[0])
+				drawSeq(HOST_X, RTT_X, DES_X, i+DRAW_UP_Y, resAry[0], resAry[1], resAry[2], des)
 
 				/*After Scrolling To the bottom*/
 			} else {
@@ -564,46 +561,46 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				fill(RTT_X+1, DRAW_UP_Y, COLUMN-1, maxY-4, termbox.Cell{Ch: ' '})
 				fill(DES_X+1, DRAW_UP_Y, COLUMN-1, maxY-4, termbox.Cell{Ch: ' '})
 
-				drawFlag(JUDGE_X, maxY-DRAW_DW_Y, res_ary[0])
-				drawFlag(JUDGE_X, 1, res_ary[0])
-				drawSeq(HOST_X, RTT_X, DES_X, maxY-DRAW_DW_Y, res_ary[0], res_ary[1], res_ary[2], des)
+				drawFlag(JUDGE_X, maxY-DRAW_DW_Y, resAry[0])
+				drawFlag(JUDGE_X, 1, resAry[0])
+				drawSeq(HOST_X, RTT_X, DES_X, maxY-DRAW_DW_Y, resAry[0], resAry[1], resAry[2], des)
 
 				/*rc is count Reading rbf After Scrolling To the bottom*/
 				var rc int
-				//var tmp_ary []string
-				tmp_ary := make([]string, 0, 200)
+				//var tmpAry []string
+				tmpAry := make([]string, 0, 200)
 
 				/*"rc" -"k" -> "All Result" - "Line of Don't want to see" */
 				rc = rc - k
-				for _, rs := range rbf_ary {
+				for _, rs := range rbfAry {
 					if rc > 0 {
-						rs_ary := strings.SplitN(rs, " ", 4)
-						drawFlag(JUDGE_X, rc+2, rs_ary[0])
-						drawSeq(HOST_X, RTT_X, DES_X, rc+2, rs_ary[0], rs_ary[1], rs_ary[2], rs_ary[3])
-						tmp_ary = append(tmp_ary, rs)
+						rsAry := strings.SplitN(rs, " ", 4)
+						drawFlag(JUDGE_X, rc+2, rsAry[0])
+						drawSeq(HOST_X, RTT_X, DES_X, rc+2, rsAry[0], rsAry[1], rsAry[2], rsAry[3])
+						tmpAry = append(tmpAry, rs)
 					}
 					rc++
 				}
 				k++
-				copy(tmp_ary, rbf_ary)
+				copy(tmpAry, rbfAry)
 			}
 			/*finish Reading Ping-list & Drawing Result.
 			  After, Logging, & Drawing Loss Counter*/
 
 			//var pres []string
 			pres := make([]string, 0, 4)
-			pres = append(pres, res_ary[0], res_ary[1], res_ary[2], des)
+			pres = append(pres, resAry[0], resAry[1], resAry[2], des)
 
 			/*Logging rbf -> This buffer Called by Next Drawing*/
-			rbf_ary = append(rbf_ary, strings.Join(pres, " "))
+			rbfAry = append(rbfAry, strings.Join(pres, " "))
 
 			/*Logging All Result with time stamp*/
 			day := time.Now()
 			date := time.Now()
-			formating_day := day.Format(DAY)
-			formating_date := date.Format(DATE)
-			log := "[" + formating_date + "]" + " " + strings.Join(pres, " ") + "\n"
-			result := "result_" + formating_day + ".txt"
+			formatingDay := day.Format(DAY)
+			formatingDate := date.Format(DATE)
+			log := "[" + formatingDate + "]" + " " + strings.Join(pres, " ") + "\n"
+			result := "result_" + formatingDay + ".txt"
 			u, err := user.Current()
 			fatal(err)
 			rfile := filepath.Join(u.HomeDir, RESULT_DIR, result)
@@ -614,21 +611,21 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 			/*Loss counting from hbf*/
 			var c int
-			for _, loss := range hbf_ary {
+			for _, loss := range hbfAry {
 				/*So, If pexpo had been sending ICMP loss, pexpo logging per host to the hbf
 				This func loss counting*/
-				if loss == res_ary[1] {
+				if loss == resAry[1] {
 					c++
 				}
 			}
 
 			/*Drawing Loss Counter*/
-			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", Round(percent.PercentOf(c, j), 2)), termbox.ColorGreen)
+			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", round(percent.PercentOf(c, j), 2)), termbox.ColorGreen)
 			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v", c), termbox.ColorGreen)
 			drawLineColor(LIST_L_X+4, index, fmt.Sprintf("%v", "loss"), termbox.ColorGreen)
 
 			/*Drawing the Dead stamp*/
-			if res_ary[0] == "o" || res_ary[0] == "200" {
+			if resAry[0] == "o" || resAry[0] == "200" {
 				fill(LIST_D_X, index, 9, 1, termbox.Cell{Ch: ' '})
 			} else {
 				drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), termbox.ColorRed)
