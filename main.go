@@ -274,7 +274,7 @@ func pinger(host string) []string {
 	p.AddIPAddr(ra)
 
 	p.MaxRTT = *interval               //icmp interval
-	out := make([]string, 0, 2)        //out is sucess ping reult []string
+	out := make([]string, 0, 2)        //out is success ping reult []string
 	res := make([]string, 0, 3)        //res is for chanerizing the  Ping result.
 	receiver := make(chan []string, 2) //suucess ping result -> receiver
 
