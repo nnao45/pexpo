@@ -394,9 +394,6 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 	/*1st key loop lock open*/
 	received <- struct{}{}
 
-	/*if stopping now & finish This func, defer closing.*/
-	defer close(received)
-
 	/*select mode*/
 	var JUDGE_X int
 	if *httping || *sslping {
@@ -708,18 +705,15 @@ func main() {
 
 	/*stop channel is for stopping drawLoop()*/
 	stop := make(chan struct{}, 0)
-	defer close(stop)
 
 	/*stop channel is for restarting drawLoop()*/
 	restart := make(chan struct{}, 0)
-	defer close(restart)
 
 	/*received channel is received message from drawLoop()*/
 	received := make(chan struct{}, 0)
 
 	/*killKey channel is received HW key interrupt*/
 	killKey := make(chan termbox.Key)
-	defer close(killKey)
 
 	/*sleep flag*/
 	sleep := false
