@@ -273,12 +273,10 @@ func pinger(host string) []string {
 	}
 	p.AddIPAddr(ra)
 
-	p.MaxRTT = *interval
-	//var out []string
-	//var res []string
-	out := make([]string, 0, 2)
-	res := make([]string, 0, 3)
-	receiver := make(chan []string, 2)
+	p.MaxRTT = *interval //icmp interval
+	out := make([]string, 0, 2) //out is sucess ping reult []string
+	res := make([]string, 0, 3) //res is for chanerizing the  Ping result. 
+	receiver := make(chan []string, 2) //suucess ping result -> receiver 
 
 	/*Received value from fastping.NewPinger()*/
 	go func() {
@@ -311,13 +309,14 @@ func pinger(host string) []string {
 	}
 }
 
+/*This http ping engine*/
 func curlCheck(url string) []string {
-	//	var out []string
-	//	var res []string
-	out := make([]string, 0, 3)
-	res := make([]string, 0, 3)
-	receiver := make(chan []string, 3)
-	done := make(chan struct{}, 0)
+	out := make([]string, 0, 3) // out is Success HTTP Ping result []string.
+	res := make([]string, 0, 3) // res is for chanerizing the HTTP Ping result. 
+	receiver := make(chan []string, 3) //suucess http result -> receiver 
+	done := make(chan struct{}, 0) //done is for finish func when http Timeout. 
+
+	/*syntax check*/
 	if *httping && *sslping {
 		if !strings.Contains(url, "https://") && !strings.Contains(url, "http://") {
 			url = "https://" + url
@@ -333,8 +332,10 @@ func curlCheck(url string) []string {
 			}
 		}
 	}
+
 	timeStart := time.Now()
 	cTimeout := time.Duration(*timeout * time.Second)
+
 	go func() {
 		client := http.Client{
 			Timeout: cTimeout,
