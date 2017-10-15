@@ -1,5 +1,6 @@
-[![v1.23](https://img.shields.io/badge/package-v1.23-ff69b4.svg)](https://github.com/nao4arale/pexpo/releases/tag/1.23)
+[![v1.24](https://img.shields.io/badge/package-v1.24-ff69b4.svg)](https://github.com/nao4arale/pexpo/releases/tag/1.24)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nao4arale/pexpo/master/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nao4arale/pexpo)](https://goreportcard.com/report/github.com/nao4arale/pexpo)
 [![platform](https://img.shields.io/conda/pn/conda-forge/python.svg?maxAge=2592000)]()
 # pexpo
 ![result](https://user-images.githubusercontent.com/17565502/30773031-041851a6-a0a3-11e7-90be-81199aa12676.png)  
@@ -8,11 +9,11 @@ pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application. 
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
   
-***Current pexpo's version: 1.23***  
-(performance up)
+***Current pexpo's version: 1.24***  
+(go report A+)
 
 ## Install
-Install Page: https://github.com/nao4arale/pexpo/releases/tag/1.23
+Install Page: https://github.com/nao4arale/pexpo/releases/tag/1.24
 
 ## Usage
 ```bash
@@ -77,7 +78,8 @@ Examples:
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, using tab is ok, no description is ok...).
   
 ## Release note
-- version 1.23...Littole performance up(assign cap in the string[])
+- version 1.24...go report A+!!(no implement change)
+- version 1.23...Little performance up(assign cap in the string[])
 - version 1.22...Too Little bug fix(string join -> append []string)
 - version 1.21...Too Little change in code & icon+
 - version 1.20...Wow!!:heart_eyes:Adding "HTTP PING"!!
