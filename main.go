@@ -85,6 +85,7 @@ var pinglist = flag.String("f", PING_LIST, "")
 var arpentries = flag.Bool("A", false, "")
 var httping = flag.Bool("H", false, "")
 var sslping = flag.Bool("S", false, "")
+
 //var editor = flag.Bool("E", true, "")
 
 /*This Used by func flag.Usage()*/
@@ -524,7 +525,6 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 	fill(DES_X-2, 1, 1, 1, termbox.Cell{Ch: '|'})
 	fill(EDGE_X, 3, 1, maxY-4, termbox.Cell{Ch: '|'})
 	fill(EDGE_X, 1, 1, 1, termbox.Cell{Ch: '|'})
-
 
 	/***************************
 	Starting MAIN LOOP!!!\(@w@)/
