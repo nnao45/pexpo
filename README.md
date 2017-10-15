@@ -79,7 +79,7 @@ Examples:
   
 ## Release note
 - version 1.24...go report A+!!(no implement change)
-- version 1.23...Littole performance up(assign cap in the string[])
+- version 1.23...Little performance up(assign cap in the string[])
 - version 1.22...Too Little bug fix(string join -> append []string)
 - version 1.21...Too Little change in code & icon+
 - version 1.20...Wow!!:heart_eyes:Adding "HTTP PING"!!
