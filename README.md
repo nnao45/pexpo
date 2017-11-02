@@ -1,6 +1,6 @@
-[![v1.24](https://img.shields.io/badge/package-v1.24-ff69b4.svg)](https://github.com/nao4arale/pexpo/releases/tag/1.24)
+[![v1.24](https://img.shields.io/badge/package-v1.24-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.24)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nnao45/pexpo/master/LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/github.com/nao4arale/pexpo)](https://goreportcard.com/report/github.com/nao4arale/pexpo)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nnao45/pexpo)](https://goreportcard.com/report/github.com/nnao45/pexpo)
 [![platform](https://img.shields.io/conda/pn/conda-forge/python.svg?maxAge=2592000)]()
 # pexpo
 ![result](https://user-images.githubusercontent.com/17565502/30773031-041851a6-a0a3-11e7-90be-81199aa12676.png)  
