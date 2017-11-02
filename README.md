@@ -94,5 +94,5 @@ Examples:
   
 ***Have a nice go hacking days***:sparkles::wink:
 ## Writer & License
-pexpo was writed by nao4arale (WORK:Network Engineer, Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
+pexpo was writed by nnao45 (WORK:Network Engineer, Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
 This software is released under the MIT License, see LICENSE.
