@@ -60,7 +60,7 @@ Examples:
 ![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo_1.20_linux.gif)
 
 ## Demo (windows10):four_leaf_clover:
-![result](https://github.com/nna045/naoGifRepo/blob/master/pexpo_1.20_win.gif)
+![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo_1.20_win.gif)
 
 ## Demo (windows10 & HTTPING):earth_asia:
 ![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo_HS_1.20_wins.gif)
