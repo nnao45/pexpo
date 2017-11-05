@@ -1,6 +1,6 @@
-[![v1.24](https://img.shields.io/badge/package-v1.24-ff69b4.svg)](https://github.com/nao4arale/pexpo/releases/tag/1.24)
-[![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nao4arale/pexpo/master/LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/github.com/nao4arale/pexpo)](https://goreportcard.com/report/github.com/nao4arale/pexpo)
+[![v1.24](https://img.shields.io/badge/package-v1.24-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.24)
+[![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nnao45/pexpo/master/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nnao45/pexpo)](https://goreportcard.com/report/github.com/nnao45/pexpo)
 [![platform](https://img.shields.io/conda/pn/conda-forge/python.svg?maxAge=2592000)]()
 # pexpo
 ![result](https://user-images.githubusercontent.com/17565502/30773031-041851a6-a0a3-11e7-90be-81199aa12676.png)  
@@ -13,7 +13,7 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 (go report A+)
 
 ## Install
-Install Page: https://github.com/nao4arale/pexpo/releases/tag/1.24
+Install Page: https://github.com/nnao45/pexpo/releases/tag/1.24
 
 ## Usage
 ```bash
@@ -57,13 +57,13 @@ Examples:
 ```
   
 ## Demo (Ubuntu16.04):penguin:
-![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_1.20_linux.gif)
+![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo_1.20_linux.gif)
 
 ## Demo (windows10):four_leaf_clover:
-![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_1.20_win.gif)
+![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo_1.20_win.gif)
 
 ## Demo (windows10 & HTTPING):earth_asia:
-![result](https://github.com/nao4arale/naoGifRepo/blob/master/pexpo_HS_1.20_wins.gif)
+![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo_HS_1.20_wins.gif)
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
@@ -94,5 +94,5 @@ Examples:
   
 ***Have a nice go hacking days***:sparkles::wink:
 ## Writer & License
-pexpo was writed by nao4arale (WORK:Network Engineer, Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
+pexpo was writed by nnao45 (WORK:Network Engineer, Twitter:@A_Resas, MAIL:n4sekai5y@gmail.com).  
 This software is released under the MIT License, see LICENSE.
