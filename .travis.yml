@@ -1,0 +1,13 @@
+language: go
+        - 1.5
+        - 1.6
+        - 1.7
+        - 1.8
+        - 1.9
+        - master
+before_script:
+          - go get "github.com/dariubs/percent"
+          - go get "github.com/mattn/go-runewidth"
+          - go get "github.com/nsf/termbox-go"
+          - go get "github.com/tatsushid/go-fastping"
+script: go build
