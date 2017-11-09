@@ -56,7 +56,6 @@ package main
 
 import (
 	"bufio"
-	//	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -64,7 +63,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	//	"os/exec"
 	"os/user"
 	"path/filepath"
 
@@ -448,17 +446,25 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				s = s + " noname_host"
 			} else {
 
+				/*Deleting consecutive white space "between"
+				  "8.8.8.8                          google.com" */
+				sAry := strings.SplitN(s, " ", 2)
+				sAry[1] = strings.TrimSpace(sAry[1])
+				s = sAry[0] + " " + sAry[1]
+
+				/*if "8.8.8.8                       "
+				  pus noname_host*/
+				if len(strings.TrimSpace(s)) == len(sAry[0]){
+					s = s + "noname_host"
+					fmt.Println(s)
+				}
+
 				/*For -a option
 				Ignoring string, "Internet"*/
 				if *arpentries && strings.HasPrefix(s, "Internet") {
 					sAry := strings.SplitN(s, "  ", 2)
 					s = sAry[1]
 				}
-				/*Deleting consecutive white space "between"
-				  "8.8.8.8                          google.com" */
-				sAry := strings.SplitN(s, " ", 2)
-				sAry[1] = strings.TrimSpace(sAry[1])
-				s = sAry[0] + " " + sAry[1]
 			}
 
 			if !*httping || !*sslping {
