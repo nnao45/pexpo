@@ -456,7 +456,6 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				  pus noname_host*/
 				if len(strings.TrimSpace(s)) == len(sAry[0]){
 					s = s + "noname_host"
-					fmt.Println(s)
 				}
 
 				/*For -a option
