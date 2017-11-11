@@ -1,4 +1,4 @@
-[![v1.24](https://img.shields.io/badge/package-v1.24-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.24)
+[![v1.25](https://img.shields.io/badge/package-v1.25-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.25)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nnao45/pexpo/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nnao45/pexpo)](https://goreportcard.com/report/github.com/nnao45/pexpo)
 [![Travis CI](https://travis-ci.org/nnao45/pexpo.svg?branch=master)](https://travis-ci.org/nnao45/pexpo)
@@ -10,11 +10,11 @@ pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application. 
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
   
-***Current pexpo's version: 1.24***  
-(go report A+)
+***Current pexpo's version: 1.25***  
+(reading ping-list's bug fix)
 
 ## Install
-Install Page: https://github.com/nnao45/pexpo/releases/tag/1.24
+Install Page: https://github.com/nnao45/pexpo/releases/tag/1.25
 
 ## Usage
 ```bash
@@ -79,6 +79,7 @@ Examples:
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, using tab is ok, no description is ok...).
   
 ## Release note
+- version 1.25...travis support & reading ping-list's bug fix.
 - version 1.24...go report A+!!(no implement change)
 - version 1.23...Little performance up(assign cap in the string[])
 - version 1.22...Too Little bug fix(string join -> append []string)
