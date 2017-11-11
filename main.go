@@ -307,6 +307,11 @@ func pinger(host string) []string {
 	}
 }
 
+/*https://golang.org/pkg/net/http/#Client*/
+var client = http.Client{
+	Timeout: time.Duration(*timeout),
+}
+
 /*This http ping engine*/
 func curlCheck(url string) []string {
 	out := make([]string, 0, 3)        // out is Success HTTP Ping result []string.
@@ -332,12 +337,9 @@ func curlCheck(url string) []string {
 	}
 
 	timeStart := time.Now()
-	cTimeout := time.Duration(*timeout * time.Second)
+	//cTimeout := time.Duration(*timeout * time.Second)
 
 	go func() {
-		client := http.Client{
-			Timeout: cTimeout,
-		}
 		resp, err := client.Get(url)
 		if err != nil {
 			<-done
