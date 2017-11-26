@@ -376,6 +376,59 @@ func curlCheck(url string) []string {
 	}
 }
 
+var scrCount int
+
+type HostCounter struct {
+	Name        string
+	Description string
+	Loss        int
+	LossPercent float64
+	IsDead      bool
+}
+
+type HostList []HostCounter
+
+var hostlist HostList
+
+func registerVal(index int, host HostCounter) (nhl HostList) {
+	for n, h := range hostlist {
+		if n == index {
+			nh := HostCounter{
+				Name:        h.Name,
+				Description: h.Description,
+				Loss:        host.Loss,
+				LossPercent: host.LossPercent,
+				IsDead:      host.IsDead,
+			}
+			nhl = append(nhl, nh)
+		} else {
+			nhl = append(nhl, h)
+		}
+	}
+	return
+}
+
+func drawHostlist(maxX, maxY int) {
+	fill(LIST_H_X, DRAW_UP_Y, COLUMN, maxY-4, termbox.Cell{Ch: ' '})
+	fill(LIST_P_X, DRAW_UP_Y, COLUMN, maxY-4, termbox.Cell{Ch: ' '})
+	fill(LIST_L_X, DRAW_UP_Y, COLUMN+2, maxY-4, termbox.Cell{Ch: ' '})
+	for n, h := range hostlist {
+		if n < scrCount {
+			continue
+		}
+		drawLineColor(LIST_H_X, n-scrCount+DRAW_UP_Y, fmt.Sprintf("%v", runewidth.Truncate(h.Name, COLUMN, "")), termbox.ColorGreen)
+		drawLineColor(LIST_P_X, n-scrCount+DRAW_UP_Y, fmt.Sprintf("%.2f", h.LossPercent), termbox.ColorGreen)
+		drawLineColor(LIST_L_X, n-scrCount+DRAW_UP_Y, fmt.Sprintf("%v   loss", h.Loss), termbox.ColorGreen)
+
+		if h.IsDead {
+			drawLineColor(LIST_D_X, n-scrCount+DRAW_UP_Y, fmt.Sprintf("%v", "Dead Now!"), termbox.ColorRed)
+		}
+		if n > maxY-6+scrCount {
+			break
+		}
+	}
+}
+
 /*This is Main loop*/
 func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
@@ -389,7 +442,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 	pbfAry := make([]string, 0, 200) // pbfAry is ping-list(textfile -> buffer).
 	rbfAry := make([]string, 0, 200) // rbfAry is ping result list.
-	hbfAry := make([]string, 0, 200) // hbfAry is ping loss counter map to per host.
+	//hbfAry := make([]string, 0, 200) // hbfAry is ping loss counter map to per host.
 
 	/*1st key loop lock open*/
 	received <- struct{}{}
@@ -456,7 +509,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 				/*if "8.8.8.8                       "
 				  pus noname_host*/
-				if len(strings.TrimSpace(s)) == len(sAry[0]){
+				if len(strings.TrimSpace(s)) == len(sAry[0]) {
 					s = s + "noname_host"
 				}
 
@@ -493,13 +546,16 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 		}
 	}
 	/*draw init loss counter*/
-	for n, pres := range pbfAry {
+	for _, pres := range pbfAry {
 		sAry := strings.SplitN(pres, " ", 2)
-		s := sAry[0]
-		drawLineColor(LIST_H_X, n+DRAW_UP_Y, fmt.Sprintf("%v", runewidth.Truncate(s, COLUMN, "")), termbox.ColorGreen)
-		drawLineColor(LIST_P_X, n+DRAW_UP_Y, fmt.Sprintf("%v", "0.00"), termbox.ColorGreen)
-		drawLineColor(LIST_L_X, n+DRAW_UP_Y, fmt.Sprintf("%v", "0   loss"), termbox.ColorGreen)
+		//s := sAry[0]
+		var h HostCounter
+		h.Name = sAry[0]
+		h.Description = sAry[1]
+		hostlist = append(hostlist, h)
 	}
+
+	drawHostlist(maxX, maxY)
 
 	/*making logging file*/
 	day := time.Now()
@@ -544,10 +600,8 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 		j++
 
 		/*Userd by hbf, index must be Reinitialize in per loop*/
-		index := DRAW_UP_Y
 
-		/*Sending Ping per Ping-list's line*/
-		for _, preps := range pbfAry {
+		for index, host := range hostlist {
 
 			/*For Stop & Restart*/
 			select {
@@ -559,25 +613,21 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			/*Default behavior*/
 			default:
 			}
-			prepsAry := strings.SplitN(preps, " ", 2)
-			ps := prepsAry[0]
-			des := prepsAry[1]
-			//var resAry []string
 			resAry := make([]string, 0, 3)
 			if *httping || *sslping {
 				time.Sleep(*interval)
-				resAry = curlCheck(ps)
+				resAry = curlCheck(host.Name)
 			} else {
-				resAry = pinger(ps)
+				resAry = pinger(host.Name)
 			}
 			if resAry[0] != "o" && resAry[0] != "200" {
-				hbfAry = append(hbfAry, resAry[1])
+				host.Loss++
 			}
 			/*Before Scrolling To the bottom*/
 			if maxY > i+DRAW_UP_Y+1 {
 				drawFlag(JUDGE_X, i+DRAW_UP_Y, resAry[0])
 				drawFlag(JUDGE_X, 1, resAry[0])
-				drawSeq(HOST_X, RTT_X, DES_X, i+DRAW_UP_Y, resAry[0], resAry[1], resAry[2], des)
+				drawSeq(HOST_X, RTT_X, DES_X, i+DRAW_UP_Y, resAry[0], resAry[1], resAry[2], host.Description)
 
 				/*After Scrolling To the bottom*/
 			} else {
@@ -589,7 +639,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 				drawFlag(JUDGE_X, maxY-DRAW_DW_Y, resAry[0])
 				drawFlag(JUDGE_X, 1, resAry[0])
-				drawSeq(HOST_X, RTT_X, DES_X, maxY-DRAW_DW_Y, resAry[0], resAry[1], resAry[2], des)
+				drawSeq(HOST_X, RTT_X, DES_X, maxY-DRAW_DW_Y, resAry[0], resAry[1], resAry[2], host.Description)
 
 				/*rc is count Reading rbf After Scrolling To the bottom*/
 				var rc int
@@ -615,7 +665,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 			//var pres []string
 			pres := make([]string, 0, 4)
-			pres = append(pres, resAry[0], resAry[1], resAry[2], des)
+			pres = append(pres, resAry[0], resAry[1], resAry[2], host.Description)
 
 			/*Logging rbf -> This buffer Called by Next Drawing*/
 			rbfAry = append(rbfAry, strings.Join(pres, " "))
@@ -626,30 +676,18 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			log := "[" + formatingDate + "]" + " " + strings.Join(pres, " ") + "\n"
 			addog(log, rfile)
 
-			/*Refreshing Loss Counter*/
-			fill(LIST_P_X, index, 10, 1, termbox.Cell{Ch: ' '})
+			host.LossPercent = round(percent.PercentOf(host.Loss, j), 2)
 
-			/*Loss counting from hbf*/
-			var c int
-			for _, loss := range hbfAry {
-				/*So, If pexpo had been sending ICMP loss, pexpo logging per host to the hbfAry,
-				This loop loss counting*/
-				if loss == resAry[1] {
-					c++
-				}
-			}
-
-			/*Drawing Loss Counter*/
-			drawLineColor(LIST_P_X, index, fmt.Sprintf("%.2f", round(percent.PercentOf(c, j), 2)), termbox.ColorGreen)
-			drawLineColor(LIST_L_X, index, fmt.Sprintf("%v", c), termbox.ColorGreen)
-			drawLineColor(LIST_L_X+4, index, fmt.Sprintf("%v", "loss"), termbox.ColorGreen)
-
-			/*Drawing the Dead stamp*/
+			/*Judge the Dead*/
 			if resAry[0] == "o" || resAry[0] == "200" {
-				fill(LIST_D_X, index, 9, 1, termbox.Cell{Ch: ' '})
+				host.IsDead = false
 			} else {
-				drawLineColor(LIST_D_X, index, fmt.Sprintf("%v", "Dead Now!"), termbox.ColorRed)
+				host.IsDead = true
 			}
+
+			hostlist = registerVal(index, host)
+
+			drawHostlist(maxX, maxY)
 
 			/*Drawing Done*/
 			termbox.Flush()
@@ -657,8 +695,6 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 			/*All couting per sending ICMP*/
 			i++
 
-			/*"index" for the mapping host to the Loss counter*/
-			index++
 		}
 	}
 }
@@ -710,6 +746,9 @@ func main() {
 
 	//terch := make(chan struct{})
 
+	/*killKey channel is received HW key interrupt*/
+	killKey := make(chan termbox.Key)
+
 	/*stop channel is for stopping drawLoop()*/
 	stop := make(chan struct{}, 0)
 
@@ -718,9 +757,6 @@ func main() {
 
 	/*received channel is received message from drawLoop()*/
 	received := make(chan struct{}, 0)
-
-	/*killKey channel is received HW key interrupt*/
-	killKey := make(chan termbox.Key)
 
 	/*sleep flag*/
 	sleep := false
@@ -750,6 +786,14 @@ loop:
 					sleep = false
 					goto loop
 				}
+			case termbox.KeyArrowUp:
+				scrCount++
+				drawHostlist(maxX, maxY)
+				termbox.Flush()
+			case termbox.KeyArrowDown:
+				scrCount--
+				drawHostlist(maxX, maxY)
+				termbox.Flush()
 			}
 			/*
 				case <-terch:
