@@ -14,7 +14,7 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 (scroling host-list!)
 
 ## Install
-Install Page: https://github.com/nnao45/pexpo/releases/tag/1.25
+Install Page: https://github.com/nnao45/pexpo/releases/tag/1.３０
 
 ## Usage
 ```bash
