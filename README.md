@@ -82,6 +82,7 @@ Examples:
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, using tab is ok, no description is ok...).
   
 ## Release note
+- version 1.30...Scroling host-list!!!!! :fish_cake:
 - version 1.25...travis support & reading ping-list's bug fix.
 - version 1.24...go report A+!!(no implement change)
 - version 1.23...Little performance up(assign cap in the string[])
