@@ -789,7 +789,7 @@ loop:
 					goto loop
 				}
 			case termbox.KeyArrowUp:
-				if len(hostlist) != maxY-4+scrCount {
+				if len(hostlist) >= scrCount+maxY-3 {
 					scrCount++
 					drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorCyan)
 					drawHostlist(maxX, maxY)
