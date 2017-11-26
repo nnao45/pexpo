@@ -573,6 +573,8 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 	drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)
 	drawLineColor(LIST_L_X, 2, fmt.Sprintf("%v", "Loss(sum)"), termbox.ColorWhite)
 	drawLineColor(LIST_D_X, 2, fmt.Sprintf("%v", "Dead Now?"), termbox.ColorWhite)
+	drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorDefault)
+	drawLineColor(120, maxY-2, "↓", termbox.ColorDefault)
 	drawLine(HOST_X, 1, fmt.Sprintf("%v", "Host"))
 	drawLine(RTT_X, 1, fmt.Sprintf("%v", "Response"))
 	drawLine(DES_X, 1, fmt.Sprintf("%v", "Description"))
@@ -787,12 +789,24 @@ loop:
 					goto loop
 				}
 			case termbox.KeyArrowUp:
-				scrCount++
-				drawHostlist(maxX, maxY)
+				if len(hostlist) != maxY-4+scrCount {
+					scrCount++
+					drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorCyan)
+					drawHostlist(maxX, maxY)
+				} else {
+					drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorRed)
+				}
+				drawLineColor(120, maxY-2, "↓", termbox.ColorDefault)
 				termbox.Flush()
 			case termbox.KeyArrowDown:
-				scrCount--
-				drawHostlist(maxX, maxY)
+				if scrCount != 0 {
+					scrCount--
+					drawLineColor(120, maxY-2, "↓", termbox.ColorCyan)
+					drawHostlist(maxX, maxY)
+				} else {
+					drawLineColor(120, maxY-2, "↓", termbox.ColorRed)
+				}
+				drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorDefault)
 				termbox.Flush()
 			}
 			/*
