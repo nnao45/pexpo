@@ -80,6 +80,7 @@ Examples:
 ### more...
 - Logging ping result($HOME/.pexpo/result_$DATE_.txt).
 - Check the syntax on the ping-list(# is comment out, ignoring blank line, using tab is ok, no description is ok...).
+- Push ArrowUp or Down key, scroll host-list :arrow_double_up: :arrow_double_down:
   
 ## Release note
 - version 1.30...Scroling host-list!!!!! :fish_cake:
