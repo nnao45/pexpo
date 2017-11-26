@@ -1,4 +1,4 @@
-[![v1.25](https://img.shields.io/badge/package-v1.25-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.25)
+[![v1.30](https://img.shields.io/badge/package-v1.30-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.30)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nnao45/pexpo/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nnao45/pexpo)](https://goreportcard.com/report/github.com/nnao45/pexpo)
 [![Travis CI](https://travis-ci.org/nnao45/pexpo.svg?branch=master)](https://travis-ci.org/nnao45/pexpo)
@@ -10,8 +10,8 @@ pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application. 
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
   
-***Current pexpo's version: 1.25***  
-(reading ping-list's bug fix)
+***Current pexpo's version: 1.30***  
+(scroling host-list!)
 
 ## Install
 Install Page: https://github.com/nnao45/pexpo/releases/tag/1.25
@@ -56,7 +56,10 @@ Examples:
 
 	And, if http status code is "200", string color is Blue, else Red.
 ```
-  
+ 
+## Demo (macOS 10.13.1):apple:
+![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo-mac.gif)
+ 
 ## Demo (Ubuntu16.04):penguin:
 ![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo_1.20_linux.gif)
 
