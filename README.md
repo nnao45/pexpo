@@ -46,7 +46,7 @@ $ cat << EOT > ping-list.txt
 2001:4860:4860::8888 www.google.com
 EOT
 ```
-Okay, and run:blush:
+Okay, and run :blush:
 ```bash
 sudo pexpo -f ping-list.txt
 ```
