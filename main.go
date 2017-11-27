@@ -510,11 +510,11 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 					s = s + "noname_host"
 				}
 
-				/*For -a option
+				/*For -A option
 				Ignoring string, "Internet"*/
 				if *arpentries && strings.HasPrefix(s, "Internet") {
 					sAry := strings.SplitN(s, "  ", 2)
-					s = sAry[1]
+					s = strings.TrimSpace(sAry[1])
 				}
 			}
 
