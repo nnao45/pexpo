@@ -9,7 +9,7 @@ pexpo is ping sending tui tool with cool clomun & logging loss-count in the mult
 pexpo has tui engine is [termbox-go](https://github.com/nsf/termbox-go), sending ICMP engine is [go-fastping](https://github.com/tatsushid/go-fastping).  
 So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) application. 
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
-And, This app use with root(sudo) privilege, Because, using　icmp socket.
+And, This app use with root(sudo) privilege. Because using socket of icmp.
   
 ***Current pexpo's version: 1.30***  
 (scroling host-list!)
