@@ -513,8 +513,8 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				/*For -A option
 				Ignoring string, "Internet"*/
 				if *arpentries && strings.HasPrefix(s, "Internet") {
-					sAry := strings.SplitN(s, "  ", 2)
-					s = strings.TrimSpace(sAry[1])
+					sAry := strings.SplitN(s, " ", 2)
+					s = sAry[1]
 				}
 			}
 
