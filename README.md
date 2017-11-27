@@ -43,7 +43,7 @@ $ cat << EOT > ping-list.txt
 8.20.247.20 		Comodo Secure DNS
 106.186.17.181 		OpenNIC
 106.185.41.36 		OpenNIC
-2001:4860:4860::8888 www.google.com
+2001:4860:4860::8888	www.google.com
 EOT
 ```
 Okay, and run :blush:
