@@ -2,7 +2,7 @@
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nnao45/pexpo/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nnao45/pexpo)](https://goreportcard.com/report/github.com/nnao45/pexpo)
 [![Travis CI](https://travis-ci.org/nnao45/pexpo.svg?branch=master)](https://travis-ci.org/nnao45/pexpo)
-[![platform](https://img.shields.io/conda/pn/conda-forge/python.svg?maxAge=2592000)]()
+[![platform](https://img.shields.io/badge/platform-win10%20|%20osx%20|%20linux-orange.svg)]()
 # pexpo
 ![result](https://user-images.githubusercontent.com/17565502/30773031-041851a6-a0a3-11e7-90be-81199aa12676.png)  
 pexpo is ping sending tui tool with cool clomun & logging loss-count in the multi platforms(Windows, Mac, Linux...).  
@@ -14,7 +14,7 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 (scroling host-list!)
 
 ## Install
-Install Page: https://github.com/nnao45/pexpo/releases/tag/1.25
+Install Page: https://github.com/nnao45/pexpo/releases/tag/1.30
 
 ## Usage
 ```bash
@@ -71,7 +71,7 @@ Examples:
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
-- ONLY one app run on multi platforms(Windows7, Windows10, Mac, Linux...)!!:kissing_heart:
+- ONLY one app run on multi platforms(Windows10, Mac, Linux...)!!:kissing_heart:
 - You can send ICMP or HTTP GET or HTTPS GET ipv4, and ipv6!!:open_mouth:
 - pexpo has several options. You can change ping interval, timeout, select ping-list, ,help Cisco using, & http ping mode!:octocat:
 - Display Counting Ping loss per host:point_up_2:
