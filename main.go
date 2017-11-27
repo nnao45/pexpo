@@ -767,7 +767,7 @@ loop:
 					sleep = false
 					goto loop
 				}
-			case termbox.KeyArrowUp, 'w':
+			case termbox.KeyArrowUp, termbox.KeyCtrlA:
 				if len(hostlist.Hosts) >= scrCount+maxY-3 {
 					scrCount++
 					drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorCyan)
@@ -777,7 +777,7 @@ loop:
 				}
 				drawLineColor(120, maxY-2, "↓", termbox.ColorDefault)
 				termbox.Flush()
-			case termbox.KeyArrowDown, 's':
+			case termbox.KeyArrowDown, termbox.KeyCtrlZ:
 				if scrCount != 0 {
 					scrCount--
 					drawLineColor(120, maxY-2, "↓", termbox.ColorCyan)
