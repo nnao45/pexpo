@@ -393,7 +393,7 @@ type HostList struct {
 var hostlist *HostList
 
 func newHostList() (hl *HostList) {
-	h := make([]HostCounter, 0, 100)
+	h := make([]HostCounter, 0, 200)
 	hl = &HostList{
 		Hosts: h,
 	}
