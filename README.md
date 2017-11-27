@@ -14,8 +14,13 @@ And, This app use with root(sudo) privilege. Because using socket of icmp.
 ***Current pexpo's version: 1.30***  
 (scroling host-list!)
 
+## Download
+Download Page: https://github.com/nnao45/pexpo/releases/tag/1.30
+
 ## Install
-Install Page: https://github.com/nnao45/pexpo/releases/tag/1.30
+```bash
+brew install pexpo
+```
 
 ## Usage
 ```bash
