@@ -386,33 +386,30 @@ type HostCounter struct {
 	IsDead      bool
 }
 
-type HostList []HostCounter
+type HostList struct {
+	Hosts []HostCounter
+}
 
-var hostlist HostList
+var hostlist *HostList
 
-func registerVal(index int, host HostCounter) (nhl HostList) {
-	for n, h := range hostlist {
-		if n == index {
-			nh := HostCounter{
-				Name:        h.Name,
-				Description: h.Description,
-				Loss:        host.Loss,
-				LossPercent: host.LossPercent,
-				IsDead:      host.IsDead,
-			}
-			nhl = append(nhl, nh)
-		} else {
-			nhl = append(nhl, h)
-		}
+func newHostList() (hl *HostList) {
+	h := make([]HostCounter, 0, 100)
+	hl = &HostList{
+		Hosts: h,
 	}
 	return
 }
 
+func (hl *HostList) registerVal(index int, host HostCounter) []HostCounter {
+	hl.Hosts[index] = host
+	return hl.Hosts
+}
+
 func drawHostlist(maxX, maxY int) {
-	fill(LIST_H_X, DRAW_UP_Y, COLUMN, maxY-4, termbox.Cell{Ch: ' '})
-	fill(LIST_P_X, DRAW_UP_Y, COLUMN, maxY-4, termbox.Cell{Ch: ' '})
+	fill(LIST_H_X, DRAW_UP_Y, COLUMN+2, maxY-4, termbox.Cell{Ch: ' '})
+	fill(LIST_P_X, DRAW_UP_Y, COLUMN+2, maxY-4, termbox.Cell{Ch: ' '})
 	fill(LIST_L_X, DRAW_UP_Y, COLUMN+2, maxY-4, termbox.Cell{Ch: ' '})
-	for n, h := range hostlist {
+	for n, h := range hostlist.Hosts {
 		if n < scrCount {
 			continue
 		}
@@ -552,7 +549,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 		var h HostCounter
 		h.Name = sAry[0]
 		h.Description = sAry[1]
-		hostlist = append(hostlist, h)
+		hostlist.Hosts = append(hostlist.Hosts, h)
 	}
 
 	drawHostlist(maxX, maxY)
@@ -603,7 +600,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 		/*Userd by hbf, index must be Reinitialize in per loop*/
 
-		for index, host := range hostlist {
+		for index, host := range hostlist.Hosts {
 
 			/*For Stop & Restart*/
 			select {
@@ -687,7 +684,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 				host.IsDead = true
 			}
 
-			hostlist = registerVal(index, host)
+			hostlist.Hosts = hostlist.registerVal(index, host)
 
 			drawHostlist(maxX, maxY)
 
@@ -714,25 +711,7 @@ func init() {
 	err = os.MkdirAll(rdir, 0755)
 	fatal(err)
 
-	/*
-		if *editor {
-
-		edited := make(chan struct{}, 0)
-			go func () {
-			cmd := exec.Command(`C:\Program Files\Notepad++\notepad++.exe`, *pinglist)
-			cmd.Stdin = os.Stdin
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-
-			err := cmd.Run()
-			if err != nil{
-				panic(err)
-				}
-			edited <- struct{}{}
-			}()
-			<- edited
-		}
-	*/
+	hostlist = newHostList()
 }
 
 func main() {
@@ -788,8 +767,8 @@ loop:
 					sleep = false
 					goto loop
 				}
-			case termbox.KeyArrowUp:
-				if len(hostlist) >= scrCount+maxY-3 {
+			case termbox.KeyArrowUp, 'w':
+				if len(hostlist.Hosts) >= scrCount+maxY-3 {
 					scrCount++
 					drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorCyan)
 					drawHostlist(maxX, maxY)
@@ -798,7 +777,7 @@ loop:
 				}
 				drawLineColor(120, maxY-2, "↓", termbox.ColorDefault)
 				termbox.Flush()
-			case termbox.KeyArrowDown:
+			case termbox.KeyArrowDown, 's':
 				if scrCount != 0 {
 					scrCount--
 					drawLineColor(120, maxY-2, "↓", termbox.ColorCyan)
