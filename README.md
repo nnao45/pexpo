@@ -48,7 +48,7 @@ EOT
 ```
 Okay, and run :blush:
 ```bash
-sudo pexpo -f ping-list.txt
+$ sudo pexpo -f ping-list.txt
 ```
 
 ## Usage
