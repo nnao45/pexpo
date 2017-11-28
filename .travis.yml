@@ -6,6 +6,10 @@ go:
           - 1.8
           - 1.9
           - master
+os:
+          - linux
+          - osx
+          - windows
 before_script:
           - go get "github.com/dariubs/percent"
           - go get "github.com/mattn/go-runewidth"
