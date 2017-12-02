@@ -15,7 +15,7 @@ And, This app use with root(sudo) privilege. Because using socket of icmp.
 (add "-V"...make tmp ping-list with vi)
 
 ## Download
-Download Page: https://github.com/nnao45/pexpo/releases/tag/1.32
+Download Page: https://github.com/nnao45/pexpo/releases/tag/1.33
 
 ## Install
 ```bash
@@ -106,6 +106,35 @@ Option:
 
 ## Demo (windows10 & HTTPING):earth_asia:
 ![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo_HS_1.20_wins.gif)
+
+## Support, Running NOT NEED text file mode
+```bash
+$ sudo pexpo -V
+```
+you write, for example, following text,
+```bash
+8.8.8.8	google.com
+8.8.4.4	google.com
+208.67.220.123 OpenDNS
+216.146.35.35 Dyn Internet Guide
+216.146.36.36 Dyn Internet Guide
+77.88.8.8 Yandex.DNS
+77.88.8.1 Yandex.DNS
+77.88.8.88 Yandex.DNS
+77.88.8.2 Yandex.DNS
+77.88.8.7 Yandex.DNS
+77.88.8.3 Yandex.DNS
+180.76.76.76 Baidu DNS
+114.114.114.114 Baidu DNS
+80.80.80.80 Freenom World
+80.80.81.81 Freenom World
+8.26.56.26 Comodo Secure DNS
+8.20.247.20 Comodo Secure DNS
+106.186.17.181 OpenNIC
+106.185.41.36 OpenNIC
+2001:4860:4860::8888 www.google.com
+```
+okay, and push ":wq", run pexpo :relieved:
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
