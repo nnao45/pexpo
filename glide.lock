@@ -1,5 +1,5 @@
 hash: 19522a55ec090688e488180f6975be7b65424bca19385ff7788449b45e1d8b16
-updated: 2017-12-03T01:35:15.303872+09:00
+updated: 2017-12-03T01:43:55.868725+09:00
 imports:
 - name: github.com/dariubs/percent
   version: 6a210960ed74f0c94ad2c45fb5ba2a49b7fd7b1c
