@@ -108,6 +108,7 @@ Option:
 ![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo_HS_1.20_wins.gif)
 
 ## Support, Running NOT NEED text file mode
+Before run main, make ping-list with "vi".
 ```bash
 $ sudo pexpo -V
 ```
