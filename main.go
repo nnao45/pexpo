@@ -110,8 +110,8 @@ Option:
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
 	   Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
 	   
-	-V if you DON'T want to make file "ping-list", should use this option.
-	   this option is run "vi", and make tmpfile...pexpo this file as ping-list.
+　　　　　　　　　-V if you DON'T want to make file "ping-list", should use this option.
+　　　　　　　　　　　　 　this option is run "vi", and make tmpfile...pexpo this file as ping-list.
 
 <HTTP mode options!>
 
