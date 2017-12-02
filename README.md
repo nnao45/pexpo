@@ -1,4 +1,4 @@
-[![v1.32](https://img.shields.io/badge/package-v1.32-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.32)
+[![v1.33](https://img.shields.io/badge/package-v1.33-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.33)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nnao45/pexpo/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nnao45/pexpo)](https://goreportcard.com/report/github.com/nnao45/pexpo)
 [![Travis CI](https://travis-ci.org/nnao45/pexpo.svg?branch=master)](https://travis-ci.org/nnao45/pexpo)
@@ -15,7 +15,7 @@ And, This app use with root(sudo) privilege. Because using socket of icmp.
 (add "-V"...make tmp ping-list with vi)
 
 ## Download
-Download Page: https://github.com/nnao45/pexpo/releases/tag/1.32
+Download Page: https://github.com/nnao45/pexpo/releases/tag/1.33
 
 ## Install
 ```bash
@@ -73,7 +73,7 @@ Option:
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
 	   Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
 	   
-    -V if you want to make file "ping-list", should use this option.
+    -V if you DON'T want to make file "ping-list", should use this option.
        this option is run "vi", and make tmpfile...pexpo this file as ping-list.
 
 <HTTP mode options!>
@@ -106,6 +106,36 @@ Option:
 
 ## Demo (windows10 & HTTPING):earth_asia:
 ![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo_HS_1.20_wins.gif)
+
+## Support, Running NOT NEED text file mode
+Before run main, make ping-list with "vi".
+```bash
+$ sudo pexpo -V
+```
+you write, for example, following text,
+```bash
+8.8.8.8	google.com
+8.8.4.4	google.com
+208.67.220.123 OpenDNS
+216.146.35.35 Dyn Internet Guide
+216.146.36.36 Dyn Internet Guide
+77.88.8.8 Yandex.DNS
+77.88.8.1 Yandex.DNS
+77.88.8.88 Yandex.DNS
+77.88.8.2 Yandex.DNS
+77.88.8.7 Yandex.DNS
+77.88.8.3 Yandex.DNS
+180.76.76.76 Baidu DNS
+114.114.114.114 Baidu DNS
+80.80.80.80 Freenom World
+80.80.81.81 Freenom World
+8.26.56.26 Comodo Secure DNS
+8.20.247.20 Comodo Secure DNS
+106.186.17.181 OpenNIC
+106.185.41.36 OpenNIC
+2001:4860:4860::8888 www.google.com
+```
+okay, and push ":wq", run the pexpo :relieved:
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
