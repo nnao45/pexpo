@@ -1,0 +1,21 @@
+hash: 19522a55ec090688e488180f6975be7b65424bca19385ff7788449b45e1d8b16
+updated: 2017-12-03T01:35:15.303872+09:00
+imports:
+- name: github.com/dariubs/percent
+  version: 6a210960ed74f0c94ad2c45fb5ba2a49b7fd7b1c
+- name: github.com/mattn/go-runewidth
+  version: 9e777a8366cce605130a531d2cd6363d07ad7317
+- name: github.com/nsf/termbox-go
+  version: aa4a75b1c20a2b03751b1a9f7e41d58bd6f71c43
+- name: github.com/tatsushid/go-fastping
+  version: d7bb493dee3e090e2ffb6914adddf17c1e7c026c
+- name: golang.org/x/net
+  version: a8b9294777976932365dabb6640cf1468d95c70f
+  subpackages:
+  - bpf
+  - icmp
+  - internal/iana
+  - internal/socket
+  - ipv4
+  - ipv6
+testImports: []
