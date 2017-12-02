@@ -11,8 +11,8 @@ So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) appl
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
 And, This app use with root(sudo) privilege. Because using socket of icmp.
   
-***Current pexpo's version: 1.32***  
-(bug fix)
+***Current pexpo's version: 1.33***  
+(add "-V"...make tmp ping-list with vi)
 
 ## Download
 Download Page: https://github.com/nnao45/pexpo/releases/tag/1.32
@@ -52,9 +52,8 @@ $ sudo pexpo -f ping-list.txt
 ```
 
 ## Usage
-```bash
-Usage:
-    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-A] [-H] [-S]
+```bashUsage:
+    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-A] [-H] [-S] [-V]
 
 Examples:
     ./pexpo -i 500ms -t 1s -f /usr/local/ping-list.txt
@@ -72,24 +71,28 @@ Option:
 
     -A If you want to write on ping-list -- such as Cisco's show ip arp -- , 
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
-       Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
+	   Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
+	   
+    -V if you want to make file "ping-list", should use this option.
+       this option is run "vi", and make tmpfile...pexpo this file as ping-list.
 
 <HTTP mode options!>
 
 Examples:
     ./pexpo -H -i 500ms -t 1s -f /usr/local/curl-list.txt
     pexpo.exe -S -i 500ms -t 1s -f C:\Users\arale\Desktop\curl-list.txt
-	(If you want to Request, "http and https", Using Both -H & -S.)
-	   
-	-H This optison is like "curl". So you Sending HTTP(:80) GET Request instead of the PING...!
-	   
-	-S This optison is like "curl". So you Sending HTTP"S"(:443) GET Request instead of the PING...!
+       (If you want to "Request, http and https", Using Both -H & -S.)
 	
-	-H or -S options is sending HTTP/HTTPS GET Request instead of the PING.
-	(Just like, curl -LIs www.google.com -o /dev/null -w '%{http_code}\n')
-	This Request is ververy simple GET Request, Only Getting status code(No header, No form, No getting data.)
+Option:
+    -H This optison is like "curl". So you Sending HTTP(:80) GET Request instead of the PING...!
+	   
+    -S This optison is like "curl". So you Sending HTTP"S"(:443) GET Request instead of the PING...!
+	
+       -H or -S options HTTP/HTTPS GET Request instead of the PING.
+       (Just like, curl -LIs www.google.com -o /dev/null -w '%{http_code}\n')
+       This Request is ververy simple GET Request, Only Getting status code(No header, No form, No getting data.)
 
-	And, if http status code is "200", string color is Blue, else Red.
+       And, if http status code is "200", string color is Blue, else Red.
 ```
  
 ## Demo (macOS 10.13.1):apple:
@@ -118,6 +121,7 @@ Examples:
 - Push ArrowUp(Ctrl+A) or ArrowDown(Ctrl+Z) key, scroll host-list :arrow_double_up: :arrow_double_down:
   
 ## Release note
+- version 1.33...add "-V"...make tmp ping-list with vi.
 - version 1.32...little bug fix & brew install support.
 - version 1.31...little bug fix & brew install support.
 - version 1.30...Scroling host-list!!!!! :fish_cake:
