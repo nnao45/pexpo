@@ -135,7 +135,7 @@ you write, for example, following text,
 106.185.41.36 OpenNIC
 2001:4860:4860::8888 www.google.com
 ```
-okay, and push ":wq", run pexpo :relieved:
+okay, and push ":wq", run the pexpo :relieved:
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
