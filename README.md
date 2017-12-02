@@ -136,7 +136,6 @@ you write, for example, following text,
 2001:4860:4860::8888 www.google.com
 ```
 okay, and push ":wq", run the pexpo :relieved:  
-![result](https://github.com/nnao45/naoGifRepo/blob/master/pexpo-mac12月-02-2017%2016-29-49.gif)
 
 ## Implementation
 - Very light, and quick application(for Sending ICMP to the too many hosts):metal:
