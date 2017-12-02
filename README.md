@@ -1,4 +1,4 @@
-[![v1.32](https://img.shields.io/badge/package-v1.32-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.32)
+[![v1.33](https://img.shields.io/badge/package-v1.33-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.33)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nnao45/pexpo/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nnao45/pexpo)](https://goreportcard.com/report/github.com/nnao45/pexpo)
 [![Travis CI](https://travis-ci.org/nnao45/pexpo.svg?branch=master)](https://travis-ci.org/nnao45/pexpo)
@@ -73,7 +73,7 @@ Option:
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
 	   Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
 	   
-    -V if you want to make file "ping-list", should use this option.
+    -V if you DON'T want to make file "ping-list", should use this option.
        this option is run "vi", and make tmpfile...pexpo this file as ping-list.
 
 <HTTP mode options!>
