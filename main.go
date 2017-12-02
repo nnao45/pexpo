@@ -110,7 +110,7 @@ Option:
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
 	   Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
 	   
-	-V if you want to make file "ping-list", should use this option.
+	-V if you DON'T want to make file "ping-list", should use this option.
 	   this option is run "vi", and make tmpfile...pexpo this file as ping-list.
 
 <HTTP mode options!>
@@ -720,7 +720,7 @@ func init() {
 	if *vi {
 		edited := make(chan struct{}, 0)
 		go func() {
-			tmplist, err := ioutil.TempFile(".", "pexpotmp")
+			tmplist, err := ioutil.TempFile("/tmp", "pexpotmp")
 			defer tmplist.Close()
 			if err != nil {
 				panic(err)
