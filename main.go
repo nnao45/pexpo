@@ -58,11 +58,13 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math"
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 
@@ -81,15 +83,14 @@ var timeout = flag.Duration("t", time.Second*ICMP_TIMEOUT, "")
 var interval = flag.Duration("i", time.Millisecond*ICMP_INTERVAL, "")
 var pinglist = flag.String("f", PING_LIST, "")
 var arpentries = flag.Bool("A", false, "")
+var vi = flag.Bool("V", false, "")
 var httping = flag.Bool("H", false, "")
 var sslping = flag.Bool("S", false, "")
-
-//var editor = flag.Bool("E", true, "")
 
 /*This Used by func flag.Usage()*/
 var usage = `
 Usage:
-    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-A] [-H] [-S]
+    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-A] [-H] [-S] [-V]
 
 Examples:
     ./pexpo -i 500ms -t 1s -f /usr/local/ping-list.txt
@@ -107,7 +108,10 @@ Option:
 
     -A If you want to write on ping-list -- such as Cisco's show ip arp -- , 
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
-       Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
+	   Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
+	   
+	-V if you want to make file "ping-list", should use this option.
+	   this option is run "vi", and make tmpfile...pexpo this file as ping-list.
 
 <HTTP mode options!>
 
@@ -157,7 +161,7 @@ const (
 	ICMP_TIMEOUT  = 3
 
 	/*pexpo's version*/
-	VERSION = "1.32"
+	VERSION = "1.33"
 )
 
 func fatal(err error) {
@@ -712,9 +716,39 @@ func init() {
 	fatal(err)
 
 	hostlist = newHostList()
+
+	if *vi {
+		edited := make(chan struct{}, 0)
+		go func() {
+			tmplist, err := ioutil.TempFile(".", "pexpotmp")
+			defer tmplist.Close()
+			if err != nil {
+				panic(err)
+			}
+			cmd := exec.Command(`vi`, tmplist.Name())
+			cmd.Stdin = os.Stdin
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			runErr := cmd.Run()
+			if runErr != nil {
+				panic(runErr)
+			}
+			*pinglist = tmplist.Name()
+			edited <- struct{}{}
+		}()
+		<-edited
+	}
 }
 
 func main() {
+
+	if *vi {
+		defer func() {
+			if err := os.RemoveAll(*pinglist); err != nil {
+				fmt.Println(err)
+			}
+		}()
+	}
 
 	/*termbox start*/
 	err := termbox.Init()
