@@ -1,4 +1,4 @@
-[![v1.33](https://img.shields.io/badge/package-v1.33-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.33)
+[![v1.34](https://img.shields.io/badge/package-v1.34-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.34)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nnao45/pexpo/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nnao45/pexpo)](https://goreportcard.com/report/github.com/nnao45/pexpo)
 [![Travis CI](https://travis-ci.org/nnao45/pexpo.svg?branch=master)](https://travis-ci.org/nnao45/pexpo)
@@ -11,11 +11,11 @@ So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) appl
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
 And, This app use with root(sudo) privilege. Because using socket of icmp.
   
-***Current pexpo's version: 1.33***  
-(add "-V"...make tmp ping-list with vi)
+***Current pexpo's version: 1.34***  
+(typo fix)
 
 ## Download
-Download Page: https://github.com/nnao45/pexpo/releases/tag/1.33
+Download Page: https://github.com/nnao45/pexpo/releases/tag/1.34
 
 ## Install
 ```bash
@@ -146,6 +146,7 @@ okay, and push ":wq", run the pexpo :relieved:
 - Push ArrowUp(Ctrl+A) or ArrowDown(Ctrl+Z) key, scroll host-list :arrow_double_up: :arrow_double_down:
   
 ## Release note
+- version 1.34...typo fix.
 - version 1.33...add "-V"...make tmp ping-list with vi.
 - version 1.32...little bug fix & brew install support.
 - version 1.31...little bug fix & brew install support.
