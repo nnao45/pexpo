@@ -7,8 +7,5 @@ os:
           - linux
           - osx
 before_script:
-          - go get "github.com/dariubs/percent"
-          - go get "github.com/mattn/go-runewidth"
-          - go get "github.com/nsf/termbox-go"
-          - go get "github.com/tatsushid/go-fastping"
+          - glide up
 script: go build
