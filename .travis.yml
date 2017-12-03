@@ -6,6 +6,4 @@ go:
 os:
           - linux
           - osx
-before_script:
-          - glide up
 script: go build
