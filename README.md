@@ -20,8 +20,7 @@ Download Page: https://github.com/nnao45/pexpo/releases/tag/1.36
 
 ## Install
 ```bash
-$ brew tap nnao45/pexpo
-$ brew install pexpo
+$ brew install nnao45/pexpo/pexpo
 ```
 if you install with brew, please make ping-list, for example, following text.
 ```bash
