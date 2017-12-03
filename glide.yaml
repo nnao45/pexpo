@@ -1,4 +1,4 @@
-package: .
+package: github.com/nnao45/pexpo
 import:
 - package: github.com/dariubs/percent
 - package: github.com/mattn/go-runewidth
