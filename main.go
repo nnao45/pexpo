@@ -68,7 +68,6 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -321,8 +320,7 @@ var client = http.Client{}
 
 /*This http ping engine*/
 func curlCheck(url string) []string {
-	res := make([]string, 0, 3)        // res is for chanerizing the HTTP Ping result.
-	receiver := make(chan []string, 3) //suucess http result -> receiver
+	res := make([]string, 0, 3) // res is for chanerizing the HTTP Ping result.
 
 	/*syntax check*/
 	if *httping && *sslping {
@@ -346,43 +344,26 @@ func curlCheck(url string) []string {
 	req, err := http.NewRequest("GET", url, nil)
 	fatal(err)
 
-	parent, pCancel := context.WithTimeout(context.Background(), *timeout)
-	child, cCancel := context.WithCancel(parent)
-	defer cCancel()
+	ctx, cancel := context.WithTimeout(context.Background(), *timeout)
+	defer cancel()
 
-	req = req.WithContext(parent)
+	req = req.WithContext(ctx)
 
-	go func() {
-		resp, err := client.Do(req)
-		if err != nil {
-			defer pCancel()
-			return
-		}
-		defer resp.Body.Close()
-
-		out := make([]string, 0, 3) // out is Success HTTP Ping result []string.
-		out = append(out, strconv.Itoa(resp.StatusCode), url, time.Since(timeStart).String())
-		select {
-		case receiver <- out:
-			defer close(receiver)
-			return
-		case <-parent.Done():
-			pCancel()
-			return
-		}
-	}()
-
-	select {
-	case res = <-receiver:
-		return res
-	case <-child.Done():
+	resp, err := client.Do(req)
+	if err != nil {
 		if *sslping {
 			res = append(res, "000", url, "ssl...no_response")
 		} else {
-			res = append(res, "000", url, " http...no_response")
+			res = append(res, "000", url, "http...no_response")
 		}
 		return res
 	}
+	defer resp.Body.Close()
+
+	out := make([]string, 0, 3) // out is Success HTTP Ping result []string.
+	out = append(out, strconv.Itoa(resp.StatusCode), url, time.Since(timeStart).String())
+
+	return out
 }
 
 var scrCount int
@@ -702,7 +683,6 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 			/*All couting per sending ICMP*/
 			i++
-			fmt.Println(runtime.NumGoroutine())
 		}
 	}
 }
