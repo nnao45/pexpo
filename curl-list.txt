@@ -25,11 +25,12 @@
 #
 #################################################################################
 
+#localhost:8080
 www.google.com
 www.yahoo.com
-8.8.8.8
-http://192.168.1.1
-github.com
-getpocket.com
-http://menthas.com
-https://www.youtube.com
+#8.8.8.8
+#http://192.168.1.1
+#github.com
+#getpocket.com
+#http://menthas.com
+#http://www.youtube.com

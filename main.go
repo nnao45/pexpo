@@ -56,6 +56,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -67,7 +68,7 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
-
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -162,7 +163,7 @@ const (
 	ICMP_TIMEOUT  = 3
 
 	/*pexpo's version*/
-	VERSION = "1.36"
+	VERSION = "1.37"
 )
 
 func fatal(err error) {
@@ -281,48 +282,47 @@ func pinger(host string) []string {
 	res := make([]string, 0, 3)        //res is for chanerizing the  Ping result.
 	receiver := make(chan []string, 2) //suucess ping result -> receiver
 
+	parent, pCancel := context.WithTimeout(context.Background(), *timeout)
+	child, cCancel := context.WithCancel(parent)
+	defer cCancel()
+
 	/*Received value from fastping.NewPinger()*/
 	go func() {
 		p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
 			out = append(out, host, rtt.String())
-			receiver <- out
-			defer close(receiver)
+			select {
+			case receiver <- out:
+				defer close(receiver)
+				return
+			case <-parent.Done():
+				pCancel()
+				return
+			}
 		}
 	}()
 	p.OnIdle = func() {
 	}
 	err = p.Run()
-	/*if err != nil {
-	                fmt.Println(err)
-			        }*/
+
 	fatal(err)
 
-	/*Set the timeout timer*/
-	timer := time.NewTimer(*timeout)
-	for {
-		timer.Reset(*timeout)
-		select {
-		case res = <-receiver:
-			res = append([]string{"o"}, res...)
-			return res
-		case <-timer.C:
-			res = append(res, "x", host, "ping...faild...")
-			return res
-		}
+	select {
+	case res = <-receiver:
+		res = append([]string{"o"}, res...)
+		return res
+	case <-child.Done():
+		res = append(res, "x", host, "ping...faild...")
+		return res
 	}
 }
 
 /*https://golang.org/pkg/net/http/#Client*/
-var client = http.Client{
-	Timeout: time.Duration(*timeout),
-}
+var client = http.Client{}
 
 /*This http ping engine*/
 func curlCheck(url string) []string {
-	out := make([]string, 0, 3)        // out is Success HTTP Ping result []string.
 	res := make([]string, 0, 3)        // res is for chanerizing the HTTP Ping result.
 	receiver := make(chan []string, 3) //suucess http result -> receiver
-	done := make(chan struct{}, 0)     //done is for finish func when http Timeout.
 
 	/*syntax check*/
 	if *httping && *sslping {
@@ -342,42 +342,46 @@ func curlCheck(url string) []string {
 	}
 
 	timeStart := time.Now()
-	//cTimeout := time.Duration(*timeout * time.Second)
+
+	req, err := http.NewRequest("GET", url, nil)
+	fatal(err)
+
+	parent, pCancel := context.WithTimeout(context.Background(), *timeout)
+	child, cCancel := context.WithCancel(parent)
+	defer cCancel()
+
+	req = req.WithContext(parent)
 
 	go func() {
-		resp, err := client.Get(url)
+		resp, err := client.Do(req)
 		if err != nil {
-			<-done
-			defer close(done)
+			defer pCancel()
+			return
 		}
-		out = append(out, strconv.Itoa(resp.StatusCode), url, time.Since(timeStart).String())
-		receiver <- out
-		defer close(receiver)
-
 		defer resp.Body.Close()
+
+		out := make([]string, 0, 3) // out is Success HTTP Ping result []string.
+		out = append(out, strconv.Itoa(resp.StatusCode), url, time.Since(timeStart).String())
+		select {
+		case receiver <- out:
+			defer close(receiver)
+			return
+		case <-parent.Done():
+			pCancel()
+			return
+		}
 	}()
 
-	timer := time.NewTimer(*timeout)
-	for {
-		timer.Reset(*timeout)
-		select {
-		case res = <-receiver:
-			return res
-		case <-timer.C:
-			if *sslping {
-				res = append(res, "000", url, "ssl...no_response")
-			} else {
-				res = append(res, "000", url, " http...no_response")
-			}
-			return res
-		case <-done:
-			if *sslping {
-				res = append(res, "000", url, "ssl...no_response")
-			} else {
-				res = append(res, "000", url, "http...no_response")
-			}
-			return res
+	select {
+	case res = <-receiver:
+		return res
+	case <-child.Done():
+		if *sslping {
+			res = append(res, "000", url, "ssl...no_response")
+		} else {
+			res = append(res, "000", url, " http...no_response")
 		}
+		return res
 	}
 }
 
@@ -698,7 +702,7 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 			/*All couting per sending ICMP*/
 			i++
-
+			fmt.Println(runtime.NumGoroutine())
 		}
 	}
 }
