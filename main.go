@@ -260,7 +260,7 @@ func fill(x, y, w, h int, cell termbox.Cell) {
 }
 
 /*This Core of the sendig ICMP engine*/
-func pinger(host string) []string {
+func pinger(host string) (res []string) {
 	p := fastping.NewPinger()
 
 	/*Selecting IPv4 or IPv6*/
@@ -278,7 +278,7 @@ func pinger(host string) []string {
 
 	p.MaxRTT = *interval               //icmp interval
 	out := make([]string, 0, 2)        //out is success ping reult []string
-	res := make([]string, 0, 3)        //res is for chanerizing the  Ping result.
+	res = make([]string, 0, 3)         //res is for chanerizing the  Ping result.
 	receiver := make(chan []string, 2) //suucess ping result -> receiver
 
 	parent, pCancel := context.WithTimeout(context.Background(), *timeout)
@@ -308,10 +308,10 @@ func pinger(host string) []string {
 	select {
 	case res = <-receiver:
 		res = append([]string{"o"}, res...)
-		return res
+		return
 	case <-child.Done():
 		res = append(res, "x", host, "ping...faild...")
-		return res
+		return
 	}
 }
 
@@ -319,8 +319,8 @@ func pinger(host string) []string {
 var client = http.Client{}
 
 /*This http ping engine*/
-func curlCheck(url string) []string {
-	res := make([]string, 0, 3) // res is for chanerizing the HTTP Ping result.
+func curlCheck(url string) (res []string) {
+	res = make([]string, 0, 3) // res is for chanerizing the HTTP Ping result.
 
 	/*syntax check*/
 	if *httping && *sslping {
@@ -356,14 +356,12 @@ func curlCheck(url string) []string {
 		} else {
 			res = append(res, "000", url, "http...no_response")
 		}
-		return res
+		return
 	}
 	defer resp.Body.Close()
 
-	out := make([]string, 0, 3) // out is Success HTTP Ping result []string.
-	out = append(out, strconv.Itoa(resp.StatusCode), url, time.Since(timeStart).String())
-
-	return out
+	res = append(res, strconv.Itoa(resp.StatusCode), url, time.Since(timeStart).String())
+	return
 }
 
 var scrCount int
