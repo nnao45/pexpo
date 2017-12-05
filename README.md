@@ -13,7 +13,7 @@ This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http
 And, This app use with root(sudo) privilege. Because using socket of icmp.
   
 ***Current pexpo's version: 1.37***  
-(context support & slim goroutine)
+(context support & slim goroutine.)
 
 ## Download
 Download Page: https://github.com/nnao45/pexpo/releases/tag/1.37
@@ -147,7 +147,7 @@ okay, and push ":wq", run the pexpo :relieved:
 - Push ArrowUp(Ctrl+A) or ArrowDown(Ctrl+Z) key, scroll host-list :arrow_double_up: :arrow_double_down:
   
 ## Release note
-- version 1.37...context support & slim goroutine
+- version 1.37...context support & slim goroutine.
 - version 1.36...stable homebrew & glide.
 - version 1.34...bug fix.
 - version 1.34...typo fix.
