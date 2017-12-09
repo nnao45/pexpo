@@ -90,11 +90,13 @@ var sslping = flag.Bool("S", false, "")
 /*This Used by func flag.Usage()*/
 var usage = `
 Usage:
-    pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-A] [-H] [-S] [-V]
+    pexpo | pexpo.exe [-v] [-h] [-i interval] [-t timeout] [-f ping-list] [-A] [-H] [-S] [-V]
 Examples:
     ./pexpo -i 500ms -t 1s -f /usr/local/ping-list.txt
     pexpo.exe -i 500ms -t 1s -f C:\Users\arale\Desktop\ping-list.txt
 Option:
+    -h Print this.
+    -v Print version.
     -i Sending ICMP interval time(Default:500ms, should not be lower this).
        You must not use "200" or "1" or..., must use "200ms" or "1s" or ... , so use with time's unit.
     -t Sending ICMP timeout time(Default:3s)
@@ -152,9 +154,6 @@ const (
 	/*Sending ICMP Param*/
 	ICMP_INTERVAL = 500
 	ICMP_TIMEOUT  = 3
-
-	/*pexpo's version*/
-	//VERSION = "1.39"
 )
 
 var (
