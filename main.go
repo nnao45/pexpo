@@ -153,7 +153,7 @@ const (
 	ICMP_TIMEOUT  = 3
 
 	/*pexpo's version*/
-	VERSION = "1.38"
+	VERSION = "1.39"
 )
 
 func fatal(err error) {
@@ -604,6 +604,7 @@ func drawLoop(maxX, maxY int, pauser *Pauser) {
 			/*For Stop & Restart*/
 			select {
 			case <-pauser.Stop:
+				pauser.MainMux.Unlock()
 				pauser.DrawMux.Lock()
 				pauser.MainMux.Unlock()
 
@@ -774,6 +775,7 @@ func main() {
 					fill(maxX-44, 0, 45, 1, termbox.Cell{Ch: ' '})
 					drawLineColor(maxX-48, 0, "Stop Now!! Crtl+S: Restart, Esc or Ctrl+C: Exit.", termbox.ColorYellow)
 					pauser.Stop <- struct{}{}
+					pauser.MainMux.Lock()
 					sleep = true
 				} else if sleep == true {
 					fill(maxX-48, 0, 49, 1, termbox.Cell{Ch: ' '})
