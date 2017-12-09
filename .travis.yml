@@ -6,4 +6,20 @@ go:
 os:
           - linux
           - osx
-script: go build
+script: 
+          - make
+          - make deps
+          - make cross-build
+          - make dist
+          - make install
+          - bin/pexpo -v
+          - make clean
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key: $GITHUB_TOKEN
+  file_glob: true
+  file: 'dist/*.{tar.gz,zip}'
+  on:
+    tags: true
+    go: '1.9'

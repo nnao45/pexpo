@@ -82,6 +82,7 @@ var timeout = flag.Duration("t", time.Second*ICMP_TIMEOUT, "")
 var interval = flag.Duration("i", time.Millisecond*ICMP_INTERVAL, "")
 var pinglist = flag.String("f", PING_LIST, "")
 var arpentries = flag.Bool("A", false, "")
+var ver = flag.Bool("v", false, "")
 var vi = flag.Bool("V", false, "")
 var httping = flag.Bool("H", false, "")
 var sslping = flag.Bool("S", false, "")
@@ -153,7 +154,12 @@ const (
 	ICMP_TIMEOUT  = 3
 
 	/*pexpo's version*/
-	VERSION = "1.39"
+	//VERSION = "1.39"
+)
+
+var (
+	/*pexpo's version*/
+	version string
 )
 
 func fatal(err error) {
@@ -563,7 +569,7 @@ func drawLoop(maxX, maxY int, pauser *Pauser) {
 
 	/*drawing column*/
 	drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
-	drawLine(maxX-9, maxY-1, fmt.Sprintf("ver. %v", VERSION))
+	drawLine(maxX-9, maxY-1, fmt.Sprintf("ver. %v", version))
 	drawLineColorful(LIST_H_X-1, 1, fmt.Sprintf("%v", "           Now, Loss counting Per host.            "), termbox.ColorDefault, termbox.ColorMagenta)
 	drawLineColor(LIST_H_X, 2, fmt.Sprintf("%v", "Hostname"), termbox.ColorWhite)
 	drawLineColor(LIST_P_X, 2, fmt.Sprintf("%v", "Loss(%)"), termbox.ColorWhite)
@@ -702,6 +708,11 @@ func init() {
 	}
 
 	flag.Parse()
+
+	if *ver {
+		fmt.Println("version: ", version)
+		os.Exit(0)
+	}
 
 	u, err := user.Current()
 	fatal(err)
