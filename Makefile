@@ -1,3 +1,5 @@
+GO15VENDOREXPERIMENT=1
+
 NAME	 := pexpo
 TARGET	 := bin/$(NAME)
 VERSION  := 1.40
@@ -33,9 +35,9 @@ deps:
 
 .PHONY: glide
 glide:
-	go get github.com/Masterminds/glide
-	go install github.com/Masterminds/glide
-	export GO15VENDOREXPERIMENT=1
+ifeq ($(shell command -v glide 2> /dev/null),)
+	curl https://glide.sh/get | sh
+endif
 
 .PHONY: dist
 dist:
