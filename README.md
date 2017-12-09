@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/nnao45/pexpo.svg?style=svg)](https://circleci.com/gh/nnao45/pexpo)
 [![Travis CI](https://travis-ci.org/nnao45/pexpo.svg?branch=master)](https://travis-ci.org/nnao45/pexpo)
-[![v1.37](https://img.shields.io/badge/package-v1.37-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.37)
+[![v1.38](https://img.shields.io/badge/package-v1.38-ff69b4.svg)](https://github.com/nnao45/pexpo/releases/tag/1.38)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/nnao45/pexpo/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nnao45/pexpo)](https://goreportcard.com/report/github.com/nnao45/pexpo)
 [![platform](https://img.shields.io/badge/platform-win10%20|%20osx%20|%20linux-orange.svg)]()
@@ -12,11 +12,11 @@ So, pexpo's code is NATIVE [The Go Programming Language](http://golang.org) appl
 This is inspired the [pinger](https://github.com/hirose31/pinger), [Exping](http://www.woodybells.com/exping.html).  
 And, This app use with root(sudo) privilege. Because using socket of icmp.
   
-***Current pexpo's version: 1.37***  
-(context support & slim goroutine.)
+***Current pexpo's version: 1.38***  
+(pausing implement change from channel to the mutex.)
 
 ## Download
-Download Page: https://github.com/nnao45/pexpo/releases/tag/1.37
+Download Page: https://github.com/nnao45/pexpo/releases/tag/1.38
 
 ## Install
 ```bash
@@ -147,6 +147,7 @@ okay, and push ":wq", run the pexpo :relieved:
 - Push ArrowUp(Ctrl+A) or ArrowDown(Ctrl+Z) key, scroll host-list :arrow_double_up: :arrow_double_down:
   
 ## Release note
+- version 1.38...pausing implement change from channel to the mutex.
 - version 1.37...context support & slim goroutine.
 - version 1.36...stable homebrew & glide.
 - version 1.34...bug fix.
