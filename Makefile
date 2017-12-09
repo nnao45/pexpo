@@ -6,12 +6,6 @@ DIST_DIRS := find * -type d -exec
 SRCS	:= $(shell find . -type f -name '*.go')
 LDFLAGS := -ldflags="-s -w -X \"main.version=$(VERSION)\" -extldflags \"-static\""
 
-.PHONY: glide
-glide:
-ifeq ($(shell command -v glide 2> /dev/null),)
-    curl https://glide.sh/get | sh
-endif
-
 $(TARGET): $(SRCS)
 	go build -a -tags netgo -installsuffix netgo $(LDFLAGS) -o bin/$(NAME)
 
@@ -36,6 +30,12 @@ cross-build: deps
 .PHONY: deps
 deps:
 	glide install
+
+.PHONY: glide
+glide:
+	go get github.com/Masterminds/glide
+	go install github.com/Masterminds/glide
+	export GO15VENDOREXPERIMENT=1
 
 .PHONY: dist
 dist:
