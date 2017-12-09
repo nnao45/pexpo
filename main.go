@@ -1,10 +1,8 @@
 /*
-
 ###################
 pexpo Demo Console.
 console 130x45
 ###################
-
 =================================================================                    Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.
 | o | Host              | Response          | Description       |              Now, Loss counting Per host.
 =================================================================    Hostname            Loss(%)   Loss(sum) Dead Now?
@@ -70,7 +68,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/dariubs/percent"
@@ -92,21 +89,16 @@ var sslping = flag.Bool("S", false, "")
 var usage = `
 Usage:
     pexpo | pexpo.exe [-i interval] [-t timeout] [-f ping-list] [-A] [-H] [-S] [-V]
-
 Examples:
     ./pexpo -i 500ms -t 1s -f /usr/local/ping-list.txt
     pexpo.exe -i 500ms -t 1s -f C:\Users\arale\Desktop\ping-list.txt
-
 Option:
     -i Sending ICMP interval time(Default:500ms, should not be lower this).
        You must not use "200" or "1" or..., must use "200ms" or "1s" or ... , so use with time's unit.
-
     -t Sending ICMP timeout time(Default:3s)
        You must not use "200" or "1" or..., must use "200ms" or "1s" or ... , so use with time's unit.
        this "timeout" is Exact meaning, fastping.NewPinger() receives OnRecv struct value interval.
-
     -f Using Filepath of ping-list(Default:current_dir/ping-list.txt).
-
     -A If you want to write on ping-list -- such as Cisco's show ip arp -- , 
        "Internet  10.0.0.1                0   ca01.18cc.0038  ARPA   Ethernet2/0",
        Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
@@ -114,9 +106,7 @@ Option:
     -V if you DON'T want to make file "ping-list", should use this option.
        this option is run "vi", and make tmpfile...pexpo this file as ping-list.
 	   Ignoring string "Internet", So It is good as you copy&paste show ip arp line.
-
 <HTTP mode options!>
-
 Examples:
     ./pexpo -H -i 500ms -t 1s -f /usr/local/curl-list.txt
     pexpo.exe -S -i 500ms -t 1s -f C:\Users\arale\Desktop\curl-list.txt
@@ -130,7 +120,6 @@ Option:
        -H or -S options HTTP/HTTPS GET Request instead of the PING.
        (Just like, curl -LIs www.google.com -o /dev/null -w '%{http_code}\n')
        This Request is ververy simple GET Request, Only Getting status code(No header, No form, No getting data.)
-
        And, if http status code is "200", string color is Blue, else Red.
 `
 
@@ -163,7 +152,7 @@ const (
 	ICMP_TIMEOUT  = 3
 
 	/*pexpo's version*/
-	VERSION = "1.38"
+	VERSION = "1.37"
 )
 
 func fatal(err error) {
@@ -416,7 +405,7 @@ func drawHostlist(maxX, maxY int) {
 }
 
 /*This is Main loop*/
-func drawLoop(maxX, maxY int, mu sync.Mutex, stop chan struct{}) {
+func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 	/***************************
 	Initilizing part here /(^o^)\
@@ -428,6 +417,10 @@ func drawLoop(maxX, maxY int, mu sync.Mutex, stop chan struct{}) {
 
 	pbfAry := make([]string, 0, 200) // pbfAry is ping-list(textfile -> buffer).
 	rbfAry := make([]string, 0, 200) // rbfAry is ping result list.
+	//hbfAry := make([]string, 0, 200) // hbfAry is ping loss counter map to per host.
+
+	/*1st key loop lock open*/
+	received <- struct{}{}
 
 	/*select mode*/
 	var JUDGE_X int
@@ -590,7 +583,9 @@ func drawLoop(maxX, maxY int, mu sync.Mutex, stop chan struct{}) {
 			/*For Stop & Restart*/
 			select {
 			case <-stop:
-				mu.Lock()
+				received <- struct{}{}
+				<-restart
+				received <- struct{}{}
 
 			/*Default behavior*/
 			default:
@@ -735,22 +730,30 @@ func main() {
 	defer termbox.Close()
 
 	maxX, maxY := termbox.Size()
+	//chanMaxX, chanMaxY := make(chan int, maxX), make(chan int, maxY)
+
+	//terch := make(chan struct{})
 
 	/*killKey channel is received HW key interrupt*/
 	killKey := make(chan termbox.Key)
 
-	/*mu give stop & restart implement*/
-	var mu sync.Mutex
-
 	/*stop channel is for stopping drawLoop()*/
 	stop := make(chan struct{}, 0)
+
+	/*stop channel is for restarting drawLoop()*/
+	restart := make(chan struct{}, 0)
+
+	/*received channel is received message from drawLoop()*/
+	received := make(chan struct{}, 0)
 
 	/*sleep flag*/
 	sleep := false
 
 	go keyEventLoop(killKey)
-	go drawLoop(maxX, maxY, mu, stop)
+	go drawLoop(maxX, maxY, stop, restart, received)
 
+loop:
+	<-received
 	for {
 		select {
 		case wait := <-killKey:
@@ -763,10 +766,13 @@ func main() {
 					drawLineColor(maxX-48, 0, "Stop Now!! Crtl+S: Restart, Esc or Ctrl+C: Exit.", termbox.ColorYellow)
 					stop <- struct{}{}
 					sleep = true
+					goto loop
 				} else if sleep == true {
 					fill(maxX-48, 0, 49, 1, termbox.Cell{Ch: ' '})
 					drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
-					mu.Unlock()
+					restart <- struct{}{}
+					sleep = false
+					goto loop
 				}
 			case termbox.KeyArrowUp, termbox.KeyCtrlA:
 				if len(hostlist.Hosts) >= scrCount+maxY-3 {
@@ -789,6 +795,12 @@ func main() {
 				drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorDefault)
 				termbox.Flush()
 			}
+			/*
+				case <-terch:
+					maxX, maxY := termbox.Size()
+					chanMaxX <- maxX
+					chanMaxY <- maxY
+			*/
 		}
 	}
 }
