@@ -16,7 +16,7 @@ And, This app use with root(sudo) privilege. Because using socket of icmp.
 (new CI & fix bug.)
 
 ## Download
-Download Page: https://github.com/nnao45/pexpo/releases/tag/1.40
+Download Page: https://github.com/nnao45/pexpo/releases/tag/latest
 
 ## Install
 ```bash
