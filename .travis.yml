@@ -7,11 +7,17 @@ os:
           - linux
           - osx
 script: 
+          - make glide
           - make cross-build
           - make
           - make dist
           - make install
           - bin/pexpo -v
+before_deploy:
+      # Set up git user name and tag this commit
+      - git config --local user.name "nnao45"
+      - git config --local user.email "n4sekai5y@gmail.com"
+      - git tag "$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)"
 deploy:
   provider: releases
   skip_cleanup: true
