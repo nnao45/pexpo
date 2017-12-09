@@ -7,8 +7,8 @@ os:
           - linux
           - osx
 script: 
-          - make
           - make cross-build
+          - make
           - make dist
           - make install
           - bin/pexpo -v
