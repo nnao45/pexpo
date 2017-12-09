@@ -68,6 +68,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/dariubs/percent"
@@ -152,7 +153,7 @@ const (
 	ICMP_TIMEOUT  = 3
 
 	/*pexpo's version*/
-	VERSION = "1.37"
+	VERSION = "1.38"
 )
 
 func fatal(err error) {
@@ -356,6 +357,7 @@ func curlCheck(url string) (res []string) {
 
 var scrCount int
 
+/*HostCounter count per host Loss*/
 type HostCounter struct {
 	Name        string
 	Description string
@@ -364,6 +366,7 @@ type HostCounter struct {
 	IsDead      bool
 }
 
+/*HostList is slice of HostCounter*/
 type HostList struct {
 	Hosts []HostCounter
 }
@@ -404,8 +407,30 @@ func drawHostlist(maxX, maxY int) {
 	}
 }
 
+/*Pauser give pause implementation*/
+type Pauser struct {
+	Stop    chan struct{}
+	MainMux sync.Mutex
+	DrawMux sync.Mutex
+}
+
+func newPauser() *Pauser {
+	var (
+		mu1 sync.Mutex
+		mu2 sync.Mutex
+	)
+	mu1.Lock() //Mutex is availablize.
+	mu2.Lock() //Mutex is availablize.
+	stop := make(chan struct{}, 0)
+	return &Pauser{
+		Stop:    stop,
+		MainMux: mu1,
+		DrawMux: mu2,
+	}
+}
+
 /*This is Main loop*/
-func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
+func drawLoop(maxX, maxY int, pauser *Pauser) {
 
 	/***************************
 	Initilizing part here /(^o^)\
@@ -417,10 +442,6 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 	pbfAry := make([]string, 0, 200) // pbfAry is ping-list(textfile -> buffer).
 	rbfAry := make([]string, 0, 200) // rbfAry is ping result list.
-	//hbfAry := make([]string, 0, 200) // hbfAry is ping loss counter map to per host.
-
-	/*1st key loop lock open*/
-	received <- struct{}{}
 
 	/*select mode*/
 	var JUDGE_X int
@@ -582,10 +603,9 @@ func drawLoop(maxX, maxY int, stop, restart, received chan struct{}) {
 
 			/*For Stop & Restart*/
 			select {
-			case <-stop:
-				received <- struct{}{}
-				<-restart
-				received <- struct{}{}
+			case <-pauser.Stop:
+				pauser.DrawMux.Lock()
+				pauser.MainMux.Unlock()
 
 			/*Default behavior*/
 			default:
@@ -730,30 +750,19 @@ func main() {
 	defer termbox.Close()
 
 	maxX, maxY := termbox.Size()
-	//chanMaxX, chanMaxY := make(chan int, maxX), make(chan int, maxY)
-
-	//terch := make(chan struct{})
 
 	/*killKey channel is received HW key interrupt*/
 	killKey := make(chan termbox.Key)
 
-	/*stop channel is for stopping drawLoop()*/
-	stop := make(chan struct{}, 0)
-
-	/*stop channel is for restarting drawLoop()*/
-	restart := make(chan struct{}, 0)
-
-	/*received channel is received message from drawLoop()*/
-	received := make(chan struct{}, 0)
-
 	/*sleep flag*/
 	sleep := false
 
-	go keyEventLoop(killKey)
-	go drawLoop(maxX, maxY, stop, restart, received)
+	/*pauser give pause implementation*/
+	pauser := newPauser()
 
-loop:
-	<-received
+	go keyEventLoop(killKey)
+	go drawLoop(maxX, maxY, pauser)
+
 	for {
 		select {
 		case wait := <-killKey:
@@ -764,15 +773,14 @@ loop:
 				if sleep == false {
 					fill(maxX-44, 0, 45, 1, termbox.Cell{Ch: ' '})
 					drawLineColor(maxX-48, 0, "Stop Now!! Crtl+S: Restart, Esc or Ctrl+C: Exit.", termbox.ColorYellow)
-					stop <- struct{}{}
+					pauser.Stop <- struct{}{}
 					sleep = true
-					goto loop
 				} else if sleep == true {
 					fill(maxX-48, 0, 49, 1, termbox.Cell{Ch: ' '})
 					drawLine(maxX-44, 0, "Ctrl+S: Stop & Restart, Esc or Ctrl+C: Exit.")
-					restart <- struct{}{}
+					pauser.DrawMux.Unlock()
+					pauser.MainMux.Lock()
 					sleep = false
-					goto loop
 				}
 			case termbox.KeyArrowUp, termbox.KeyCtrlA:
 				if len(hostlist.Hosts) >= scrCount+maxY-3 {
@@ -795,12 +803,6 @@ loop:
 				drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorDefault)
 				termbox.Flush()
 			}
-			/*
-				case <-terch:
-					maxX, maxY := termbox.Size()
-					chanMaxX <- maxX
-					chanMaxY <- maxY
-			*/
 		}
 	}
 }
