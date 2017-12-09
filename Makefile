@@ -6,6 +6,12 @@ DIST_DIRS := find * -type d -exec
 SRCS	:= $(shell find . -type f -name '*.go')
 LDFLAGS := -ldflags="-s -w -X \"main.version=$(VERSION)\" -extldflags \"-static\""
 
+.PHONY: glide
+glide:
+ifeq ($(shell command -v glide 2> /dev/null),)
+    curl https://glide.sh/get | sh
+endif
+
 $(TARGET): $(SRCS)
 	go build -a -tags netgo -installsuffix netgo $(LDFLAGS) -o bin/$(NAME)
 
