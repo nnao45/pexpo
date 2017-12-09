@@ -7,7 +7,6 @@ os:
           - linux
           - osx
 script: 
-          - make glide
           - make
           - make cross-build
           - make dist

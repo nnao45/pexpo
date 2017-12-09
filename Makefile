@@ -1,6 +1,6 @@
 NAME	 := pexpo
 TARGET	 := bin/$(NAME)
-VERSION  := 1.41
+VERSION  := 1.40
 DIST_DIRS := find * -type d -exec
 
 SRCS	:= $(shell find . -type f -name '*.go')
