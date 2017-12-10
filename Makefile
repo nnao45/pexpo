@@ -15,13 +15,13 @@ $(TARGET): $(SRCS)
 install:
 	go install $(LDFLAGS)
 
-.PHONY: clean
-clean:
+.PHONY: wash
+wash:
 	rm -rf bin/*
 	rm -rf dist/*
 
-.PHONY: cleans
-cleans:
+.PHONY: clean
+clean:
 	rm -rf bin/*
 	rm -rf vendor/*
 	rm -rf dist/*
