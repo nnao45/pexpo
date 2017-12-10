@@ -34,8 +34,8 @@ cross-build: deps
 		done; \
 	done
 
-.PHONY: deps-up
-deps:
+.PHONY: upde
+upde:
 	glide up
 
 .PHONY: deps
