@@ -419,21 +419,6 @@ type Pauser struct {
 	DrawMux sync.Mutex
 }
 
-func newPauser() *Pauser {
-	var (
-		mu1 sync.Mutex
-		mu2 sync.Mutex
-	)
-	mu1.Lock() //Mutex is availablize.
-	mu2.Lock() //Mutex is availablize.
-	stop := make(chan struct{}, 0)
-	return &Pauser{
-		Stop:    stop,
-		MainMux: mu1,
-		DrawMux: mu2,
-	}
-}
-
 /*This is Main loop*/
 func drawLoop(maxX, maxY int, pauser *Pauser) {
 
@@ -769,7 +754,11 @@ func main() {
 	sleep := false
 
 	/*pauser give pause implementation*/
-	pauser := newPauser()
+	pauser := &Pauser{
+		Stop: make(chan struct{}, 0),
+	}
+	pauser.MainMux.Lock()
+	pauser.DrawMux.Lock()
 
 	go keyEventLoop(killKey)
 	go drawLoop(maxX, maxY, pauser)
