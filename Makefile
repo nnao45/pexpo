@@ -34,6 +34,10 @@ cross-build: deps
 		done; \
 	done
 
+.PHONY: deps-up
+deps:
+	glide up
+
 .PHONY: deps
 deps:
 	glide install
