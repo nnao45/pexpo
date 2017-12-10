@@ -45,6 +45,9 @@ deps:
 .PHONY: glide
 glide:
 ifeq ($(shell command -v glide 2> /dev/null),)
+	ifeq ($(shell uname),Darwin)
+		mkdir -p GOPATH/bin
+	endif
 	curl https://glide.sh/get | sh
 endif
 
