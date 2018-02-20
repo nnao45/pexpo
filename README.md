@@ -147,7 +147,7 @@ okay, and push ":wq", run the pexpo :relieved:
 - Push ArrowUp(Ctrl+A) or ArrowDown(Ctrl+Z) key, scroll host-list :arrow_double_up: :arrow_double_down:
   
 ## Release note
-- version 1.40...scroll fix.
+- version 1.41...scroll fix.
 - version 1.40...new CI & fix bug.
 - version 1.39...mutex is safetilize.
 - version 1.38...pausing implement change from channel to the mutex.
