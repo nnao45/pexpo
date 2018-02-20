@@ -25,7 +25,7 @@ www.yahoo.com
 #192.168.189.148
 8.8.8.8                                       dou?
 		8.8.4.4				Google_IPv4
-Internet  208.67.222.123  OpenDNS
+208.67.222.123  OpenDNS
 208.67.220.123 OpenDNS
 216.146.35.35  Dyn Internet Guide
 216.146.36.36 Dyn Internet Guide

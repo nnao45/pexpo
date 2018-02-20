@@ -783,25 +783,27 @@ func main() {
 					pauser.MainMux.Lock()
 					sleep = false
 				}
-			case termbox.KeyArrowUp, termbox.KeyCtrlA:
+			//case termbox.KeyArrowUp, termbox.KeyCtrlA:
+			case termbox.KeyArrowDown, termbox.KeyCtrlZ:
 				if len(hostlist.Hosts) >= scrCount+maxY-3 {
 					scrCount++
-					drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorCyan)
-					drawHostlist(maxX, maxY)
-				} else {
-					drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorRed)
-				}
-				drawLineColor(120, maxY-2, "↓", termbox.ColorDefault)
-				termbox.Flush()
-			case termbox.KeyArrowDown, termbox.KeyCtrlZ:
-				if scrCount != 0 {
-					scrCount--
 					drawLineColor(120, maxY-2, "↓", termbox.ColorCyan)
 					drawHostlist(maxX, maxY)
 				} else {
 					drawLineColor(120, maxY-2, "↓", termbox.ColorRed)
 				}
 				drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorDefault)
+				termbox.Flush()
+			//case termbox.KeyArrowDown, termbox.KeyCtrlZ:
+			case termbox.KeyArrowUp, termbox.KeyCtrlA:
+				if scrCount != 0 {
+					scrCount--
+					drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorCyan)
+					drawHostlist(maxX, maxY)
+				} else {
+					drawLineColor(120, DRAW_UP_Y, "↑", termbox.ColorRed)
+				}
+				drawLineColor(120, maxY-2, "↓", termbox.ColorDefault)
 				termbox.Flush()
 			}
 		}
