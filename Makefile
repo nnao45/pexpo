@@ -2,7 +2,7 @@ GO15VENDOREXPERIMENT=1
 
 NAME	 := pexpo
 TARGET	 := bin/$(NAME)
-VERSION  := 1.40
+VERSION  := 1.41
 DIST_DIRS := find * -type d -exec
 
 SRCS	:= $(shell find . -type f -name '*.go')
